@@ -1,0 +1,27 @@
+The Magma Chef (Revised)
+
+Visuals & Personality:
+
+    A giant, round fish in a flaming chef’s hat and stained apron, wielding a massive ladle.
+    The central lava pot sits at the top center of the arena, bubbling and occasionally erupting.
+    The chef is dramatic, shouting cooking puns and berating his sous-chefs Gordon Ramsay–style.
+
+Attack Patterns:
+
+    Boiling Soup Splash: Hurls ladlefuls of lava soup from the central pot, creating burning puddles.
+    Pepper Bombs: Tosses spicy magma peppers that explode in fiery bursts.
+    Pot Block: Moves to block the player from reaching the pot, using sweeping ladle attacks or creating fire walls.
+    Spicy Steam: Breathes out a cloud of spicy steam, slowing and blurring the player’s vision.
+    Sous-Chef Summon: Several sous-chef shrimp work at stations around the arena. If the player gets close, they attack; otherwise, they’re busy “cooking.”
+
+Unique Mechanics:
+
+    The player can interact with sous-chef stations—messing up a station causes the chef to rush over and yell at the sous-chef, leaving himself open for a big damage window.
+    The player can toss ingredients into the central pot. If the right combo is thrown in, the pot erupts, stunning the chef and damaging nearby minions.
+    Some pepper bombs can be caught and thrown back at the chef or used to disrupt sous-chef stations.
+
+Phase 2 (Low Health):
+
+    The chef becomes more frantic, moving between stations and the pot more quickly, and soup eruptions become more frequent.
+    Sous-chefs occasionally panic and run around, creating chaos and new hazards.
+    The chef tries to “plate” the player as the final dish, but if the player dodges, he slips on spilled soup, opening a final big damage window.
