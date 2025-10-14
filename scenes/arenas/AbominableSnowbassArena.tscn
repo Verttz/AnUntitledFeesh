@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="AbominableSnowbassArena" type="Node2D"]
+
+# Placeholder arena for Abominable Snowbass

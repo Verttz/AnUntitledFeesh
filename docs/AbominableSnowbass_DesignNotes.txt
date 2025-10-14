@@ -1,0 +1,64 @@
+Abominable Snowbass - Boss Design Notes
+======================================
+
+Core Theme:
+- Slapstick, showboating, and pratfall humor; a washed-up celebrity fish with a flair for the dramatic.
+- Arena: Frozen lake with breakable ice, snowbanks, and interactive elements.
+
+Signature Mechanics:
+--------------------
+1. Avalanche Roar:
+   - Snowbass lets out a mighty roar, causing snow to fall from above in patterns (telegraphed shadows).
+   - Can break ice tiles, creating water hazards.
+
+2. Snowboulder Toss:
+   - Hurls giant snowballs that roll and shatter into smaller projectiles.
+   - Sometimes snowballs contain minions (snow hares) or power-ups.
+
+3. Stompquake:
+   - Stomps the ice, sending shockwaves and cracking tiles.
+   - Players must avoid falling into water or getting stunned.
+
+4. Frosty Breath:
+   - Breathes a cone of icy wind that freezes players.
+
+5. Minion Mayhem:
+   - Summons snow hare minions that skate around, drop snowballs, or repair ice.
+
+6. Pratfall Gags:
+   - Occasionally slips, falls, or gets stuck in snow, giving players a chance to counterattack.
+   - May play up the drama with exaggerated poses or demand applause.
+
+7. Autograph/Showboat Moments:
+   - Pauses to sign autographs, pose, or interact with the (invisible) audience.
+   - Players can interrupt for bonus damage or rewards.
+
+9. Spotlight Showdown (Phase 2):
+    - The arena darkens except for spotlights.
+    - If the player's fish is melee:
+       - A single large spotlight follows both the player and Snowbass, forcing close-quarters combat and dodging.
+       - Staying outside the spotlight causes freezing or slow debuffs.
+    - If the player's fish is ranged:
+       - Two smaller spotlights: one for the player, one for Snowbass.
+       - The player must stay in their spotlight to avoid debuffs (freeze/slow).
+       - Extra challenge: periodically, Snowbass “snuffs out” the player’s spotlight for a few seconds, forcing the player to quickly move to a new lit area or risk being frozen.
+    - Snowbass hams it up in the spotlight, performing dramatic moves, and occasionally slips, giving the player a chance to counter.
+    - Emphasizes slapstick and showboating.
+   - Dodging, catching, and throwing snowballs for bonus damage or buffs.
+
+10. Finale Spectacle:
+    - Over-the-top defeat animation: slips, spins, and crashes through the ice, waving to the crowd as he sinks.
+
+Design Goals:
+-------------
+- Emphasize humor, spectacle, and player agency.
+- Encourage interaction with the environment (breaking/repairing ice, using snowballs, etc.).
+- Telegraph attacks clearly with visual and audio cues.
+- Reward players for creative play and timing (interrupting showboating, using hazards).
+- Keep the fight dynamic and memorable with varied attack patterns and slapstick moments.
+
+Notes:
+------
+- Consider adding supportive antagonist gags (e.g., rival fish booing, snow hare minions cheering or sabotaging).
+- Use visual spectacle (spotlights, confetti, dramatic music) for key moments.
+- Ensure the boss’s personality shines through in animations and dialogue.

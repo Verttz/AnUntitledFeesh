@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="FishingSanctumArena" type="Node2D"]
+
+# The final arena: The Fishing Sanctum
+# Decorate with ancient fishing relics, glowing water, and mysterious ambiance

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="DonCatfishoniArena" type="Node2D"]
+
+# Placeholder arena for Don Catfishoni
+# Add background, obstacles, and spawn points as needed

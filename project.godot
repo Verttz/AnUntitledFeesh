@@ -1,0 +1,9 @@
+; Engine configuration file.
+; It's best edited using the Godot editor.
+
+[application]
+config/name="AnUntitledFeesh"
+config/icon=""
+
+[rendering]
+quality/intended_usage=0
