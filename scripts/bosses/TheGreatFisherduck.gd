@@ -38,7 +38,7 @@ func start_phase(new_phase):
 		start_attack("dive_bomb", fast=true)
 
 func check_phase_transition():
-	if health <= max_health * 0.5 and phase == 1:
+	if health <= max_health * 0.3 and phase == 1:
 		start_phase(2)
 
 

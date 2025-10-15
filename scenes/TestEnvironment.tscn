@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="TestEnvironment" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+
+[node name="FishingSpot" type="Area2D" parent="."]
+position = Vector2(400, 300)
+
+[node name="TestGround" type="TileMap" parent="."]
+# Configure with a simple ground tile for movement
+
+# Add more test objects as needed
