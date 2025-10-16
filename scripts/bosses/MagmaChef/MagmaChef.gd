@@ -106,8 +106,8 @@ func start_phase(new_phase):
 		start_attack("spicy_meatball")
 
 func check_phase_transition():
-	if health <= max_health * 0.5 and phase == 1:
-		start_phase(2)
+	   if health <= max_health * 0.3 and phase == 1:
+		   start_phase(2)
 
 func start_attack(attack_name):
 	emit_signal("attack_started", attack_name)

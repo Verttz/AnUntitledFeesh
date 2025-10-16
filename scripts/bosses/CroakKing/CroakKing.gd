@@ -28,8 +28,8 @@ func start_phase(new_phase):
 		start_attack("throne_hop")
 
 func check_phase_transition():
-	if health <= max_health * 0.5 and phase == 1:
-		start_phase(2)
+	   if health <= max_health * 0.3 and phase == 1:
+		   start_phase(2)
 	if health <= max_health * 0.2 and not finale:
 		start_finale()
 

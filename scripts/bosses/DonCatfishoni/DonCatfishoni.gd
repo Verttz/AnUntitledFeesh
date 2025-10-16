@@ -168,9 +168,9 @@ func check_phase_transition():
 	start_phase(2)
 	# Example: Add new attack patterns and increase hazard frequency
 	# (You can expand this logic as needed for more phases)
-	if health <= max_health * 0.5 and phase == 1:
-		# Phase 2: Buff up, more aggressive
-		start_phase(2)
+	   if health <= max_health * 0.3 and phase == 1:
+		   # Phase 2: Buff up, more aggressive
+		   start_phase(2)
 
 func start_attack(attack_name):
 	emit_signal("attack_started", attack_name)
