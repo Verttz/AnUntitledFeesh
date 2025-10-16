@@ -1,0 +1,54 @@
+Don Catfishoni - Boss Design Notes
+==================================
+
+1. Core Theme & Personality
+--------------------------
+A large, imposing catfish in a pinstripe suit and fedora, with a cigar and a classic “mob boss” attitude. Speaks in mobster slang, makes threats, and offers “deals” mid-fight. Alternates between intimidation, negotiation, and slapstick blunders.
+
+2. Arena & Audience
+-------------------
+- Mobster minion fish cheer, jeer, and occasionally toss coins or junk into the arena.
+- Floating Black Market: The arena is a cluster of makeshift rafts and boats lashed together, forming a shady floating market on the river. Stalls sell “illegal” fishy goods, and some can be destroyed for loot or hazards. Rafts drift and shift, changing the arena layout mid-fight. Underwater tunnels between rafts allow quick movement or ambushes. Mobster minions run the stalls, toss junk, or try to scam the player. Occasionally, the market boss calls for a “market lockdown,” causing all stalls to close and hazards to increase. Special events like “contraband drops” or “police raids” can temporarily change the arena’s behavior, adding chaos and opportunity.
+- Contraband Crates: Randomly drop from above; can be broken for loot, but sometimes explode or release smoke, creating temporary danger zones.
+- Police Raids: Sirens sound and spotlights sweep the arena. Anyone caught in the light is temporarily stunned or slowed, and all stalls close their shutters, creating new barriers.
+- Fireworks Caches: Explosive caches that, when hit, launch random bullet patterns or area-of-effect blasts, adding chaos to the bullet hell.
+- Market Floods: Sudden surges of water temporarily flood parts of the arena, slowing movement and washing away hazards, coins, or even minions.
+- Stall Runners: Mobster fish who operate stalls, occasionally tossing junk, coins, or hazards at the player. Can duck behind their stalls for cover.
+- Firework Fishes: Minions that carry fireworks and, when defeated or after a timer, launch a burst of bullets in all directions, adding to the bullet hell chaos.
+
+3. Signature Mechanics & Attacks
+- Mobster Minions: Summons waves of smaller “goon” fish (mobster-themed) to attack or block the player. Some minions can be knocked into Don Catfishoni to stun him.
+	- If a Market Flood occurs, minions can be swept to new positions, changing their attack angles or clustering them for easier (or harder) dodging.
+	- Contraband crates or fireworks caches near minions can be triggered by their attacks, causing chain reactions or clearing out groups of minions.
+	- If a Negotiation Interrupt is triggered, some minions might get distracted or argue, pausing their attacks or even accidentally hitting Don.
+	- Two minion types spawn:
+		1. Brass Knuckle Minion: Wields brass knuckles, keeps fists up, and steadily walks toward the player to attack at close range.
+		2. Tommy Gun Minion: Wields a tommy gun, tries to keep a medium distance from the player, and fires bursts of 5-8 bullets before repositioning.
+
+- Tommy-Gun Squirt: Fires rapid streams of water bullets in sweeping bullet-hell patterns, mimicking a tommy gun.
+
+- Cigar Smoke Rings: Don fires expanding rings of slow-moving smoke bullets that linger as obstacles, forcing the player to weave through or around them.
+
+- Goon Crossfire: Mobster minions line up on the arena edges and fire synchronized spreads, creating tight bullet gaps the player must dodge through.
+    - If a Market Flood occurs, minions’ positions shift with the water, altering the crossfire pattern and forcing the player to adapt.
+	- Contraband crates or fireworks caches caught in the crossfire can be triggered, adding extra hazards.
+
+- Whisker Sweep: Don’s whiskers sweep across the arena, launching curved bullet trails that whip back and forth in wide arcs.
+	- If a Negotiation Interrupt is triggered mid-sweep, Don’s whiskers might tangle in a stall or hazard, stunning him and opening a damage window.
+
+- Firework Finale: Firework Fishes launch starburst patterns from random locations, filling the screen with colorful, crisscrossing bullets.
+
+4. Unique Mechanics
+
+- Market Lockdown: At intervals, the market “locks down”—stalls close, new barriers appear, and bullet patterns change. The player must quickly adapt to the new layout and hazards.
+- Negotiation Interrupts: Occasionally, Don tries to “negotiate” mid-fight, pausing his attacks for a second. If the player performs a quick action (dodge, shoot, or taunt), Don gets flustered, opening a damage window or causing a humorous mishap.
+- Mobster Deal Roulette: A spinning wheel or slot machine appears, giving random effects—extra hazards, minion betrayals, or silly visual gags (e.g., everyone wears fake mustaches for a few seconds).
+
+5. Phase Structure
+------------------
+- Phase 1: Standard attacks, minion waves, negotiation and bribe mechanics active, arena hazards moderate.
+- Phase 2 (Low Health): Don Catfishoni gets “serious,” removes his fedora, and attacks faster. Summons more minions, uses more aggressive bullet patterns, and combines attacks (e.g., smoke + tommy-gun). Arena becomes more chaotic, with more junk and hazards.
+
+6. Victory Flair
+----------------
+When defeated, Don Catfishoni dramatically “surrenders,” tossing his fedora and cigar aside as his minions scatter.

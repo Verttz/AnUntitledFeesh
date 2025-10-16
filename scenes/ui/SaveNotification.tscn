@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="SaveNotification" type="Label"]
+anchor_left = 0.0
+anchor_top = 0.95
+anchor_right = 0.3
+anchor_bottom = 1.0
+margin_left = 16
+margin_top = -32
+margin_right = 300
+margin_bottom = -8
+text = "Game Saved"
+visible = false
+modulate = Color(1,1,1,0.9)

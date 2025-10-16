@@ -1,0 +1,104 @@
+Guppazuma - Boss Design Notes
+1. Core Theme & Personality
+
+Guppazuma is a flamboyant, ancient jungle fish idol—part Aztec/Mayan stone statue, part living guppy, adorned with gold, feathers, and glowing gems. Idol flair: gold-plated features, gemstone "bling," 
+feathered headdress, dramatic poses, spotlights, confetti bursts, and crowd-pleasing gestures. He is egotistical, theatrical, obsessed with being worshipped and adored, and speaks in grand proclamations, 
+referring to himself in the third person. Loves pageantry, rituals, and talent shows—demands the player "prove their worth" through trials.
+
+2. Arena & Audience
+
+    Fight takes place on a rotating stone idol platform, surrounded by jungle wildlife as the audience (birds, monkeys, frogs, etc.).
+    Spotlights sweep the arena; the crowd reacts to both Guppazuma and the player (cheers, boos, fruit-throwing).
+    Arena is circular, with shifting platforms or rising/lowering stone blocks.
+    Idol statues and jungle plants line the edges; some can be activated or destroyed for effects.
+    Totems in the background light up to showcase audience favor: When the crowd favors Guppazuma, his totems glow gold; when the player is favored, their totems glow with vibrant colors or effects.
+    Crowd cheers and boos: The volume and intensity of animal cheers, applause, or boos shift based on who the audience favors, providing clear audio feedback.
+
+3. Audience Buffs & Hazards (Bullet Hell Mechanics)
+
+    Fruit Toss:
+        The crowd throws fruit into the arena.
+            If the player catches it: temporary speed boost, attack up, or a brief shield (blocks one hit/projectile).
+            If Guppazuma catches it: he immediately fires a special attack (no heal or damage boost).
+    Cheer Waves:
+        When the crowd cheers for the player, a wave of energy sweeps from the arena edge, clearing minor enemy bullets in its path or briefly slowing Guppazuma.
+        If the crowd cheers for Guppazuma, he gets a burst of speed or fires a radial bullet pattern.
+    Confetti Storm:
+        If the player is favored, confetti rains down, briefly highlighting safe zones (no bullets spawn in those areas for a few seconds).
+        If Guppazuma is favored, confetti becomes a visual hazard, obscuring part of the screen or hiding incoming bullets.
+    Rotten Fruit/Banana Peels:
+        Occasionally, the crowd throws rotten fruit or banana peels.
+            If the player steps on a peel, they are briefly stunned or slowed.
+            If Guppazuma hits a peel, he’s stunned or his next attack is delayed.
+    Wild Animal Interference:
+        A monkey or bird swoops across the arena, dropping projectiles or creating a moving hazard.
+        If the player is favored, the animal targets Guppazuma; if he’s favored, it targets the player.
+    Boo Bombs:
+        If the crowd is displeased, they throw “boo bombs” (exploding fruit) that create bullet clusters on impact.
+
+All buffs and hazards are clearly telegraphed (shadows, icons, or sound cues) and limited in number to avoid overwhelming the player. Their frequency and power scale with audience favor.
+4. Phase Structure
+
+1. 100%-75% Normal Phase: “Idol King’s Reign”
+
+    Guppazuma uses standard attacks (Stone Piranha Swarm, Idol Beam, arena hazards).
+    Crowd is fully on his side—cheers, spotlights, and fruit buffs go to Guppazuma.
+    He’s confident, showboating, and taunting the player.
+    Crowd may boo or distract if the player does something stylish, hinting at a coming shift.
+
+2. 75%-50% Mimicry Phase: “Copycat Challenger”
+
+    Guppazuma starts using mimicry mechanics (copies player’s last move, with telegraphed flair), mixed with standard attacks.
+    Crowd starts noticing the player—occasional cheers or fruit thrown to the player, but Guppazuma is still the favorite.
+    Mimicry is showy but not reckless; Guppazuma tries to “outdo” the player.
+    The crowd’s reaction is mixed, creating tension.
+
+3. 50%-25% Exaggerated Mimicry Phase: “Desperate Idol”
+
+    Mimicry becomes wild, aggressive, and sometimes sloppy—he chains moves, overcommits, and leaves himself open.
+    Guppazuma is desperate for attention, sometimes “begs” the crowd or throws tantrums if ignored.
+    The crowd is now rooting for the player—cheers, buffs, and fruit are mostly for the player.
+    Attacks are more powerful but have longer recovery, giving the player big counter windows.
+    Visual cues: Guppazuma’s color/lighting changes, crowd throws confetti for the player.
+
+4. 25%-0% “Phase 2” (Showdown/Finale)
+
+    Arena spins faster, hazards intensify, crowd is wild.
+    Guppazuma chains multiple mimics, uses unpredictable attacks, and may trigger unpredictable attack patterns.
+    Alternates between desperate attacks and moments of gloating or mockery, giving the player comeback opportunities.
+    “Jungle Idol Voting” moments can swing the fight (player is stylish = Guppazuma stunned; if not, he gets a last-ditch buff).
+
+5. Signature Mechanics
+
+    Mimicry Mechanic:
+        Guppazuma watches the player’s last attack or movement pattern, then copies it in an exaggerated, stone-golem way:
+            If the player dashes, Guppazuma does a heavy, sliding dash with a shockwave.
+            If the player uses a ranged attack, Guppazuma fires a volley of stone projectiles in a similar pattern.
+            If the player circles him, Guppazuma spins, creating a whirlwind or sending debris outward.
+        Occasionally, he “mocks” the player with a flashy pose or dance move, which can be interrupted for a stun.
+    Unique Attacks & Hazards:
+        Stone Piranha Swarm: Classic bullet hell pattern.
+        Idol Beam: Guppazuma channels a beam attack, but only after mimicking a player action (e.g., after copying a dash, he fires a beam in that direction).
+        Arena Shifts: The platform rotates or tilts at intervals, changing movement dynamics and bullet patterns.
+    Jungle Idol Voting:
+        The wildlife audience “votes” on who’s cooler at certain points.
+        If the player is winning, Guppazuma gets desperate and uses wild, unpredictable attacks.
+        If Guppazuma is winning, he pauses to gloat, giving the player a chance to catch up.
+
+
+6. Audience Participation & Player Agency
+
+    Guppazuma constantly tries to impress the jungle’s wildlife audience.
+    The audience reacts to both boss and player — cheering, booing, or throwing fruit depending on who’s winning.
+    The player can win over the crowd in the following ways:
+        - **Stylish Dodges:** Perfectly timed dodges (i-frames, last-second movement) trigger crowd cheers and shift favor toward the player.
+        - **Skillful Combos:** Chaining together attacks without taking damage, or using a variety of moves in quick succession, impresses the audience.
+        - **Interrupting Guppazuma’s Mockery:** If the player interrupts Guppazuma’s dance/pose with an attack, the crowd erupts in support.
+        - **Catching Audience Fruit:** Successfully catching fruit thrown by the crowd (especially if it was aimed at Guppazuma) delights the audience.
+        - **Countering Mimicry:** Outsmarting Guppazuma’s mimicry (e.g., baiting him into a move and punishing the recovery) gets the crowd on the player’s side.
+        - **Surviving or Escaping Hazards:** Escaping a confetti storm, dodging wild animal interference, or avoiding boo bombs at the last moment earns crowd respect.
+        - **Clutch Comebacks:** If the player is low on health and makes a comeback (lands a big hit, survives a tough phase), the crowd’s support surges.
+
+7. Victory Flair
+
+    When defeated, Guppazuma dramatically bows to the crowd, cracks, and showers the arena with gems and confetti as the wildlife audience goes wild.

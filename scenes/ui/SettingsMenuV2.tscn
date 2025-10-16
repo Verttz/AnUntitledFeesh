@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="SettingsMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Panel" type="Panel" parent="."]
+anchor_left = 0.3
+anchor_top = 0.1
+anchor_right = 0.7
+anchor_bottom = 0.9
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+anchor_left = 0.1
+anchor_top = 0.05
+anchor_right = 0.9
+anchor_bottom = 0.95
+
+[node name="MasterVolumeLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "Master Volume"
+[node name="MasterVolumeSlider" type="HSlider" parent="Panel/VBoxContainer"]
+min_value = 0
+max_value = 1
+step = 0.01
+value = 0.8
+
+[node name="MusicVolumeLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "Music Volume"
+[node name="MusicVolumeSlider" type="HSlider" parent="Panel/VBoxContainer"]
+min_value = 0
+max_value = 1
+step = 0.01
+value = 0.8
+
+[node name="SFXVolumeLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "SFX Volume"
+[node name="SFXVolumeSlider" type="HSlider" parent="Panel/VBoxContainer"]
+min_value = 0
+max_value = 1
+step = 0.01
+value = 0.8
+
+[node name="MuteAll" type="CheckBox" parent="Panel/VBoxContainer"]
+text = "Mute All"
+
+[node name="ScreenModeLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "Screen Mode"
+[node name="ScreenModeOption" type="OptionButton" parent="Panel/VBoxContainer"]
+items = ["Windowed", "Fullscreen"]
+
+[node name="ResolutionLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "Resolution"
+[node name="ResolutionOption" type="OptionButton" parent="Panel/VBoxContainer"]
+items = ["1280x720", "1920x1080", "2560x1440"]
+
+[node name="VSync" type="CheckBox" parent="Panel/VBoxContainer"]
+text = "VSync"
+
+[node name="Subtitles" type="CheckBox" parent="Panel/VBoxContainer"]
+text = "Subtitles"
+
+[node name="TextSpeedLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "Text Speed"
+[node name="TextSpeedSlider" type="HSlider" parent="Panel/VBoxContainer"]
+min_value = 0.5
+max_value = 3.0
+step = 0.05
+value = 1.0
+
+[node name="ColorblindMode" type="CheckBox" parent="Panel/VBoxContainer"]
+text = "Colorblind Mode"
+
+[node name="LanguageLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "Language"
+[node name="LanguageOption" type="OptionButton" parent="Panel/VBoxContainer"]
+items = ["English", "Español", "Français"]
+
+[node name="BackButton" type="Button" parent="Panel/VBoxContainer"]
+text = "Back"

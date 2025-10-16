@@ -3,6 +3,7 @@
 
 extends Node
 
+
 var shopkeeper = ""
 var inventory = [] # Items for sale
 var player_inventory = [] # Reference to player's inventory
@@ -10,6 +11,7 @@ var player_node = null # Reference to player node for gold/inventory
 var buy_prices = {} # {item_name: price}
 var sell_prices = {} # {fish_name: price}
 var notice_board_hints = []
+var shop_menu = null
 
 func open(shopkeeper_name, items_for_sale, buy_prices_dict, sell_prices_dict, hints, player_inv):
 	shopkeeper = shopkeeper_name
@@ -20,7 +22,21 @@ func open(shopkeeper_name, items_for_sale, buy_prices_dict, sell_prices_dict, hi
 	player_inventory = player_inv
 	player_node = get_parent() # Assumes Player is parent
 	print("Welcome to the shop! I am " + shopkeeper)
-	# TODO: Show shop UI
+	# Show new ShopMenu UI
+	var ShopMenu = preload("res://scenes/ui/shop/ShopMenu.tscn")
+	shop_menu = ShopMenu.instantiate()
+	add_child(shop_menu)
+	shop_menu.open(shopkeeper, inventory, buy_prices, sell_prices, player_inventory, player_node.player_gold)
+	shop_menu.connect("item_bought", self, "_on_item_bought")
+	shop_menu.connect("item_sold", self, "_on_item_sold")
+func _on_item_bought(item_name):
+	buy_item(item_name)
+	if shop_menu:
+		shop_menu.visible = false
+func _on_item_sold(item_name):
+	sell_fish(item_name)
+	if shop_menu:
+		shop_menu.visible = false
 
 func buy_item(item_name):
 	if item_name in buy_prices:

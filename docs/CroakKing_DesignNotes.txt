@@ -1,0 +1,96 @@
+The Croak King - Boss Design Notes
+==================================
+
+1. Core Theme & Personality
+--------------------------
+A regal, bombastic frog king who rules the swamp with an iron tongue. Wears a crown, sits on a lily throne, and is obsessed with being the loudest and most important. 
+
+
+2. Arena & Audience
+-------------------
+- Fight takes place in a swampy arena with lily pads, mud, and croaking minions.
+- Frog minions and swamp creatures cheer, croak, and throw mud or bugs.
+- The throne and lily pads can be used, destroyed, or moved. Mud patches slow movement; bugs can be caught for buffs.
+- The arena may flood or drain during the fight, changing movement and hazards.
+
+3. Signature Mechanics & Attacks
+--------------------------------
+- Tongue Lash: Strikes with a long, fast tongue attack that can pull the player or objects.
+- Croakquake: Lets out a deafening croak, creating shockwaves that break lily pads or stun the player.
+- Minion Swarm: Summons frog minions to attack, block, or repair the arena.
+- Throne Hop: Jumps between lily pads or throne, changing arena layout and creating waves.
+- Mud Toss: Throws mud that slows and sticks to the player, creating hazards.
+- Bug Buffet: Occasionally eats bugs for buffs or spits them as projectiles.
+- Arena Flood: Floods or drains the arena, changing movement speed and available cover.
+
+
+
+4. Unique Mechanics
+-------------------
+- The player can use lily pads for cover or movement, but they can be destroyed or moved by the Croak King.
+- Bugs can be caught for temporary buffs (speed, attack, cleanse debuffs).
+- If the player is stuck in mud, they are vulnerable to tongue lash or minion attacks.
+- Throne Mechanic: The throne is a central, destructible objective in the arena. The Croak King is fiercely protective of his throne—he will prioritize defending it, but must leave it vulnerable when attacking the player 
+or performing special moves. 
+Damaging or destroying the throne weakens the Croak King, triggers new attack patterns, and can sway minion loyalty. The player can choose to target the throne directly or use it as bait to manipulate the boss’s behavior.
+
+- Environmental Hazards:
+	- Mud Geysers: When stepped on, wait 2.5 seconds then shoot up, dealing damage and arcing mud in various spots around it.
+	- Bug Nests: Can be destroyed, providing either a healing item or releasing a swarm of angry bugs that slowly move toward the player and deal contact damage. Bugs persist for 10 seconds.
+	- Lilypads: Can be walked on but slowly sink. When fully submerged, the player is walking through mud.
+	- Mud: Causes the player to move slowly and the effect persists for a period after leaving the mud.
+
+5. Minion Conversion & Defectors
+Throughout the fight, the Croak King holds "knighting ceremonies" for minions, granting them titles and powers. Ceremonies occur in the background or at the arena’s edge, signaled by an audible fanfare 
+and a brief pause as the King gives a dramatic "ribbit" to start the event. The boss is not animation-locked and continues attacking, allowing the player to choose whether to engage with the ceremony or 
+focus on dodging. Only one ceremony can be active at a time.
+
+If the player interrupts or sabotages these ceremonies, the minions become disillusioned and may switch sides at any point, not just in the finale. The type of minion that appears is not influenced by the 
+player and is determined by the fight’s progression or at random. Converted minions persist between phases and cannot be un-converted. However, they can be damaged and slain by the Croak King or enemy minions. 
+The Medic Minion can revive fallen converted minions. The boss and enemy minions will actively target defected minions as threats.
+
+Ceremony Outcomes:
+1. If the player is unable to interrupt the ceremony or ignores it, the minion is knighted and joins the King as an empowered enemy.
+2. If the player attacks and kills the minion, the minion dies, is not knighted, and is not converted.
+3. If the player interrupts the ceremony—either by keeping the King from starting it or by using a special environmental hazard to end the ceremony abruptly—the minion is converted to the player's side.
+
+Ceremony Timing:
+- Knighting ceremonies occur in a window every 20–45 seconds, ensuring regular opportunities for player interaction without overwhelming the fight’s flow.
+
+Player Abilities That Can Interrupt the King:
+- Large amounts of damage dealt during the King’s ceremony wind-up
+- Stun effects
+- Taunt abilities
+- Interrupt abilities (e.g., special shots or skills)
+
+Interrupting the Ceremony:
+- The player can keep the King from starting the ceremony by pressuring him: staying close, dealing damage, or using a stun/disruption attack just as he attempts to “ribbit” and begin the ceremony. If the King is hit or forced to dodge during his brief pause, the ceremony is canceled and the minion is converted.
+- Certain player abilities (e.g., a “taunt” or “interrupt” shot) can specifically target the King during his ceremony wind-up.
+
+Environmental Hazard Interruption:
+- Before a ceremony begins, a special hazard (such as a mud geyser, lily pad, or bug nest) spawns near the ceremony zone. The player must destroy or trigger this hazard at the right moment
+
+
+5. Phase Structure
+------------------
+- Phase 1: Standard attacks, throne intact, crowd on Croak King’s side.
+- Phase 2: Arena shifts—throne can be damaged or destroyed, Croak King becomes more mobile and aggressive, arena floods or drains, more minions and hazards.
+
+Finale (Two Possible Outcomes):
+  1. Throne Destroyed – Wild Enrage & Mass Minion Conversion:
+	  - The Croak King loses all composure, attacking with reckless abandon and ignoring all ceremonies.
+	  - Minions who arrive for knighting are instantly disillusioned and join the player.
+	  - The fight becomes chaotic, with many minions helping the player and the boss using desperate, powerful attacks.
+	  - The arena may become unstable (hazards trigger randomly, lily pads sink).
+
+  2. Throne Intact – Composed Enrage & Desperate Defense:
+	  - At low health, the Croak King enters a more controlled but still aggressive enrage.
+	  - He continues knighting ceremonies, desperately trying to maintain loyalty.
+	  - Minion conversion is still possible, but requires player intervention.
+	  - The boss splits attention between defending the throne and attacking, making the fight tense and strategic.
+
+
+6. Victory Flair
+----------------
+If defeated, Croak King is buried in mud as the minions croak in celebration and the swamp erupts in a chorus of ribbits.
+

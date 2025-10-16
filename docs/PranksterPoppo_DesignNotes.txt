@@ -1,0 +1,33 @@
+
+Prankster Poppo – Boss Design Notes
+===================================
+
+1. Core Theme & Personality
+--------------------------
+A mischievous, bright-orange fish with a jester hat, springy tail, and a big, toothy grin. Poppo is constantly cracking puns, taunting the player, and popping in and out of lava pools with confetti and smoke. He never walks on the ground—he swims beneath the surface, always just out of reach, and delights in being a relentless irritant. Never stops taunting, joking, and making a spectacle of himself.
+
+2. Arena & Audience
+-------------------
+A field of lava pools scattered across the arena. The player can knock rocks into pools to block them, gradually limiting Poppo’s options and making his movements more predictable as the fight progresses. Once a pool is blocked, Poppo cannot unblock it. The audience is a crowd of prankster minions and circus props.
+
+3. Signature Mechanics & Attacks
+--------------------------------
+- Lava Pop Whack-a-Mole: Poppo rapidly pops out of random lava pools, launching firecrackers, hot peppers, or confetti bombs in unpredictable arcs. Sometimes he pops out just to taunt or make a face, wasting the player’s time and keeping them guessing.
+- Fakeout Puppet Decoy: Occasionally, a crude puppet version of Poppo emerges from a pool as a decoy, while the real Poppo pops out elsewhere for a surprise attack or prank. Attacking the decoy triggers a harmless but distracting effect (e.g., confetti burst, silly sound).
+- Pool Blockade: The player can knock rocks into lava pools to block them, reducing the number of places Poppo can appear. This is the main way the player progresses and gains control over the fight.
+- Fake Defeat: At low health, Poppo dramatically flops over with a “NOT YET!” comic banner and circus music, then pops back up for a final, frantic round. The real defeat is much more obvious and satisfying.
+
+4. Unique Mechanics
+-------------------
+- Pool blocking as progression mechanic.
+- Decoy puppet for misdirection.
+- Poppo’s constant taunting and unpredictable movement.
+
+5. Phase Structure
+------------------
+- Phase 1: Standard whack-a-mole attacks, pool blocking, and decoy pranks.
+- Phase 2 (Low Health): Poppo fakes defeat, then returns for a frantic final round with faster attacks and more decoys. Pools are mostly blocked, making his movement more predictable.
+
+6. Victory Flair
+----------------
+On true defeat, Poppo gets stuck in a pool, sputters, and explodes in a shower of confetti and steam, leaving the player with a sense of triumph over a relentless prankster.

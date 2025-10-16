@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="LadyLilypadMinion" type="CharacterBody2D"]
+script = ExtResource( 1 )
+
+[ext_resource path="res://scripts/bosses/CroakKing/minions/CroakKingMinion_LadyLilypad.gd" type="Script" id=1]

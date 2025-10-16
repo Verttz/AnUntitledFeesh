@@ -1,0 +1,94 @@
+
+# 1. Core Game Loop & State Management
+- [x] Main menu (complete)
+- [x] Save/load system (complete)
+- [~] Pause menu (core features complete, polish remaining)
+  - [x] Pause menu UI and layout
+  - [x] Open/close with Escape key
+  - [x] Manual save button (exploration only)
+  - [x] Settings button (opens settings menu)
+  - [x] Quit to main menu button
+  - [x] Game unpauses and resumes correctly
+  - [ ] Keyboard/gamepad navigation and focus polish
+  - [ ] Prevent opening during boss fights/cutscenes (if desired)
+  - [ ] Sound/visual feedback for pausing/unpausing
+  - [ ] Polish transitions/animations
+  - [ ] Test all pause menu features in-game
+- [~] Exploration/fishing transitions (basic implemented, polish needed)
+- [~] Boss fight transitions (started: boss gate/tribute logic and player interaction done)
+  - [x] Detect when player triggers a boss fight (boss gate, requirements)
+  - [ ] Fade out/animate transition from overworld to boss fight
+  - [ ] Load and display boss arena/fight scene
+  - [ ] Initialize boss, player, and UI for the fight
+  - [ ] Handle music, sound, and visual transitions (boss intro, cut-in)
+  - [ ] Lock out pause menu and non-boss features if needed
+  - [ ] Transition back to exploration/cutscene after boss is defeated or player loses
+  - [ ] Restore correct game state, player position, and UI
+- [ ] Cutscene transitions (scaffolded, not complete)
+
+# 2. Fishing System Design & Polish
+- [ ] Complete all fishing UI (bobber, tension meter, reeling minigame, etc.)
+- [ ] Add sound and visual feedback for fishing actions (bites, reeling, catching, failing)
+- [ ] Implement unique fish abilities and special events
+- [ ] Add and polish player animations (movement, fishing, reeling, etc.)
+- [ ] Fishing System Design Checklist
+  - [x] Free-aim casting with mouse/cursor (core implemented)
+    - [x] Player can aim in any direction
+    - [x] Cast direction updates in real time
+  - [x] Variable cast power (core implemented)
+    - [x] Holding cast button charges power
+    - [x] Release casts line further based on charge
+    - [ ] Visual feedback for cast power (bar, color, etc.)
+  - [ ] Cast trajectory preview
+    - [ ] Show arc or line preview as player aims and charges
+    - [ ] Preview updates in real time
+  - [ ] Bobber/lure animation
+    - [ ] Animate bobber flying to target spot
+    - [ ] Splash or landing effect at destination
+  - [x] Fish biting logic (core implemented)
+    - [x] Randomized bite timer after cast lands
+    - [x] Fish selection based on biome, location, or rarity
+    - [ ] Bobber animation/sound for bite
+  - [x] Fishing minigame (reeling/tension, core implemented)
+    - [x] Transition to minigame only when fish is hooked
+    - [x] Tension meter and reeling controls
+    - [x] Success/failure outcomes
+  - [ ] Environmental and polish features
+    - [ ] Bobber can land in different water types (deep, shallow, hazards)
+    - [ ] Weather/time of day affects fish or bite rate
+    - [ ] Sound and visual polish for all steps
+  - [ ] UI/UX
+    - [ ] Clear prompts for casting, reeling, and minigame
+    - [ ] Feedback for failed casts, missed bites, or rare catches
+
+# 3. Overworld/Exploration Framework
+- [x] Player movement and controls in the overworld (core implemented)
+- [ ] Map/area system (regions, transitions, fast travel, etc.)
+- [ ] NPCs, shops, and interactable objects
+
+# 4. Progression & Unlocks
+- [ ] Quest system (main, side, boss unlocks)
+- [ ] Player upgrades (gear, abilities, etc.)
+- [ ] Currency, shops, and economy
+
+# 5. World & Event System
+- [ ] Day/night cycle, weather, and world events
+- [ ] Random encounters, secrets, and environmental hazards
+- [ ] Add unique events (e.g., Angry Hermit Crab Shell)
+
+
+# 6. UI/UX
+- [ ] HUD for health, inventory, quest tracking, and minimap
+- [~] Menus for inventory, quests, and upgrades (inventory menu started, not fully polished)
+
+# Inventory System Improvements
+- [~] Implement inventory UI (basic grid/tabs, open/close, no icons/tooltips yet)
+- [ ] Expand non-stackable item support to store metadata (e.g., unique fish stats)
+- [ ] Add filtering/sorting helpers to Inventory.gd (by type, rarity, etc.)
+- [ ] Integrate inventory UI with shops, tribute, and equipment
+- [ ] Refactor/add methods for getting all fish, all bait, etc.
+- [ ] Ensure inventory is fully serializable for save/load
+- [ ] Add support for drag-and-drop, quick use, and context actions (use/equip/offer)
+
+# 7. Audio/Visual Polish
+- [ ] Ambient music, sound effects, and visual feedback for overworld actions

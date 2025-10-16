@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="DirectDefectorMinion" type="CharacterBody2D"]
+script = ExtResource( 1 )
+
+[ext_resource path="res://scripts/bosses/CroakKing/minions/CroakKingMinion_DirectDefector.gd" type="Script" id=1]

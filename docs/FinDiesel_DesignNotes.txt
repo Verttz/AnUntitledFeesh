@@ -1,0 +1,35 @@
+
+Fin Diesel – Boss Design Notes
+=============================
+
+1. Core Theme & Personality
+--------------------------
+A massive, muscular shark in a tuxedo vest, bowtie, and sunglasses, chewing bubblegum. Acts as the bouncer outside a lively beachside club, with a velvet rope and a visible guest list. Speaks in nightclub bouncer lingo, taunts the player, and interacts with a crowd of beachgoers.
+
+2. Arena & Audience
+-------------------
+The fight takes place on the sand outside the club, with velvet ropes, electric eel hazards, and a cheering/rowdy crowd. Ruffian minions burst out from the club entrance to assist Fin Diesel.
+
+3. Signature Mechanics & Attacks
+--------------------------------
+- Velvet Rope Control: Fin Diesel manipulates velvet ropes to block areas, lasso the player, or create moving/electric hazards.
+- Bubblegum Bomb: Spits a giant bubble that sticks to the player, requiring button mashing to escape. If not removed, it slows the player and leaves them vulnerable.
+- Bouncer Bash: Swings massive fists, sending shockwaves through the sand. Shockwaves can knock over sandcastles and send beach balls bouncing as hazards.
+- Guest List Gimmick: Checks his clipboard; if the player stands still, he gets confused, pausing attacks and opening a counterattack window. Minion names are crossed off as they’re defeated.
+- Ruffian Roll Call: Ruffian minions burst out from the club entrance. Knocking a minion into Fin Diesel stuns him and drops coins or power-ups.
+- No Splash Zone: Slams the ground, causing a wave to push the player toward hazards (velvet rope, minions, beach balls).
+- Beach Crowd Interference: Beachgoers occasionally toss items into the arena—some helpful (snacks, buffs), some hazardous (sunscreen puddles, sand buckets).
+
+4. Unique Mechanics
+-------------------
+- Minion names crossed off guest list as they’re defeated.
+- Crowd interference can be both helpful and hazardous.
+
+5. Phase Structure
+------------------
+- Phase 1: Standard attacks, minion waves, and crowd hazards active.
+- Phase 2 (“Serious Mode”): Fin Diesel rips off his bowtie, attacks faster, and uses two velvet ropes at once. Arena becomes more chaotic, with increased crowd interference and faster minion spawns.
+
+6. Victory Flair
+----------------
+When defeated, Fin Diesel collapses onto the sand, reaching for his velvet rope before falling unconscious, sunglasses askew, as the club door swings open behind him.

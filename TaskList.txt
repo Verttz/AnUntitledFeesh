@@ -1,0 +1,129 @@
+# AnUntitledFeesh - Combined Task List
+
+## Core Game Loop & State Management
+- [x] Main menu
+- [x] Save/load system
+- [~] Pause menu (core features complete, polish remaining)
+  - [x] UI and layout
+  - [x] Open/close with Escape key
+  - [x] Manual save button (exploration only)
+  - [x] Settings button
+  - [x] Quit to main menu button
+  - [x] Game unpauses/resumes correctly
+  - [ ] Keyboard/gamepad navigation and focus polish
+  - [ ] Prevent opening during boss fights/cutscenes
+  - [ ] Sound/visual feedback for pausing/unpausing
+  - [ ] Polish transitions/animations
+  - [ ] Test all pause menu features in-game
+- [~] Exploration/fishing transitions (basic implemented, polish needed)
+- [~] Boss fight transitions (boss gate/tribute logic and player interaction done)
+  - [x] Detect when player triggers a boss fight
+  - [ ] Fade out/animate transition to boss fight
+  - [ ] Load/display boss arena/fight scene
+  - [ ] Initialize boss, player, and UI for the fight
+  - [ ] Handle music, sound, and visual transitions
+  - [ ] Lock out pause menu/non-boss features if needed
+  - [ ] Transition back to exploration/cutscene after boss
+  - [ ] Restore correct game state, player position, and UI
+- [ ] Cutscene transitions (scaffolded, not complete)
+
+## Fishing System
+- [x] Player movement and fishing state logic
+- [x] Bobber phase and reaction window
+- [x] Reeling minigame framework
+- [x] Fish data structure and per-biome fish lists
+- [x] Connect fish fight patterns to tension meter
+- [x] Inventory system for caught fish
+- [x] Store and display caught fish
+- [x] Track fish by biome and rarity
+- [x] Unlock new areas after boss battles
+- [x] Integrate biome selection and fish selection logic
+- [x] Map fish fight patterns to reeling minigame behavior
+- [x] Implement bait selection and its effect on fish bites
+- [x] Area progression logic (unlock new biomes)
+- [x] Fishing gear upgrades
+- [ ] Complete all fishing UI (bobber, tension meter, reeling minigame, etc.)
+- [ ] Add sound and visual feedback for fishing actions
+- [ ] Implement unique fish abilities and special events
+- [ ] Add/polish player animations (movement, fishing, reeling, etc.)
+- [ ] Visual feedback for cast power (bar, color, etc.)
+- [ ] Cast trajectory preview (arc/line, real time)
+- [ ] Bobber/lure animation (flying, splash/landing)
+- [ ] Bobber animation/sound for bite
+- [ ] Environmental/polish features (water types, weather, polish)
+- [ ] UI/UX prompts for casting, reeling, minigame
+- [ ] Feedback for failed casts, missed bites, rare catches
+
+## Boss Battles
+- [x] Modular boss system, base class, manager, and arenas scaffolded
+- [x] Design boss fish for each biome (10 unique bosses)
+- [x] Use caught fish in boss battles
+- [x] Unique boss mechanics per area
+- [x] Implement minion summoning and behavior for bosses that use minions
+- [x] Implement all boss attack logic and unique mechanics
+- [x] Complete all phase transitions and special phase logic for each boss
+- [ ] Build and polish all boss arenas (obstacles, visuals, interactive elements)
+- [ ] Add defeat/victory animations and transitions for each boss
+- [ ] Add visual effects for boss attacks, arena hazards, and special events
+- [ ] Playtest and balance all boss fights
+- [ ] Wire up UI/UX for unique boss mechanics
+- [ ] Add sound and visual effects for attacks, minions, and arena events
+
+### Individual Bosses (see TODO.md for per-boss breakdowns)
+- [~] Don Catfishoni, Abominable Snowbass, Captain Pinchbeard, Croak King, Fin Diesel, Frostbite Maestro, Guppazuma, Magma Chef, Prankster Poppo, The Great Fisherduck (core logic scaffolded, polish and unique features pending)
+
+## Overworld/Exploration
+- [x] Player movement and controls in the overworld
+- [ ] Map/area system (regions, transitions, fast travel, etc.)
+- [ ] NPCs, shops, and interactable objects
+- [ ] Foraging for bait
+- [ ] Boat fishing
+- [ ] Special fish with unique acquisition
+- [ ] Fish encyclopedia
+
+## Progression & Unlocks
+- [x] Quest system (main, side, boss unlocks)
+  - Modular quest system implemented. Sample quest auto-loads and is tracked. Quest log UI displays progress. System is ready for more quests and deeper integration.
+- [ ] Player upgrades (gear, abilities, etc.)
+- [ ] Currency, shops, and economy
+- [ ] Achievements and unlockables
+- [ ] Online leaderboards
+- [ ] Photo mode
+- [ ] Character customization
+- [ ] Dynamic music
+- [ ] Seasonal events
+
+## World & Event System
+- [ ] Day/night cycle, weather, and world events
+- [ ] Random encounters, secrets, and environmental hazards
+- [ ] Add unique events (e.g., Angry Hermit Crab Shell)
+
+## UI/UX
+- [ ] HUD for health, inventory, quest tracking, and minimap
+- [~] Menus for inventory, quests, and upgrades (inventory menu started, not fully polished)
+- [ ] Polish and connect all shop UI and inventory interactions
+
+### Inventory System Improvements
+- [~] Implement inventory UI (basic grid/tabs, open/close, no icons/tooltips yet)
+- [ ] Expand non-stackable item support to store metadata (e.g., unique fish stats)
+- [ ] Add filtering/sorting helpers to Inventory.gd (by type, rarity, etc.)
+- [ ] Integrate inventory UI with shops, tribute, and equipment
+- [ ] Refactor/add methods for getting all fish, all bait, etc.
+- [ ] Ensure inventory is fully serializable for save/load
+- [x] Add drag-and-drop support to inventory UI
+  - Implemented mouse drag-and-drop for item icons in InventoryMenu.gd. Items can be dragged between inventory and tribute/shop UI. Uses Godot's Control node drag-and-drop API. Item icons now support drag, and drop events are handled in grid panels.
+- [x] Enable drag-and-drop for tribute selection
+  - Player can drag fish from inventory to tribute slots for boss gate tribute. Integrated with BossGateGuard.gd logic. Tribute slots accept only valid fish items and update selection accordingly.
+
+## Audio/Visual Polish
+- [ ] Ambient music, sound effects, and visual feedback for overworld actions
+- [ ] Add and polish all sound effects and music cues
+- [ ] Add feedback for rare/fun catches and boss moments
+- [ ] Polish boss visuals and VFX
+- [ ] Polish boss audio and music cues
+
+## Playtesting & Polish
+- [ ] Playtest all boss fights (each boss for bugs, balance, and polish)
+- [ ] General polish, bugfixes, and balancing
+- [ ] Review and update boss design notes
+- [ ] Implement final boss unlock/sequence

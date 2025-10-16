@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="FadeLayer" type="ColorRect"]
+color = Color(0,0,0,1)
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0

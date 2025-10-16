@@ -8,16 +8,17 @@ Core Theme:
 Signature Mechanics:
 --------------------
 1. Avalanche Roar:
-   - Snowbass lets out a mighty roar, causing snow to fall from above in patterns (telegraphed shadows).
-   - Can break ice tiles, creating water hazards.
+   - Snowbass lets out a mighty roar, causing both ice chunks and icicles to fall from above in telegraphed patterns.
+   - Ice chunks can break ice tiles, creating water hazards.
+   - Icicles create spike hazards where they land, persisting as dangerous obstacles until removed.
 
 2. Snowboulder Toss:
    - Hurls giant snowballs that roll and shatter into smaller projectiles.
    - Sometimes snowballs contain minions (snow hares) or power-ups.
 
 3. Stompquake:
-   - Stomps the ice, sending shockwaves and cracking tiles.
-   - Players must avoid falling into water or getting stunned.
+   - Stomps the ice, sending out shockwaves that can stun players.
+   - Removes existing floor hazards (such as spikes or ice chunks) from the arena, clearing the battlefield.
 
 4. Frosty Breath:
    - Breathes a cone of icy wind that freezes players.
@@ -33,7 +34,7 @@ Signature Mechanics:
    - Pauses to sign autographs, pose, or interact with the (invisible) audience.
    - Players can interrupt for bonus damage or rewards.
 
-9. Spotlight Showdown (Phase 2):
+8. Spotlight Showdown (Phase 2):
     - The arena darkens except for spotlights.
     - If the player's fish is melee:
        - A single large spotlight follows both the player and Snowbass, forcing close-quarters combat and dodging.
@@ -44,7 +45,6 @@ Signature Mechanics:
        - Extra challenge: periodically, Snowbass “snuffs out” the player’s spotlight for a few seconds, forcing the player to quickly move to a new lit area or risk being frozen.
     - Snowbass hams it up in the spotlight, performing dramatic moves, and occasionally slips, giving the player a chance to counter.
     - Emphasizes slapstick and showboating.
-   - Dodging, catching, and throwing snowballs for bonus damage or buffs.
 
 10. Finale Spectacle:
     - Over-the-top defeat animation: slips, spins, and crashes through the ice, waving to the crowd as he sinks.
