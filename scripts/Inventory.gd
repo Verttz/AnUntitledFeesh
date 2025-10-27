@@ -1,5 +1,47 @@
+func move_item_to_slot(item_name, from_index, to_index):
+	"""
+	Moves or swaps an item to a specific slot index in the inventory.
+	For stackable items, this is a no-op (since order doesn't matter).
+	For non-stackable items, moves the item entry from one index to another.
+	"""
+	var stackable = true
+	if item_name in item_data.ITEM_DATA:
+		stackable = item_data.ITEM_DATA[item_name].stackable
+	if stackable:
+		# For stackable items, do nothing (order doesn't matter)
+		return
+	if item_name in items:
+		var arr = items[item_name]
+		if from_index >= 0 and from_index < arr.size() and to_index >= 0 and to_index < arr.size():
+			var entry = arr[from_index]
+			arr.remove(from_index)
+			arr.insert(to_index, entry)
+			items[item_name] = arr
+		# If moving to an empty slot, just move
+		elif from_index >= 0 and from_index < arr.size() and to_index == arr.size():
+			var entry = arr[from_index]
+			arr.remove(from_index)
+			arr.append(entry)
+			items[item_name] = arr
+
+# Inventory.gd
+# Handles player inventory logic: serialization, item management, and sorting.
+
+extends Node
+
+"""
+Inventory System
+---------------
+Manages all player items, including stackable and unique items. Supports serialization for save/load, item sorting, and type filtering.
+"""
+
+var items = {} # {item_name: count or array of unique items}
+
 func to_dict():
-	# Returns a serializable dictionary of the inventory
+	"""
+	Returns a serializable dictionary of the inventory.
+	Used for saving player progress.
+	"""
 	var data = {}
 	for k in items.keys():
 		var stackable = true
@@ -15,7 +57,10 @@ func to_dict():
 	return data
 
 func from_dict(data):
-	# Loads inventory from a dictionary (as produced by to_dict)
+	"""
+	Loads inventory from a dictionary (as produced by to_dict).
+	Used for loading player progress.
+	"""
 	items.clear()
 	for k in data.keys():
 		var stackable = true
@@ -27,8 +72,12 @@ func from_dict(data):
 			items[k] = []
 			for entry in data[k]:
 				items[k].append(entry.duplicate(true))
+
 func get_items_by_type(item_type: String):
-	# Returns all items (with metadata) of a given type (e.g., "fish", "bait")
+	"""
+	Returns all items (with metadata) of a given type (e.g., "fish", "bait").
+	Used for inventory filtering and UI.
+	"""
 	var result = []
 	for k in items.keys():
 		var stackable = true
@@ -46,18 +95,22 @@ func get_items_by_type(item_type: String):
 	return result
 
 func get_all_fish():
+	"""
+	Returns all fish items in the inventory.
+	"""
 	return get_items_by_type("fish")
 
 func sort_items(items: Array, by: String):
-	# Sorts an array of items (dicts) by a metadata field (e.g., "rarity", "size", "name")
+	"""
+	Sorts an array of items (dicts) by a metadata field (e.g., "rarity", "size", "name").
+	Used for inventory UI sorting.
+	"""
 	items.sort_custom(func(a, b):
 		if a.has(by) and b.has(by):
 			return a[by] < b[by] ? -1 : (a[by] > b[by] ? 1 : 0)
 		return 0
 	)
 	return items
-# Inventory.gd
-# Handles player inventory logic
 
 extends Node
 

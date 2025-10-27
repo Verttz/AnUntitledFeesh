@@ -1,4 +1,31 @@
+
+extends Node
+
+"""
+Equipment.gd
+------------
+Handles fisher's equipment slots, equipping/unequipping items, and calculating combined stat bonuses.
+Each slot (pole, line, bobber, sink, bait, clothes) can hold one item. Items provide stat bonuses and may have slot restrictions.
+"""
+
+# --- Equipment Slots ---
+var slots = {
+	"pole": null,    # Fishing pole
+	"line": null,    # Fishing line
+	"bobber": null,  # Bobber/float
+	"sink": null,    # Sink/weight
+	"bait": null,    # Bait
+	"clothes": null  # Clothing/cosmetic
+}
+
+# Reference to item data (defines stats, slot restrictions, etc.)
+var item_data = load("res://scripts/data/item_data.gd")
+
 func get_combined_stats():
+	"""
+	Calculates the combined stats from all equipped items.
+	Returns a dictionary with stat totals (cast distance, tension, depth, bonuses, etc.).
+	"""
 	var stats = {
 		"cast_distance": 0,
 		"tension_safe_min": null,
@@ -25,22 +52,12 @@ func get_combined_stats():
 				for k in data["bonus"].keys():
 					stats["bonus"][k] = data["bonus"][k]
 	return stats
-# Equipment.gd
-# Handles fisher's equipment slots
-
-extends Node
-
-var slots = {
-    "pole": null,
-    "line": null,
-    "bobber": null,
-    "sink": null,
-    "bait": null,
-    "clothes": null
-}
-var item_data = load("res://scripts/data/item_data.gd")
 
 func equip(slot, item_name):
+	"""
+	Equips an item to the specified slot if valid.
+	Only items with a matching 'equip_slot' in item_data can be equipped.
+	"""
 	if slot in slots:
 		var valid = false
 		if item_name in item_data.ITEM_DATA:
@@ -56,6 +73,9 @@ func equip(slot, item_name):
 		print("Invalid equipment slot: " + slot)
 
 func unequip(slot):
+	"""
+	Unequips the item from the specified slot and returns its name, or null if empty.
+	"""
 	if slot in slots and slots[slot] != null:
 		var item = slots[slot]
 		slots[slot] = null
@@ -64,11 +84,17 @@ func unequip(slot):
 	return null
 
 func get_equipped(slot):
+	"""
+	Returns the item equipped in the specified slot, or null if empty.
+	"""
 	if slot in slots:
 		return slots[slot]
 	return null
 
 func print_equipment():
+	"""
+	Prints a summary of all equipped items to the output.
+	"""
 	print("Equipment:")
 	for k in slots.keys():
 		print("- %s: %s" % [k.capitalize(), slots[k] if slots[k] != null else "(empty)"])

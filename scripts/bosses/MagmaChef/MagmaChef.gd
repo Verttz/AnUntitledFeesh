@@ -17,7 +17,11 @@ func _ready():
 	# ...other setup
 
 func spawn_sous_chefs():
-	# Placeholder for sous-chef shrimp spawning
+	# Sous-Chef Shrimp Spawning Logic:
+	# - Spawn a set number of sous-chef shrimp minions at designated kitchen stations or random positions.
+	# - Each sous-chef can have unique behaviors (e.g., throw ingredients, block player, repair hazards).
+	# - Add each spawned sous-chef to the sous_chefs array for tracking.
+	# - If a sous-chef is defeated, respawn after a delay or escalate boss attacks.
 	pass
 
 func start_phase(phase_num):
@@ -31,7 +35,16 @@ func start_phase(phase_num):
 		start_attack_cycle(frantic=true)
 
 func start_attack_cycle(frantic=false):
-	# Main attack loop (placeholder)
+	# Main Attack Loop Logic:
+	# - Loop through signature attacks in a set or random order.
+	# - If frantic is true (phase 2), increase attack speed, add new hazards, or combine attacks.
+	# - Use timers or coroutines to schedule attacks and pauses.
+	# - Example pseudocode:
+	#   1. While boss is alive and not stunned:
+	#       a. Pick next attack (random or weighted).
+	#       b. Call the attack function.
+	#       c. Wait for attack cooldown (shorter if frantic).
+	#   2. Repeat until phase or state changes.
 	pass
 
 # --- Signature Attacks ---
@@ -111,7 +124,16 @@ func check_phase_transition():
 
 func start_attack(attack_name):
 	emit_signal("attack_started", attack_name)
-	# Placeholder for attack logic
+	# Attack Logic:
+	# - Based on attack_name, call the corresponding attack function (e.g., boiling_soup_splash, pepper_bomb).
+	# - Each attack function should handle its own telegraphing, animation, and effect logic.
+	# - If attack_name is not recognized, log a warning.
+	# - Example pseudocode:
+	#   match attack_name:
+	#       "boiling_soup_splash": boiling_soup_splash()
+	#       "pepper_bomb": pepper_bomb()
+	#       ...
+	#       _: print("Unknown attack: " + attack_name)
 
 func _on_pot_lid_opened():
 	set_vulnerable(true)

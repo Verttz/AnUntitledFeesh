@@ -1,19 +1,30 @@
+
 # Shop.gd
-# Handles shop logic for buying/selling and notice board hints
+# Handles shop logic for buying/selling, notice board hints, and shop UI events.
 
 extends Node
 
+"""
+Shop System
+-----------
+Manages shopkeeper inventory, player transactions, and shop UI events.
+"""
 
-var shopkeeper = ""
+# --- Shop State ---
+var shopkeeper = "" # Name of the shopkeeper
 var inventory = [] # Items for sale
 var player_inventory = [] # Reference to player's inventory
 var player_node = null # Reference to player node for gold/inventory
 var buy_prices = {} # {item_name: price}
 var sell_prices = {} # {fish_name: price}
-var notice_board_hints = []
-var shop_menu = null
+var notice_board_hints = [] # Hints or tips shown in the shop
+var shop_menu = null # Reference to the shop UI instance
 
 func open(shopkeeper_name, items_for_sale, buy_prices_dict, sell_prices_dict, hints, player_inv):
+	"""
+	Opens the shop with the given shopkeeper and inventory.
+	Sets up prices, hints, and connects shop UI events.
+	"""
 	shopkeeper = shopkeeper_name
 	inventory = items_for_sale
 	buy_prices = buy_prices_dict
@@ -29,11 +40,19 @@ func open(shopkeeper_name, items_for_sale, buy_prices_dict, sell_prices_dict, hi
 	shop_menu.open(shopkeeper, inventory, buy_prices, sell_prices, player_inventory, player_node.player_gold)
 	shop_menu.connect("item_bought", self, "_on_item_bought")
 	shop_menu.connect("item_sold", self, "_on_item_sold")
+
 func _on_item_bought(item_name):
+	"""
+	Handles the event when an item is bought from the shop UI.
+	"""
 	buy_item(item_name)
 	if shop_menu:
 		shop_menu.visible = false
+
 func _on_item_sold(item_name):
+	"""
+	Handles the event when a fish/item is sold to the shop UI.
+	"""
 	sell_fish(item_name)
 	if shop_menu:
 		shop_menu.visible = false

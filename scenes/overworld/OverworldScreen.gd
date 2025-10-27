@@ -35,6 +35,11 @@ func _ready():
     add_child(boss_guard)
     boss_guard.connect("tribute_accepted", self, "_on_tribute_accepted")
     boss_guard.connect("tribute_rejected", self, "_on_tribute_rejected")
+    # Add DayNightWeatherManager as child (handles day/night and weather systems)
+    var daynight_weather_manager = preload("res://scripts/DayNightWeatherManager.gd").new()
+    add_child(daynight_weather_manager)
+    # Optionally, store reference for UI or gameplay hooks
+    self.daynight_weather_manager = daynight_weather_manager
 
 func _on_tribute_accepted(tribute_fish):
     print("Tribute accepted! Fish: %s" % [str(tribute_fish)])

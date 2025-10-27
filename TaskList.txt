@@ -1,4 +1,10 @@
+
 # AnUntitledFeesh - Combined Task List
+#
+# Recent Progress (October 2025):
+# - Expanded and improved in-code documentation and docstrings for all major systems (bosses, inventory, shop, player, quest, save, settings, biomes, fish data, equipment).
+# - Created/updated boss banter and dialogue scripts in /docs.
+# - Planning and design documentation improved for future features.
 
 ## Core Game Loop & State Management
 - [x] Main menu
@@ -84,6 +90,8 @@
 ## Progression & Unlocks
 - [x] Quest system (main, side, boss unlocks)
   - Modular quest system implemented. Sample quest auto-loads and is tracked. Quest log UI displays progress. System is ready for more quests and deeper integration.
+- [x] Expanded and improved in-code documentation for all major systems (Oct 2025)
+- [x] Created/updated boss banter and dialogue scripts in /docs (Oct 2025)
 - [ ] Player upgrades (gear, abilities, etc.)
 - [ ] Currency, shops, and economy
 - [ ] Achievements and unlockables

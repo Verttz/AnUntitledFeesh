@@ -1,6 +1,13 @@
-# AnUntitledFeesh - Development Checklist
 
-## General TODOs
+# AnUntitledFeesh - Development Checklist
+#
+# Recent Progress (October 2025):
+# - Expanded and improved in-code documentation and docstrings for all major systems (bosses, inventory, shop, player, quest, save, settings, biomes, fish data, equipment).
+# - Created/updated boss banter and dialogue scripts in /docs.
+# - Planning and design documentation improved for future features.
+
+- [x] Expanded and improved in-code documentation for all major systems (Oct 2025)
+- [x] Created/updated boss banter and dialogue scripts in /docs (Oct 2025)
 - [ ] Implement save/load system for player progress
 - [ ] Polish and connect all shop UI and inventory interactions
 - [ ] Implement all TODOs and placeholder comments in scripts (search for TODO)

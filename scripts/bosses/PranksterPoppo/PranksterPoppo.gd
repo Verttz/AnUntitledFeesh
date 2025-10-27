@@ -47,7 +47,17 @@ func check_phase_transition():
 
 func start_attack(attack_name):
 	emit_signal("attack_started", attack_name)
-	# Placeholder for attack logic
+	# Attack Logic:
+	# - Based on attack_name, call the corresponding attack function (e.g., poppo_projectile, decoy_pop, taunt).
+	# - Each attack should have its own telegraph, animation, and effect logic.
+	# - Example pseudocode:
+	#   match attack_name:
+	#       "poppo_projectile": poppo_projectile()
+	#       "decoy_pop": decoy_pop()
+	#       "taunt": taunt()
+	#       ...
+	#       _: print("Unknown attack: " + attack_name)
+	# - If attack_name is not recognized, log a warning.
 
 func next_lava_pop():
 	var available_pools = []

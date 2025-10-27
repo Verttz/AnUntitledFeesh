@@ -1,17 +1,24 @@
+
 extends Node
 
-# Singleton for save/load and autosave
-var save_path := "user://savegame.dat"
+"""
+SaveManager.gd
+--------------
+Singleton for save/load and autosave functionality. Handles serialization of player, world, and progress data.
+"""
 
-# Data to save
+# --- Save Data Structure ---
+var save_path := "user://savegame.dat" # Path to save file
 var save_data = {
-    "player": {},
-    "world": {},
-    "progress": {}
+    "player": {},   # Player inventory, gold, etc.
+    "world": {},    # World state (biomes, bosses, etc.)
+    "progress": {} # Quest and unlock progress
 }
 
 func save_game():
-    # Save player inventory (backpack and tacklebox) if player exists
+    """
+    Saves the current game state to disk. Serializes player inventory, gold, and other progress.
+    """
     var player = get_tree().get_root().find_node("Player", true, false)
     if player:
         save_data["player"]["backpack"] = player.backpack.to_dict()
@@ -24,6 +31,10 @@ func save_game():
         print("Game saved.")
 
 func load_game():
+    """
+    Loads the game state from disk. Restores player inventory, gold, and other progress.
+    Returns true if successful, false otherwise.
+    """
     if not FileAccess.file_exists(save_path):
         print("No save file found.")
         return false
@@ -45,13 +56,21 @@ func load_game():
     return false
 
 func autosave():
+    """
+    Triggers an autosave of the current game state.
+    """
     save_game()
 
 func can_save(state):
-    # Only allow saving in exploration mode
+    """
+    Returns true if saving is allowed in the given state (e.g., only in exploration mode).
+    """
     return state == "exploration"
 
 func request_save(state):
+    """
+    Attempts to save the game if allowed in the current state. Returns true if saved, false otherwise.
+    """
     if can_save(state):
         save_game()
         return true

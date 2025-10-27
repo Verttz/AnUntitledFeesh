@@ -79,7 +79,15 @@ func _spawn_icicle(pos):
         get_node("../Arena").spawn_spike_hazard(pos)
 
 func _get_random_fall_positions():
-    # Placeholder: return a list of positions above the arena
+    # Random Fall Positions Logic:
+    # - Calculate a set of positions above the arena where ice chunks or icicles can fall.
+    # - Use the arena's width to determine possible X positions (e.g., evenly spaced or random within bounds).
+    # - Optionally, avoid positions directly above the player for fairness, or target the player for difficulty.
+    # - Example pseudocode:
+    #   1. Get arena width and X range.
+    #   2. Choose N positions (random or spaced) along the X axis, all with Y just above the arena.
+    #   3. Return as a list of Vector2 positions.
+    # - Replace the hardcoded positions below with the calculated list.
     return [Vector2(200,0), Vector2(400,0), Vector2(600,0)]
 
 func _snowboulder_toss():

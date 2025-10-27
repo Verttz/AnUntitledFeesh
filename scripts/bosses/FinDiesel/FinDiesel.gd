@@ -42,8 +42,15 @@ func get_rope_positions():
 	# Return positions for velvet ropes
 	return [Vector2(200, 100), Vector2(400, 100)]
 
+
 func create_velvet_rope(pos):
-	# Placeholder for rope instance
+	# Velvet Rope Instance Logic:
+	# - Create a velvet rope object at the given position.
+	# - Rope should have properties: position, electric (bool), and possibly a reference to its sprite/node.
+	# - If using Godot, instance a Rope scene or node, set its position, and add to the arena.
+	# - If in serious_mode, rope may become electrified (change color, deal damage on contact).
+	# - Rope should be able to animate (move, lasso, block player, etc.).
+	# - Return the rope object or node for tracking/manipulation.
 	var rope = {"position": pos, "electric": false}
 	return rope
 

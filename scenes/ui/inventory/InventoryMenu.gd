@@ -20,6 +20,10 @@ func open(backpack, tacklebox):
 func _ready():
     close_button.connect("pressed", self, "_on_close_pressed")
     visible = false
+    # Connect drag-and-drop handlers to backpack grid
+    if backpack_grid:
+        backpack_grid.can_drop_data = can_drop_data_on_grid
+        backpack_grid.drop_data = drop_data_on_grid
 
 func _on_close_pressed():
     visible = false
@@ -39,6 +43,50 @@ func _populate_backpack():
     # Fill empty slots
     for j in range(i, slot_count):
         backpack_grid.add_child(_create_empty_slot())
+    # TODO: Optionally, connect drag-and-drop handlers to each slot if needed
+# Drag-and-drop handlers for BackpackGrid
+func can_drop_data_on_grid(position, data):
+    # Accept drops if data contains item_name (and optionally, more checks)
+    return typeof(data) == TYPE_DICTIONARY and data.has("item_name")
+
+func drop_data_on_grid(position, data):
+    # Determine which slot was targeted by the drop
+    var slot_size = Vector2(64, 64) # Should match _create_empty_slot
+    var grid_pos = backpack_grid.get_global_position()
+    var local_pos = position - grid_pos
+    var col = int(local_pos.x / slot_size.x)
+    var row = int(local_pos.y / slot_size.y)
+    var columns = 3 # 3x3 grid
+    var slot_index = row * columns + col
+    # Clamp slot_index to valid range
+    slot_index = clamp(slot_index, 0, 8)
+
+    var item_name = data["item_name"]
+    var stackable = true
+    if backpack_inventory.item_data.ITEM_DATA.has(item_name):
+        stackable = backpack_inventory.item_data.ITEM_DATA[item_name].stackable
+
+    if stackable:
+        # For stackable items, do nothing (order doesn't matter)
+        print("Dropped stackable item (no-op):", item_name)
+        return
+
+    # For non-stackable items, find the current index and move to new slot
+    var items = backpack_inventory.get_items()
+    if item_name in items:
+        var arr = items[item_name]
+        var from_index = -1
+        # Try to match by unique_id if present
+        if data.has("unique_id"):
+            for i in range(arr.size()):
+                if arr[i].has("unique_id") and arr[i]["unique_id"] == data["unique_id"]:
+                    from_index = i
+                    break
+        # Fallback: match by name only
+        if from_index == -1:
+            from_index = 0
+        backpack_inventory.move_item_to_slot(item_name, from_index, slot_index)
+        _populate_backpack()
 
 func _populate_tacklebox():
     # For each tab, clear and add items by type

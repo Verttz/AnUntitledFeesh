@@ -1,15 +1,24 @@
+
 extends "res://scripts/bosses/Boss.gd"
 
-# Croak King
+"""
+CroakKing.gd
+------------
+Boss script for the Croak King. Handles phase transitions, minion ceremonies, and unique swamp mechanics.
+"""
 
-var throne = null
-var ceremony_timer = null
-var flood_timer = null
-var finale = false
-var throne_destroyed = false
-var converted_minions = []
+# --- Boss State ---
+var throne = null # Reference to the throne node
+var ceremony_timer = null # Timer for knighting ceremonies
+var flood_timer = null # Timer for arena flooding
+var finale = false # Finale state
+var throne_destroyed = false # Whether the throne has been destroyed
+var converted_minions = [] # List of minions converted to the player's side
 
 func _ready():
+	"""
+	Initializes boss state, finds throne, and starts phase and event timers.
+	"""
 	health = max_health
 	if has_node("../Throne"): throne = get_node("../Throne")
 	start_phase(1)
@@ -17,6 +26,9 @@ func _ready():
 	start_flood_timer()
 
 func start_phase(new_phase):
+	"""
+	Changes the boss phase and starts appropriate attacks for the phase.
+	"""
 	phase = new_phase
 	emit_signal("phase_changed", phase)
 	if phase == 1:
@@ -28,30 +40,40 @@ func start_phase(new_phase):
 		start_attack("throne_hop")
 
 func check_phase_transition():
-	   if health <= max_health * 0.3 and phase == 1:
-		   start_phase(2)
+	"""
+	Checks for phase transitions based on health thresholds.
+	Triggers finale if health is low enough.
+	"""
+	if health <= max_health * 0.3 and phase == 1:
+		start_phase(2)
 	if health <= max_health * 0.2 and not finale:
 		start_finale()
 
 func start_attack(attack_name):
-   emit_signal("attack_started", attack_name)
-   match attack_name:
-	   "lily_pad_barrage":
-		   lily_pad_barrage()
-	   "royal_croak":
-		   royal_croak()
-	   "tongue_grab":
-		   tongue_grab()
-	   "minion_frogs":
-		   minion_frogs()
-	   "mud_toss":
-		   mud_toss()
-	   "bug_buffet":
-		   bug_buffet()
-	   "throne_hop":
-		   throne_hop()
+	"""
+	Starts the specified attack by name.
+	"""
+	emit_signal("attack_started", attack_name)
+	match attack_name:
+		"lily_pad_barrage":
+			lily_pad_barrage()
+		"royal_croak":
+			royal_croak()
+		"tongue_grab":
+			tongue_grab()
+		"minion_frogs":
+			minion_frogs()
+		"mud_toss":
+			mud_toss()
+		"bug_buffet":
+			bug_buffet()
+		"throne_hop":
+			throne_hop()
+
 func mud_toss():
-	# Throws mud hazards
+	"""
+	Throws mud hazards at random positions in the arena.
+	"""
 	var mud_scene = preload("res://scenes/arenas/CroakKing/hazards/MudGeyser.tscn")
 	for i in range(2):
 		var mud = mud_scene.instance()

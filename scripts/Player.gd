@@ -1,10 +1,29 @@
+
+extends CharacterBody2D
+
+"""
+Player.gd
+-----------
+Main player script. Handles inventory, equipment, fishing state, and shop interactions.
+"""
+
+# --- Inventory Management ---
+var tacklebox = preload("res://scripts/Inventory.gd").new() # For tackle (bait, lures, etc.)
+var backpack = preload("res://scripts/Inventory.gd").new() # For caught fish and items
+
 func get_fish_inventory():
-	# Returns all fish in the backpack, including metadata for unique fish
+	"""
+	Returns all fish in the backpack, including metadata for unique fish.
+	Used for displaying inventory and for quest/fishing logic.
+	"""
 	return backpack.get_all_fish()
 
 func remove_fish_from_inventory(fish_entry):
-	# Removes a specific fish from the backpack, supporting unique (non-stackable) fish
-	# fish_entry should be a dict with at least a 'name' key, and for unique fish, a 'unique_id'
+	"""
+	Removes a specific fish from the backpack.
+	Supports both stackable and unique (non-stackable) fish.
+	fish_entry: Dictionary with at least a 'name' key, and for unique fish, a 'unique_id'.
+	"""
 	var item_name = fish_entry.get("name", null)
 	if item_name == null:
 		return
@@ -26,11 +45,15 @@ func remove_fish_from_inventory(fish_entry):
 				backpack.items[item_name].remove(found_idx)
 				if backpack.items[item_name].size() == 0:
 					backpack.items.erase(item_name)
-var tacklebox = preload("res://scripts/Inventory.gd").new() # For tackle
-var backpack = preload("res://scripts/Inventory.gd").new() # For fish/items
+
+# --- Equipment Management ---
 var equipment = preload("res://scripts/Equipment.gd").new()
-# Equipment management
+
 func equip_item(slot, item_name):
+	"""
+	Equips an item from the tacklebox to the specified equipment slot.
+	If an item is already equipped, it is returned to the tacklebox.
+	"""
 	if tacklebox.has_item(item_name):
 		var unequipped = equipment.unequip(slot)
 		if unequipped:
@@ -41,21 +64,22 @@ func equip_item(slot, item_name):
 		print("You don't have " + item_name + " in your tacklebox to equip.")
 
 func unequip_item(slot):
+	"""
+	Unequips an item from the specified slot and returns it to the tacklebox.
+	"""
 	var item = equipment.unequip(slot)
 	if item:
 		tacklebox.add_item(item)
-var player_gold = 50
-# Reference to shop script
+
+# --- Shop & Currency ---
+var player_gold = 50 # Player's current gold
 var shop_scene = preload("res://scripts/Shop.gd")
 var shop_instance = null
-extends CharacterBody2D
 
-# Movement speed in pixels/sec
-var speed := 150
+# --- Movement & State ---
+var speed := 150 # Movement speed in pixels/sec
 
-# Fishing mechanic variables
-
-# Player states
+# Player states for controlling input and animation
 enum State { MOVE, FISHING_WAIT, FISHING_REEL }
 var state = State.MOVE
 
@@ -132,7 +156,11 @@ func _physics_process(delta):
 			if not bobber_submerged and fishing_timer >= fishing_bite_time:
 				bobber_submerged = true
 				bobber_reaction_timer = 0.0
-				# TODO: Animate bobber submerging, play sound
+				# Bobber Submerge Animation & Sound:
+				# - Animate the bobber node dipping below the water surface at the cast location.
+				# - Play a short 'plop' or 'splash' sound effect.
+				# - Optionally, trigger a small water ripple or splash particle effect.
+				# - This should be triggered exactly when the bite occurs (fishing_timer >= fishing_bite_time).
 			if bobber_submerged:
 				bobber_reaction_timer += delta
 				if Input.is_action_just_pressed("ui_accept"):
@@ -196,7 +224,11 @@ func start_fishing():
 	fish_hooked = false
 	bobber_reaction_window = current_fish.reaction_window
 	velocity = Vector2.ZERO
-	# TODO: Show bobber UI/animation, display fish name for debug
+	# Bobber UI/Animation & Debug Fish Name:
+	# - Show a bobber icon/node at the cast location, gently bobbing up and down.
+	# - Animate the bobber to indicate waiting for a bite (e.g., subtle movement).
+	# - For debugging: print or display the selected fish's name on screen (e.g., via a label or print statement).
+	# - Hide the bobber UI when fishing ends.
 
 func start_reeling():
 	state = State.FISHING_REEL
@@ -211,7 +243,11 @@ func start_reeling():
 		tension_safe_min = eq_stats.tension_safe_min
 	if eq_stats.tension_safe_max != null:
 		tension_safe_max = eq_stats.tension_safe_max
-	# TODO: Show tension meter UI
+	# Tension Meter UI:
+	# - Display a tension meter (e.g., horizontal or vertical bar) on the screen when reeling starts.
+	# - The meter should have a highlighted 'safe zone' (between tension_safe_min and tension_safe_max).
+	# - The bar position reflects the current tension value (0.0 to 1.0).
+	# - Hide the tension meter when fishing ends.
 
 func finish_fishing(success):
 	if success:
@@ -222,12 +258,21 @@ func finish_fishing(success):
 			var quest_manager = get_node_or_null("/root/Main/QuestManager")
 			if quest_manager:
 				quest_manager.check_quests()
-		# TODO: Play success sound/animation
+	# Success Sound/Animation:
+	# - Play a 'catch' or 'success' sound effect.
+	# - Animate the fish jumping, sparkling, or being added to the inventory visually.
+	# - Flash the UI green or show a 'Success!' message.
 	else:
-		# TODO: Play fail sound/animation
+	# Fail Sound/Animation:
+	# - Play a 'snap', 'splash', or 'fail' sound effect.
+	# - Animate the line breaking, fish escaping, or a splash at the bobber location.
+	# - Flash the UI red or show a 'Failed!' message.
 		pass
 	state = State.MOVE
-	# TODO: Hide fishing UI, reset variables
+	# Hide Fishing UI & Reset Variables:
+	# - Hide all fishing-related UI elements (bobber, tension meter, fish name, etc.).
+	# - Reset fishing state variables: bobber_submerged, fish_hooked, current_fish, timers, etc.
+	# - Ensure the player is ready to move or start fishing again.
 	# Autosave after fishing ends (only in exploration mode)
 	if typeof(SaveManager) != TYPE_NIL and SaveManager.can_save("exploration"):
 		SaveManager.autosave()
@@ -259,7 +304,10 @@ func _handle_reeling(delta):
 	tension += tension_speed * delta
 	tension = clamp(tension, 0.0, 1.0)
 
-	# TODO: Update tension meter UI
+	# Tension Meter UI Update:
+	# - Update the tension meter bar position and color as tension changes.
+	# - If tension is near the limits, change the bar color (e.g., yellow/orange) to warn the player.
+	# - If tension is in the safe zone, keep the bar green; if out, flash or pulse the bar.
 
 	# Advance fight phase
 	fight_phase_timer += delta
@@ -271,10 +319,15 @@ func _handle_reeling(delta):
 
 	if tension < tension_safe_min or tension > tension_safe_max:
 		reeling_timer = 0.0 # Reset timer if out of safe zone
-		# TODO: Flash warning, play sound
+	# Warning Flash & Sound:
+	# - When tension leaves the safe zone, flash the tension meter border or background (e.g., red).
+	# - Play a warning beep or alert sound to notify the player.
 	else:
 		reeling_timer += delta
-		# TODO: Play reeling sound, animate fish
+	# Reeling Sound & Fish Animation:
+	# - Play a looping 'reeling' sound effect while the player is reeling in.
+	# - Animate the fish sprite (wiggle, jump, or struggle) based on the current fight phase.
+	# - Optionally, add screen shake or water splash effects for dramatic phases.
 
 	if tension <= 0.0 or tension >= 1.0:
 		finish_fishing(success=false) # Line snapped or too slack
@@ -379,6 +432,13 @@ func _start_fish_biting_logic(pos):
     # Optionally: animate bobber at pos, play splash sound, etc.
 
 func _select_fish_for_spot(pos):
-    # Placeholder: select a fish based on biome, location, or random
-    # Replace with your fish selection logic
-    return FishDatabase.get_random_fish(current_biome, pos)
+	# Fish Selection Logic:
+	# - Select a fish based on the current biome, location, and possibly time of day, bait, or weather.
+	# - Use weighted random selection: common fish are more likely, rare/legendary fish are less likely.
+	# - Optionally, filter by bait type or equipment bonuses.
+	# - Example pseudocode:
+	#   1. Get all fish for the biome/location.
+	#   2. Filter by bait, depth, or other criteria.
+	#   3. Use weighted random to select a fish.
+	#   4. Return the selected fish resource or data.
+	return FishDatabase.get_random_fish(current_biome, pos)
