@@ -1,0 +1,3 @@
+[input]
+action="inventory_menu"
+events=[{"type": "KEY", "scancode": 73}]

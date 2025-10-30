@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3]
+
+[node name="InventoryMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="BackpackPanel" type="Panel" parent="."]
+rect_min_size = Vector2(400, 400)
+rect_position = Vector2(60, 60)
+
+[node name="BackpackImage" type="TextureRect" parent="BackpackPanel"]
+rect_min_size = Vector2(400, 400)
+stretch_mode = 2 # Keep aspect centered
+# TODO: Assign open bag texture in editor
+
+[node name="BackpackGrid" type="GridContainer" parent="BackpackPanel"]
+columns = 3
+rect_min_size = Vector2(300, 300)
+rect_position = Vector2(50, 50)
+# 3x3 grid for backpack slots
+
+[node name="TackleboxPanel" type="Panel" parent="."]
+rect_min_size = Vector2(500, 400)
+rect_position = Vector2(500, 60)
+
+[node name="TackleboxTabs" type="TabContainer" parent="TackleboxPanel"]
+rect_min_size = Vector2(480, 360)
+rect_position = Vector2(10, 10)
+# Tabs for tackle types (Lures, Bait, Rods, etc.)
+
+[node name="LuresGrid" type="GridContainer" parent="TackleboxTabs/Lures"]
+columns = 5
+rect_min_size = Vector2(440, 300)
+# Magic grid, no max size
+
+[node name="BaitGrid" type="GridContainer" parent="TackleboxTabs/Bait"]
+columns = 5
+rect_min_size = Vector2(440, 300)
+
+[node name="RodsGrid" type="GridContainer" parent="TackleboxTabs/Rods"]
+columns = 5
+rect_min_size = Vector2(440, 300)
+
+# Add more tabs as needed for other equipment types
+
+[node name="CloseButton" type="Button" parent="."]
+text = "Close"
+rect_position = Vector2(900, 30)

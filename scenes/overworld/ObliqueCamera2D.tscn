@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="ObliqueCamera2D" type="Camera2D"]
+script = ExtResource( 1 )
+current = true
+smoothing_enabled = true
+smoothing_speed = 6.0
+
+[ext_resource path="res://scenes/overworld/ObliqueCamera2D.gd" type="Script" id=1]

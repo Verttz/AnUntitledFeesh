@@ -1,27 +1,38 @@
-The Magma Chef (Revised)
 
-Visuals & Personality:
+Magma Chef – Boss Design Notes
+=============================
 
-    A giant, round fish in a flaming chef’s hat and stained apron, wielding a massive ladle.
-    The central lava pot sits at the top center of the arena, bubbling and occasionally erupting.
-    The chef is dramatic, shouting cooking puns and berating his sous-chefs Gordon Ramsay–style.
+1. Core Theme & Personality
+--------------------------
+A giant, round fish in a flaming chef’s hat and stained apron, wielding a massive ladle. The chef is dramatic, shouting cooking puns and berating his sous-chefs Gordon Ramsay–style. The central lava pot sits at the top center of the arena, bubbling and occasionally erupting.
 
-Attack Patterns:
+2. Arena & Audience
+-------------------
+Arena is a volcanic kitchen with bubbling lava pots, sous-chef shrimp at workstations, and kitchen hazards. The audience is a rowdy group of sous-chefs and kitchen staff.
 
-    Boiling Soup Splash: Hurls ladlefuls of lava soup from the central pot, creating burning puddles.
-    Pepper Bombs: Tosses spicy magma peppers that explode in fiery bursts.
-    Pot Block: Moves to block the player from reaching the pot, using sweeping ladle attacks or creating fire walls.
-    Spicy Steam: Breathes out a cloud of spicy steam, slowing and blurring the player’s vision.
-    Sous-Chef Summon: Several sous-chef shrimp work at stations around the arena. If the player gets close, they attack; otherwise, they’re busy “cooking.”
+3. Signature Mechanics & Attacks
+- Flambé Arc: The chef sweeps a kitchen torch in a wide arc, sending out a fan of fire bullets that curve and overlap, creating safe lanes for the player to dodge through.
+- Sous-Chef Scatter: Sous-chef minions dash across the arena, leaving trails of hot oil or dropping random kitchen hazards (like bouncing pans or splattering soup globs) that act as slow-moving projectiles.
+--------------------------------
+- Boiling Soup Splash: Hurls ladlefuls of lava soup from the central pot, creating burning puddles.
+- Pepper Bombs: Tosses spicy magma peppers that explode in fiery bursts. Pepper bombs can be attacked by the player to launch them in a chosen direction, allowing them to be aimed at sous-chefs or the central pot.
+- Pot Block: Moves to block the player from reaching the pot, using sweeping ladle attacks or creating fire walls.
+- Spicy Steam: Breathes out a cloud of spicy steam, slowing and blurring the player’s vision.
+- Sous-Chef Summon: Several sous-chef shrimp work at stations around the arena. If the player gets close, they attack; otherwise, they’re busy “cooking.”
 
-Unique Mechanics:
+4. Unique Mechanics
+- Chef Mood Swings: The chef’s mood changes dynamically based on player actions. If the player attacks sous-chefs, messes up stations, or throws the wrong ingredients into the pot, the chef becomes angrier and more frantic, increasing attack speed, frequency, and adding new taunts or attack patterns. If the player lands a clever hit or uses the environment well, the chef may become flustered, opening a brief vulnerability window.
 
-    The player can interact with sous-chef stations—messing up a station causes the chef to rush over and yell at the sous-chef, leaving himself open for a big damage window.
-    The player can toss ingredients into the central pot. If the right combo is thrown in, the pot erupts, stunning the chef and damaging nearby minions.
-    Some pepper bombs can be caught and thrown back at the chef or used to disrupt sous-chef stations.
+-------------------
+- The player can interact with sous-chef stations—messing up a station causes the chef to rush over and loudly berate that specific sous-chef, complete with over-the-top insults and dramatic gestures. While yelling, the chef is distracted and vulnerable for a big damage window.
+- The player can toss ingredients into the central pot. If the right combo is thrown in, the pot erupts, stunning the chef and damaging nearby minions.
+- Some pepper bombs can be attacked to launch them in a direction. Launched pepper bombs can disrupt sous-chef stations or be tossed into the pot for special effects.
 
-Phase 2 (Low Health):
+5. Phase Structure
+------------------
+- Phase 1: Standard attacks, sous-chef minions, and kitchen hazards active.
+- Phase 2 (Low Health): The chef becomes more frantic, moving between stations and the pot more quickly, and soup eruptions become more frequent. Sous-chefs occasionally panic and run around, creating chaos and new hazards.
 
-    The chef becomes more frantic, moving between stations and the pot more quickly, and soup eruptions become more frequent.
-    Sous-chefs occasionally panic and run around, creating chaos and new hazards.
-    The chef tries to “plate” the player as the final dish, but if the player dodges, he slips on spilled soup, opening a final big damage window.
+6. Victory Flair
+----------------
+When defeated, the chef dramatically drops his ladle, the pot erupts one last time, and the sous-chefs cheer (or panic) as the kitchen descends into chaos.

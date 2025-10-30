@@ -1,0 +1,39 @@
+
+Captain Pinchbeard - Boss Design Notes
+======================================
+
+1. Core Theme & Personality
+--------------------------
+A burly pirate crab with a battered tricorn hat, eyepatch, tattered coat, and a golden hook claw. Wears a treasure chest strapped to his back and is accompanied by a mischievous parrotfish sidekick. Speaks in pirate lingo, taunts the player, and is obsessed with treasure. Alternates between bombastic threats and slapstick mishaps.
+
+2. Arena & Audience
+-------------------
+- Fight takes place on the open deck of a ferry, with railings at the edges (falling overboard damages and teleports the player back).
+- Visual elements include benches, life preservers, and a small cabin, but the arena is mostly open for bullet hell action.
+- The ferry’s crew occasionally throws helpful treasure or items onto the deck.
+- Pirate minions and parrotfish cheer, jeer, and throw objects (fish bones, bottles, gold coins).
+
+3. Signature Mechanics & Attacks
+--------------------------------
+- Cannonball Salvo: Pinchbeard fires bouncing/rolling cannonballs from his chest or a commandeered ferry cannon. The player can reflect cannonballs back for extra damage.
+- Pinch & Plunder: Charges at the player and, if he grabs them, slams them down on the ferry deck for damage before releasing them.
+- Parrotfish Call: The parrotfish sidekick swoops in from the rigging or mast to attack or drop water bombs. The parrotfish can be bribed for a bonus.
+- Treasure Toss: Both Pinchbeard and the ferry crew throw coins and gems onto the deck. These tempt the player to go near the edges (risking being knocked overboard) and also lure Pinchbeard, who may break his attack pattern to greedily chase after treasure, creating openings for the player.
+- Pirate Crew: Summons pirate crab minions with swords and hats to swarm the player.
+
+4. Unique Mechanics
+-------------------
+- The player can reflect cannonballs for extra damage.
+- The ferry’s crew helps by throwing helpful items.
+- If the player is knocked overboard, they take damage and are teleported back to a safe spot.
+- The parrotfish can be bribed to drop a bonus.
+
+5. Phase Structure
+------------------
+- Phase 1: Standard attacks, crowd on Pinchbeard’s side, deck mostly intact.
+- Phase 2: Pinchbeard tries to hijack the ferry’s controls, causing the ferry to swerve and tilt, briefly changing movement physics. He attempts to escape in a lifeboat, but it springs a leak, opening a big damage window. Attacks become faster and more chaotic, with more minions and hazards.
+- Finale: Pinchbeard attempts a dramatic escape with treasure, but is foiled in slapstick fashion.
+
+6. Victory Flair
+----------------
+When defeated, Pinchbeard is flung overboard, his parrotfish squawking after him, and the ferry captain thanks the player as the ferry resumes its journey.

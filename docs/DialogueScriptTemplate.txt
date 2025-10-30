@@ -1,0 +1,27 @@
+# Dialogue Script Template
+
+## Usage
+Use this template to write dialogue for cutscenes, boss intros, quest events, or special moments. Each entry can include speaker, context, and optional stage directions.
+
+---
+
+## Example
+
+### [Boss Intro]
+SPEAKER: Don Catfishoni
+CONTEXT: Player enters the floating market arena
+DIALOGUE: "You swim in my waters, you play by my rules!"
+
+### [Quest Completion]
+SPEAKER: NPC Fisher
+CONTEXT: Player returns with 3 rare carp
+DIALOGUE: "You actually caught them? I’m impressed! Here’s your reward."
+
+### [Boss Phase Change]
+SPEAKER: Abominable Snowbass
+CONTEXT: Player drops Snowbass below 30% health
+DIALOGUE: "You think you’ve seen my best? The show’s just getting started!"
+
+---
+
+## Write new dialogue below using the format above.

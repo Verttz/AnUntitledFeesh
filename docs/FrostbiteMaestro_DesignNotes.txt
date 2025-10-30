@@ -1,0 +1,39 @@
+
+
+Frostbite Maestro – Boss Design Notes
+====================================
+
+1. Core Theme & Personality
+--------------------------
+A grand, tuxedoed fish with a flowing icy cape, monocle, and a crystal baton. He stands at a conductor’s podium, gesturing dramatically and bowing to an invisible audience. The Maestro speaks in musical metaphors (“Let’s raise the tempo!”) and critiques the player’s “performance” throughout the fight.
+
+2. Arena & Audience
+-------------------
+A frozen concert hall or icy stage, with icicle chandeliers, frosty instruments, and a stationary Maestro at center stage. The floor is solid ice, but not slippery (for now). The background is filled with a frozen audience that reacts to the action—applauding, gasping, or shattering in response to big moments.
+
+3. Signature Mechanics & Attacks
+--------------------------------
+- Dynamic Musical Patterns: Every attack is a musical phrase, visually and audibly telegraphed by the Maestro’s conducting. Players can anticipate patterns by watching his baton and listening to the music.
+- Icicle Crescendo: The Maestro conducts a flurry of falling icicles in rhythmic, musical patterns, matching the beat and melody.
+- Blizzard Waltz: Swirling snow and wind push the player around the arena in a circular motion, forcing them to dodge while sliding.
+- Chorus of Minnows: A choir of singing snow minnows emits damaging sound waves in musical arcs. In phase 2, the chorus harmonizes, creating overlapping bullet-hell waves.
+- Sheet Music Shred: Throws razor-sharp frozen sheet music that spins and ricochets off the walls, following musical phrases.
+- Encore Slam: The Maestro slams his baton, causing ice pillars to erupt in a starburst pattern, synced to a musical climax.
+- Attack Fusion: In phase 2, the Maestro combines attacks (e.g., Blizzard Waltz with Icicle Crescendo) for complex, layered bullet hell patterns.
+
+4. Unique Mechanics
+-------------------
+- Tempo & Volume Control: The Maestro manipulates both the tempo (bullet speed) and volume (damage) of the music. Fast tempo = faster bullets; loud volume = higher damage. Players must “read” the music to anticipate dangerous moments.
+- Audience Reactions: The frozen audience responds to the Maestro’s performance and the player’s actions, adding humor and spectacle.
+- Environmental Interactivity: Icicle chandeliers can be shattered by the player (or Maestro’s attacks), causing falling hazards or freezing the floor in new patterns.
+- Conducting Counterplay: The Maestro is stationary, but if the player attacks his baton during a dramatic flourish, it disrupts his rhythm, causing him to fumble and become vulnerable for a brief window.
+- Visual Spectacle: Attacks create musical notes and waves of color on the ice, with the Maestro’s cape and baton glowing brighter as the fight intensifies. Arena lighting changes with each phase and musical shift.
+
+5. Phase Structure
+------------------
+- Phase 1: Standard musical attacks, audience reactions, and chandelier hazards active.
+- Phase 2 (Low Health): The Maestro’s music becomes frantic and discordant, with attacks growing wild and unpredictable. He fuses multiple attack patterns, and the arena lighting and audience reactions become more intense. The Maestro’s volume and tempo shifts become more extreme, creating high-risk, high-reward moments.
+
+6. Victory Flair
+----------------
+When defeated, the Maestro’s baton shatters, the music stops abruptly, and the frozen audience erupts in applause—cracking, shimmering, and echoing through the concert hall as the Maestro bows one last time.

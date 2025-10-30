@@ -1,0 +1,40 @@
+The Great Fisherduck – Boss Design Notes
+=======================================
+
+1. Core Theme & Personality
+--------------------------
+Giant, grumpy duck in a fishing hat with lures, vest full of tackle, and oversized rubber boots. Waddles with attitude, quacks loudly, and mutters about “rookie anglers.” Loves to out-fish the player and show off his “catch of the day.”
+
+2. Arena & Audience
+-------------------
+Arena is a lakeside dock or marshy shore, scattered with fishing gear, junk, and reeds. Ducklings and rival anglers watch from the background, sometimes tossing items or heckling.
+
+3. Signature Mechanics & Attacks
+--------------------------------
+- Rod & Reel: Casts a huge fishing line to try to “catch” the player, reeling them in for a slap with a giant fish or a whack with a tackle box.
+- Multi-Lure Mayhem: Casts several lures at once, each with a different effect—one stuns, one explodes, one drops a boot, one tries to “reel in” the player.
+- Tangled Line: Gets his own line tangled, flailing around and sending lines and hooks everywhere. Hooks can snag the player or minions, causing chaos.
+- Trophy Toss: Proudly shows off a “trophy catch” (giant fish, boot, or even a lawn chair) and hurls it at the player.
+- Bait-and-Switch: Throws a glowing, irresistible bait. If the player attacks it, it either (randomly) spawns a mini Fisherduck that mimics attacks for a short time, or heals the player’s fish.
+- Duckling Gang: Summons a flock of angry ducklings that swarm the player, pecking and quacking.
+- Dive Bomb: Dives underwater, then pops up elsewhere to launch a surprise attack or drop a barrage of fish.
+
+4. Unique Mechanics
+-------------------
+- The player can “hook” the duck’s hat or fishing rod, temporarily disarming him and opening a damage window.
+- Junk/arena interactions:
+    - Junk (boots, cans, lawn chairs, tackle boxes) spawns throughout the fight and can be hit, swung, or broken by the player or Fisherduck’s attacks.
+    - Boots leave persistent boot prints; cans rattle when hit; lawn chairs and tackle boxes are breakable obstacles.
+    - If too much junk accumulates, Fisherduck clears the arena with a splash and quack.
+    - Lures can hit junk, causing different effects: snapping the line (stunning Fisherduck), pulling junk to Fisherduck (stunning him), or swinging junk at the player.
+    - Boots and cans can be hit by the player or projectiles to reposition them as hazards or tools.
+    - Junk can be used to block attacks, damage minions, or create openings for counterattacks.
+
+5. Phase Structure
+------------------
+- Phase 1: Standard attacks, duckling minions, and arena hazards active.
+- Phase 2 (Low Health): Fisherduck gets flustered, his hat falls over his eyes, and his attacks become more erratic and wild. Summons a “giant golden duckling” as a last-ditch minion, which bounces around the arena causing chaos. Tries to “fly away” but crash-lands, opening a final big damage window.
+
+6. Victory Flair
+----------------
+When defeated, Fisherduck tries to fly away but crash-lands, flopping on the dock as ducklings swarm him in concern (and a few steal his hat).

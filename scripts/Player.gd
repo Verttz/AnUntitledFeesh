@@ -1,8 +1,59 @@
-var tacklebox = preload("res://scripts/Inventory.gd").new() # For tackle
-var backpack = preload("res://scripts/Inventory.gd").new() # For fish/items
+
+extends CharacterBody2D
+
+"""
+Player.gd
+-----------
+Main player script. Handles inventory, equipment, fishing state, and shop interactions.
+"""
+
+# --- Inventory Management ---
+var tacklebox = preload("res://scripts/Inventory.gd").new() # For tackle (bait, lures, etc.)
+var backpack = preload("res://scripts/Inventory.gd").new() # For caught fish and items
+
+func get_fish_inventory():
+	"""
+	Returns all fish in the backpack, including metadata for unique fish.
+	Used for displaying inventory and for quest/fishing logic.
+	"""
+	return backpack.get_all_fish()
+
+func remove_fish_from_inventory(fish_entry):
+	"""
+	Removes a specific fish from the backpack.
+	Supports both stackable and unique (non-stackable) fish.
+	fish_entry: Dictionary with at least a 'name' key, and for unique fish, a 'unique_id'.
+	"""
+	var item_name = fish_entry.get("name", null)
+	if item_name == null:
+		return
+	var stackable = true
+	if item_name in backpack.item_data.ITEM_DATA:
+		stackable = backpack.item_data.ITEM_DATA[item_name].stackable
+	if stackable:
+		backpack.remove_item(item_name, fish_entry.get("amount", 1))
+	else:
+		# Remove by unique_id if present
+		if item_name in backpack.items:
+			var found_idx = -1
+			for i in range(backpack.items[item_name].size()):
+				var entry = backpack.items[item_name][i]
+				if entry.has("unique_id") and fish_entry.has("unique_id") and entry.unique_id == fish_entry.unique_id:
+					found_idx = i
+					break
+			if found_idx != -1:
+				backpack.items[item_name].remove(found_idx)
+				if backpack.items[item_name].size() == 0:
+					backpack.items.erase(item_name)
+
+# --- Equipment Management ---
 var equipment = preload("res://scripts/Equipment.gd").new()
-# Equipment management
+
 func equip_item(slot, item_name):
+	"""
+	Equips an item from the tacklebox to the specified equipment slot.
+	If an item is already equipped, it is returned to the tacklebox.
+	"""
 	if tacklebox.has_item(item_name):
 		var unequipped = equipment.unequip(slot)
 		if unequipped:
@@ -13,21 +64,22 @@ func equip_item(slot, item_name):
 		print("You don't have " + item_name + " in your tacklebox to equip.")
 
 func unequip_item(slot):
+	"""
+	Unequips an item from the specified slot and returns it to the tacklebox.
+	"""
 	var item = equipment.unequip(slot)
 	if item:
 		tacklebox.add_item(item)
-var player_gold = 50
-# Reference to shop script
+
+# --- Shop & Currency ---
+var player_gold = 50 # Player's current gold
 var shop_scene = preload("res://scripts/Shop.gd")
 var shop_instance = null
-extends CharacterBody2D
 
-# Movement speed in pixels/sec
-var speed := 150
+# --- Movement & State ---
+var speed := 150 # Movement speed in pixels/sec
 
-# Fishing mechanic variables
-
-# Player states
+# Player states for controlling input and animation
 enum State { MOVE, FISHING_WAIT, FISHING_REEL }
 var state = State.MOVE
 
@@ -78,6 +130,14 @@ var fight_phase_index = 0
 var fight_phase_timer = 0.0
 var fight_phase_duration = 1.0 # seconds per phase (can randomize or set per fish)
 
+# --- Free-Aim Fishing Cast ---
+var cast_power = 0.0
+var cast_power_min = 0.2
+var cast_power_max = 1.0
+var cast_power_speed = 0.7 # How fast cast power charges per second
+var is_charging_cast = false
+var cast_direction = Vector2.RIGHT
+
 func _physics_process(delta):
 	match state:
 		State.MOVE:
@@ -96,7 +156,11 @@ func _physics_process(delta):
 			if not bobber_submerged and fishing_timer >= fishing_bite_time:
 				bobber_submerged = true
 				bobber_reaction_timer = 0.0
-				# TODO: Animate bobber submerging, play sound
+				# Bobber Submerge Animation & Sound:
+				# - Animate the bobber node dipping below the water surface at the cast location.
+				# - Play a short 'plop' or 'splash' sound effect.
+				# - Optionally, trigger a small water ripple or splash particle effect.
+				# - This should be triggered exactly when the bite occurs (fishing_timer >= fishing_bite_time).
 			if bobber_submerged:
 				bobber_reaction_timer += delta
 				if Input.is_action_just_pressed("ui_accept"):
@@ -160,7 +224,11 @@ func start_fishing():
 	fish_hooked = false
 	bobber_reaction_window = current_fish.reaction_window
 	velocity = Vector2.ZERO
-	# TODO: Show bobber UI/animation, display fish name for debug
+	# Bobber UI/Animation & Debug Fish Name:
+	# - Show a bobber icon/node at the cast location, gently bobbing up and down.
+	# - Animate the bobber to indicate waiting for a bite (e.g., subtle movement).
+	# - For debugging: print or display the selected fish's name on screen (e.g., via a label or print statement).
+	# - Hide the bobber UI when fishing ends.
 
 func start_reeling():
 	state = State.FISHING_REEL
@@ -175,19 +243,43 @@ func start_reeling():
 		tension_safe_min = eq_stats.tension_safe_min
 	if eq_stats.tension_safe_max != null:
 		tension_safe_max = eq_stats.tension_safe_max
-	# TODO: Show tension meter UI
+	# Tension Meter UI:
+	# - Display a tension meter (e.g., horizontal or vertical bar) on the screen when reeling starts.
+	# - The meter should have a highlighted 'safe zone' (between tension_safe_min and tension_safe_max).
+	# - The bar position reflects the current tension value (0.0 to 1.0).
+	# - Hide the tension meter when fishing ends.
 
 func finish_fishing(success):
 	if success:
 		# Add caught fish to backpack
 		if current_fish:
 			backpack.add_item(current_fish.name)
-		# TODO: Play success sound/animation
+			# Quest check: notify QuestManager if present
+			var quest_manager = get_node_or_null("/root/Main/QuestManager")
+			if quest_manager:
+				quest_manager.check_quests()
+	# Success Sound/Animation:
+	# - Play a 'catch' or 'success' sound effect.
+	# - Animate the fish jumping, sparkling, or being added to the inventory visually.
+	# - Flash the UI green or show a 'Success!' message.
 	else:
-		# TODO: Play fail sound/animation
+	# Fail Sound/Animation:
+	# - Play a 'snap', 'splash', or 'fail' sound effect.
+	# - Animate the line breaking, fish escaping, or a splash at the bobber location.
+	# - Flash the UI red or show a 'Failed!' message.
 		pass
 	state = State.MOVE
-	# TODO: Hide fishing UI, reset variables
+	# Hide Fishing UI & Reset Variables:
+	# - Hide all fishing-related UI elements (bobber, tension meter, fish name, etc.).
+	# - Reset fishing state variables: bobber_submerged, fish_hooked, current_fish, timers, etc.
+	# - Ensure the player is ready to move or start fishing again.
+	# Autosave after fishing ends (only in exploration mode)
+	if typeof(SaveManager) != TYPE_NIL and SaveManager.can_save("exploration"):
+		SaveManager.autosave()
+		# Show autosave notification if possible
+		var parent = get_parent()
+		if parent and parent.has_method("show_save_notification"):
+			parent.show_save_notification()
 
 func _handle_reeling(delta):
 	# Fight pattern phase logic
@@ -212,7 +304,10 @@ func _handle_reeling(delta):
 	tension += tension_speed * delta
 	tension = clamp(tension, 0.0, 1.0)
 
-	# TODO: Update tension meter UI
+	# Tension Meter UI Update:
+	# - Update the tension meter bar position and color as tension changes.
+	# - If tension is near the limits, change the bar color (e.g., yellow/orange) to warn the player.
+	# - If tension is in the safe zone, keep the bar green; if out, flash or pulse the bar.
 
 	# Advance fight phase
 	fight_phase_timer += delta
@@ -224,10 +319,15 @@ func _handle_reeling(delta):
 
 	if tension < tension_safe_min or tension > tension_safe_max:
 		reeling_timer = 0.0 # Reset timer if out of safe zone
-		# TODO: Flash warning, play sound
+	# Warning Flash & Sound:
+	# - When tension leaves the safe zone, flash the tension meter border or background (e.g., red).
+	# - Play a warning beep or alert sound to notify the player.
 	else:
 		reeling_timer += delta
-		# TODO: Play reeling sound, animate fish
+	# Reeling Sound & Fish Animation:
+	# - Play a looping 'reeling' sound effect while the player is reeling in.
+	# - Animate the fish sprite (wiggle, jump, or struggle) based on the current fight phase.
+	# - Optionally, add screen shake or water splash effects for dramatic phases.
 
 	if tension <= 0.0 or tension >= 1.0:
 		finish_fishing(success=false) # Line snapped or too slack
@@ -238,40 +338,33 @@ func _input(event):
 	# Enter shop if at shop location and Enter is pressed
 	var loc = locations_data.LOCATIONS[current_biome][current_location]
 	if "type" in loc and loc.type == "shop" and event.is_action_pressed("ui_accept"):
-		open_shop(loc.name)
-func open_shop(shop_name):
-	var shop_data = load("res://scripts/data/shop_data.gd")
-	if shop_name in shop_data.SHOPS:
-		var shop_info = shop_data.SHOPS[shop_name]
-		if not shop_instance:
-			shop_instance = shop_scene.new()
-			add_child(shop_instance)
-		# Pass backpack for fish/items
-		shop_instance.open(
-			shop_info.shopkeeper,
-			shop_info.items,
-			shop_info.buy_prices,
-			shop_info.sell_prices,
-			shop_info.hints,
-			backpack
-		)
-# Methods for shop to update inventory/gold
-func add_item_to_inventory(item_name):
-	backpack.add_item(item_name)
-
-func remove_fish_from_inventory(fish_name):
-	backpack.remove_item(fish_name)
-
-func add_gold(amount):
-	player_gold += amount
-
-func spend_gold(amount):
-	if player_gold >= amount:
-		player_gold -= amount
-		return true
-	return false
-	else:
-		print("No shop data for " + shop_name)
+		open_shop(loc)
+	if state == State.MOVE and event is InputEventMouseButton:
+		if event.button_index == BUTTON_LEFT and event.pressed:
+			# Start charging cast
+			is_charging_cast = true
+			cast_power = cast_power_min
+		elif event.button_index == BUTTON_LEFT and not event.pressed and is_charging_cast:
+			# Release cast
+			is_charging_cast = false
+			_perform_cast()
+	elif state == State.MOVE and event is InputEventMouseMotion and is_charging_cast:
+		_update_cast_direction()
+	# ...existing code...
+# Open the shop with all relevant data from the location dict
+func open_shop(shop_data):
+	if shop_instance:
+		shop_instance.queue_free()
+	shop_instance = shop_scene.new()
+	add_child(shop_instance)
+	shop_instance.open(
+		shop_data.get("shopkeeper", "Shopkeeper"),
+		shop_data.get("items_for_sale", []),
+		shop_data.get("buy_prices", {}),
+		shop_data.get("sell_prices", {}),
+		shop_data.get("notice_board_hints", []),
+		backpack
+	)
 	# Allow canceling fishing with Escape
 	if state in [State.FISHING_WAIT, State.FISHING_REEL] and event.is_action_pressed("ui_cancel"):
 		finish_fishing(success=false)
@@ -280,3 +373,72 @@ func spend_gold(amount):
 		prev_location()
 	elif event.is_action_pressed("ui_right"):
 		next_location()
+
+# Screen edge detection for overworld screens
+func _process(delta):
+    if state == State.MOVE:
+        _check_screen_edges()
+    if is_charging_cast:
+        cast_power = clamp(cast_power + cast_power_speed * delta, cast_power_min, cast_power_max)
+        _update_cast_direction()
+        _show_cast_preview()
+    else:
+        _hide_cast_preview()
+
+func _check_screen_edges():
+    var screen_rect = get_viewport_rect()
+    var margin = 8 # pixels from edge to trigger
+    if position.x < margin:
+        get_parent().on_player_reach_edge("left")
+    elif position.x > screen_rect.size.x - margin:
+        get_parent().on_player_reach_edge("right")
+    elif position.y < margin:
+        get_parent().on_player_reach_edge("up")
+    elif position.y > screen_rect.size.y - margin:
+        get_parent().on_player_reach_edge("down")
+
+func _update_cast_direction():
+    var mouse_pos = get_global_mouse_position()
+    cast_direction = (mouse_pos - global_position).normalized()
+
+func _show_cast_preview():
+    # Visualize cast arc/line (implement as needed, e.g. draw or use a node)
+    pass
+
+func _hide_cast_preview():
+    # Hide cast preview
+    pass
+
+func _perform_cast():
+    var cast_distance = lerp(100, 400, (cast_power - cast_power_min) / (cast_power_max - cast_power_min))
+    var target_pos = global_position + cast_direction * cast_distance
+    # Animate bobber/lure flying to target_pos, then start fishing minigame at that spot
+    _start_fishing_at(target_pos)
+
+func _start_fishing_at(pos):
+    state = State.FISHING_WAIT
+    # Move/animate bobber to pos, set up fishing variables as needed
+    # ...existing fishing setup logic...
+    _start_fish_biting_logic(pos)
+
+func _start_fish_biting_logic(pos):
+    # Set up bite timer and select fish based on position/biome
+    fishing_timer = 0.0
+    fishing_bite_time = rand_range(1.0, 3.0) # Random wait for bite
+    bobber_submerged = false
+    bobber_reaction_timer = 0.0
+    fish_hooked = false
+    current_fish = _select_fish_for_spot(pos)
+    # Optionally: animate bobber at pos, play splash sound, etc.
+
+func _select_fish_for_spot(pos):
+	# Fish Selection Logic:
+	# - Select a fish based on the current biome, location, and possibly time of day, bait, or weather.
+	# - Use weighted random selection: common fish are more likely, rare/legendary fish are less likely.
+	# - Optionally, filter by bait type or equipment bonuses.
+	# - Example pseudocode:
+	#   1. Get all fish for the biome/location.
+	#   2. Filter by bait, depth, or other criteria.
+	#   3. Use weighted random to select a fish.
+	#   4. Return the selected fish resource or data.
+	return FishDatabase.get_random_fish(current_biome, pos)

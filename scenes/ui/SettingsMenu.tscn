@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="SettingsMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Panel" type="Panel" parent="."]
+anchor_left = 0.3
+anchor_top = 0.2
+anchor_right = 0.7
+anchor_bottom = 0.8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.9
+anchor_bottom = 0.9
+
+[node name="VolumeLabel" type="Label" parent="Panel/VBoxContainer"]
+text = "Master Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="Panel/VBoxContainer"]
+min_value = 0
+max_value = 1
+step = 0.01
+value = 0.8
+
+[node name="BackButton" type="Button" parent="Panel/VBoxContainer"]
+text = "Back"

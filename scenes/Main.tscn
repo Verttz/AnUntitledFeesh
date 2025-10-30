@@ -9,4 +9,8 @@ anchor_bottom = 1.0
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 
+[node name="QuestManager" parent="." instance=ExtResource( 2 )]
+
+[ext_resource path="res://scenes/QuestManager.tscn" type="PackedScene" id=2]
+
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=1]
