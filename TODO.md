@@ -24,11 +24,11 @@
 - [ ] Achievements and unlockables
 - [ ] Online leaderboards
 - [ ] Photo mode
-- [ ] Character customization
+- [x] Character customization ((Partial))
 - [ ] Dynamic music
 - [ ] Seasonal events
 - [ ] Foraging for bait
-- [ ] NPCs and side quests
+- [x] NPCs and side quests ((Partial))
 - [ ] Weather effects
 - [ ] Day/night cycle
 - [ ] Environmental hazards

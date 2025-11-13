@@ -1,0 +1,3 @@
+For final move in each boss fight, text that has to appear is "Fin-ish Him"
+    - Make it look like the "Objection" Animation from Phoenix Wright.
+

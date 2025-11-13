@@ -1,19 +1,71 @@
 # Boss Banter and Dialogue
 
 ## Don Catfishoni
+### Opening
 - "You swim in my waters, you play by my rules!"
-- "Let’s make a deal, kid. Or else…"
+- "Come to make a deal? Fine. Here's my offer!"
+
+### Taunt
 - "Nobody outsmarts the Don—except maybe you, if you’re lucky."
 - "Minions! Show our guest some hospitality!"
+- "You got guts, kid. Shame you’ll be sleeping with the fishes!"
+- "You think you can muscle in on my operation? Fuggedaboutit!"
+
+### Phase Change
 - "Market lockdown! Nobody leaves until I say so!"
 - "Negotiation’s over, time for the real show!"
+- "In my territory, even the tides answer to me."
+
+### Boss Defeat
+- "Nobody beats the Don... except you, I guess."
+- "You got moxie, kid... I’ll remember this."
+- "Looks like the Don’s luck finally ran out. For now."
+- "Alright, you win this time. But the family never forgets."
+- "You got heart, but don’t get comfortable. I’ll be back on top."
+- "You made a lot of waves today, kid. Don’t let ‘em drown you."
+
+### Player Defeat
+- "That’s what happens when you cross the Don!"
+- "Maybe you’ll learn some respect before you come back to my waters."
+- "Next time, make a better offer."
+- "You’re out of your depth, kid. Go home."
+- "This is my turf. Don’t forget it."
+- "You lost. Now pay your respects and get outta here."
+
+-----------------------------------------------------------------------------------------------------
 
 ## Abominable Snowbass
+### Opening
 - "Welcome to the coolest show in town!"
+- "The ice is set, the crowd is roaring, and the Abominable Snowbass is back in the spotlight!"
+
+### Taunt
 - "Try not to slip on the ice—unless you want a front-row seat to defeat!"
-- "Encore! Encore! Let’s see if you can handle my avalanche roar!"
 - "Oops! Was that your footing or my punchline?"
-- "Spotlight’s on me, but you’re about to freeze!"
+- "Encore! Encore! Let’s see if you can handle my avalanche roar!"
+- "Is that your best move? I’ve seen snow hares with better footwork!"
+- "Don’t worry, I’ll autograph your defeat after the show."
+
+### Phase Change
+- "Spotlights shifting—hope you can keep up with my next big number!"
+- "Let’s turn this ice rink into a real spectacle!"
+- "The lights dim, the tension rises—my favorite part!"
+
+### Boss Defeat
+- "No! The critics will have a field day with this flop!"
+- "I’ll be signing autographs in the loser’s lounge… for now."
+- "You win the night, but I’ll win the reviews!"
+- "I guess every star has to take a bow… even if it’s face-first into the ice."
+- "Exit, stage left! But don’t get too comfortable—I love a good rematch!"
+
+### Player Defeat
+- "Ooo, tough crowd! Better luck in the matinee performance."
+- "The critics will be merciless, but hey, at least you tried!"
+- "Come back after rehearsal, rookie! The audience expects more."
+- "And the award for best pratfall goes to… you!"
+- "You flopped harder than my last holiday special!"
+
+-----------------------------------------------------------------------------------------------------
 
 ## The Great Fisherduck
 - "Quack! Ready to reel in defeat?"
@@ -22,12 +74,16 @@
 - "Golden ducklings, assemble! It’s showtime!"
 - "You call that a catch? Watch this!"
 
+-----------------------------------------------------------------------------------------------------
+
 ## Croak King
 - "Bow before the Croak King!"
 - "My reign is eternal—yours is about to end!"
 - "Witness the royal croak, peasant!"
 - "Minions, defend the throne! The ceremony must go on!"
 - "Interrupt my knighting? Treason!"
+
+-----------------------------------------------------------------------------------------------------
 
 ## Guppazuma
 - "Guppazuma demands your adoration!"
@@ -37,4 +93,58 @@
 - "Confetti for me, rotten fruit for you!"
 - "The jungle speaks, and it says: Guppazuma!"
 
-# (Add more banter for new bosses as needed)
+-----------------------------------------------------------------------------------------------------
+
+## Captain Pinchbeard
+- "Arrr, ye think you can outfish a pirate legend? Prepare to be plundered!"
+- "That’s Captain Pinchbeard to you, landlubber!"
+- "I’ve sunk ships for less than a bad cast!"
+- "Let’s see if you can dodge me cannonballs and me wit!"
+- "When I say ‘walk the plank,’ I mean it!"
+- "You’ll be feeding the fishes before you catch ‘em!"
+
+-----------------------------------------------------------------------------------------------------
+
+## Fin Diesel
+- "It’s not about winning. It’s about family."
+- "I live my life a quarter-mile at a time—even underwater."
+- "You think you’re fast? I’m Fin Diesel."
+- "This isn’t just a club, it’s a crew. And you’re not in it."
+- "You can have any catch you want, as long as it’s mine."
+- "You mess with the shark, you get the family!"
+- "I don’t need roads—or fins—to beat you."
+
+-----------------------------------------------------------------------------------------------------
+
+## Magma Chef
+- "This kitchen’s a disaster! Are you trying to get flambéed?"
+- "It’s raw! Even the lava’s embarrassed for you."
+- "You call that a catch? Pathetic!"
+- "Move faster! The only thing slower than you is cold soup."
+- "You’re about as useful as a soggy crouton in my kitchen!"
+- "Get out of my way before you burn the risotto—and yourself!"
+- "Congratulations, you’ve just served up defeat!"
+
+-----------------------------------------------------------------------------------------------------
+
+## Prankster Poppo
+- "Missed me! Was that your best shot, or just a warm-up?"
+- "Careful! I might just juggle your hopes and dreams."
+- "You look tense—want to hear a joke? Oh wait, you’re the punchline!"
+- "Don’t be mad! I only prank the ones I like."
+- "Try to keep up! I’m here, I’m there, I’m everywhere!"
+- "If you can’t laugh at yourself, don’t worry—I’ll do it for you!"
+- "Win or lose, you’ve been a wonderful audience!"
+- "I hope you like surprises, because I've got a whole bag of tricks!"
+
+-----------------------------------------------------------------------------------------------------
+
+## Frostbite Maestro
+- "Shhh… the performance is about to begin. Try not to freeze up!"
+- "Every note I conduct is a chill down your spine!"
+- "Let’s see if you can dance to my tempo—allegro, or adagio to defeat!"
+- "Encore? Only if you survive the first act!"
+- "I’ll conduct your downfall with a flourish!"
+- "You mistake persistence for talent. How quaint."
+- "When I finish my masterpiece, you’ll be nothing but a forgotten note."
+- "Applause? For you? Please. The audience came for me."
