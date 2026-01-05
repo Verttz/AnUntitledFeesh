@@ -15,7 +15,7 @@ func trigger():
 		start_geyser()
 
 func start_geyser():
-	yield(get_tree().create_timer(geyser_timer), "timeout")
+	await get_tree().create_timer(geyser_timer).timeout
 	shoot_geyser()
 
 func shoot_geyser():

@@ -75,7 +75,7 @@ func start_attack(attack_name, fast=false):
 func rod_and_reel(fast=false):
 	$AttackTelegraph.show()
 	$AttackTelegraph.play("rod_and_reel")
-	var player = get_tree().get_root().find_node("Player", true, false)
+	var player = get_tree().get_root().find_child("Player", true, false)
 	if player and (player.position - position).length() < 400:
 		player.snare_and_pull_to(position, fast)
 		# Slap with fish or whack with tackle box
@@ -89,7 +89,7 @@ func multi_lure_mayhem(fast=false):
 	$AttackTelegraph.show()
 	$AttackTelegraph.play("multi_lure_mayhem")
 	var effects = ["stun", "explode", "boot", "reel"]
-	var player = get_tree().get_root().find_node("Player", true, false)
+	var player = get_tree().get_root().find_child("Player", true, false)
 	for i in range(effects.size()):
 		var angle = -30 + i * 20
 		var pos = global_position + Vector2(randf_range(-50,50), randf_range(-50,50))
@@ -114,7 +114,7 @@ func trophy_toss(fast=false):
 	var trophies = ["giant_fish", "boot", "lawn_chair"]
 	var trophy = trophies[randi() % trophies.size()]
 	var pos = global_position + Vector2(randf_range(-100,100), randf_range(-50,50))
-	var player = get_tree().get_root().find_node("Player", true, false)
+	var player = get_tree().get_root().find_child("Player", true, false)
 	if player:
 		fire_aimed(pos, player.global_position, fast ? 900 : 700)
 	var trophy_obj = spawn_junk(trophy, pos)
@@ -125,17 +125,17 @@ func bait_and_switch(fast=false):
 	$AttackTelegraph.play("bait_and_switch")
 	var bait = spawn_junk("can", global_position + Vector2(randf_range(-50,50), randf_range(-50,50)))
 	bait.is_bait = true
-	bait.connect("attacked", self, "_on_bait_attacked")
+	bait.attacked.connect(_on_bait_attacked)
 
 func _on_bait_attacked(bait):
 	if randi() % 2 == 0:
 		# Spawn mini Fisherduck
-		var mini = preload("res://scenes/arenas/MiniFisherduck.tscn").instance()
+		var mini = preload("res://scenes/arenas/MiniFisherduck.tscn").instantiate()
 		mini.position = bait.position
 		get_parent().add_child(mini)
 	else:
 		# Heal player
-		var player = get_tree().get_root().find_node("Player", true, false)
+		var player = get_tree().get_root().find_child("Player", true, false)
 		if player:
 			player.heal(1)
 	bait.queue_free()
@@ -146,7 +146,7 @@ func duckling_gang(fast=false):
 	$AttackTelegraph.play("duckling_gang")
 	var count = fast ? 8 : 5
 	for i in range(count):
-		var duckling = preload("res://scenes/arenas/Duckling.tscn").instance()
+		var duckling = preload("res://scenes/arenas/Duckling.tscn").instantiate()
 		duckling.position = global_position + Vector2(randf_range(-150,150), randf_range(-100,100))
 		get_parent().add_child(duckling)
 
@@ -158,7 +158,7 @@ func dive_bomb(fast=false):
 	$Sprite.hide()
 	set_physics_process(false)
 	emit_signal("attack_started", "dive_bomb_start")
-	yield(get_tree().create_timer(0.7), "timeout")
+	await get_tree().create_timer(0.7).timeout
 	# Reappear at a random location in the arena
 	var arena_bounds = Rect2(Vector2(0,0), Vector2(1024,768)) # Example bounds, adjust as needed
 	var new_pos = arena_bounds.position + Vector2(randf() * arena_bounds.size.x, randf() * arena_bounds.size.y)
@@ -182,7 +182,7 @@ func on_player_hooks_disarm():
 	$StunEffect.play("stun")
 	set_vulnerable(true)
 	emit_signal("attack_started", "disarmed")
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)
 
 # Phase 2 erratic behavior
@@ -194,14 +194,14 @@ func _on_disarmed():
 	$StunEffect.show()
 	$StunEffect.play("stun")
 	set_vulnerable(true)
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)
 
 func spawn_giant_golden_duckling():
 	$SparkleEffect.show()
 	$SparkleEffect.play("sparkle")
 	# Assume a GoldenDuckling scene exists
-	golden_duckling = preload("res://scenes/arenas/GoldenDuckling.tscn").instance()
+	golden_duckling = preload("res://scenes/arenas/GoldenDuckling.tscn").instantiate()
 	get_parent().add_child(golden_duckling)
 	golden_duckling.position = position + Vector2(0, -100)
 	duckling_jump_count = 0
@@ -215,7 +215,7 @@ func _start_duckling_jump():
 	duckling_jump_count += 1
 	if duckling_jump_count % 3 == 2:
 		# Lock target at player's current position
-		var player = get_tree().get_root().find_node("Player", true, false)
+		var player = get_tree().get_root().find_child("Player", true, false)
 		if player:
 			duckling_target_point = player.position
 		else:
@@ -231,28 +231,28 @@ func _start_duckling_jump():
 	# Leave a trail of sparkles
 	golden_duckling.leave_sparkle_trail = true
 	# Schedule next jump
-	golden_duckling.connect("jump_finished", self, "_start_duckling_jump", [], CONNECT_ONESHOT)
+	golden_duckling.jump_finished.connect(_start_duckling_jump, CONNECT_ONE_SHOT)
 
 func spawn_junk(junk_type, pos):
 	# Clamp position to arena bounds
 	var arena_bounds = Rect2(Vector2(0,0), Vector2(1024,768))
 	var clamped_pos = pos.clamped(arena_bounds.size) + arena_bounds.position
 	var scene_path = "res://scenes/arenas/Junk_%s.tscn" % junk_type.capitalize()
-	var junk = preload(scene_path).instance()
+	var junk = preload(scene_path).instantiate()
 	junk.position = clamped_pos
 	get_parent().add_child(junk)
 	junk_list.append(junk)
 	if junk_type == "boot":
-		junk.connect("landed", self, "_on_boot_landed")
+		junk.landed.connect(_on_boot_landed)
 	if junk_type == "can":
-		junk.connect("hit", self, "_on_can_hit")
+		junk.hit.connect(_on_can_hit)
 	if junk_type in ["lawn_chair", "tackle_box"]:
-		junk.connect("broken", self, "_on_junk_broken")
+		junk.broken.connect(_on_junk_broken)
 	_check_junk_clutter()
 
 func _on_boot_landed(pos):
 	# Leave a persistent boot print and splash effect
-	var boot_print = preload("res://scenes/arenas/BootPrint.tscn").instance()
+	var boot_print = preload("res://scenes/arenas/BootPrint.tscn").instantiate()
 	boot_print.position = pos
 	get_parent().add_child(boot_print)
 	$SplashEffect.global_position = pos
@@ -325,5 +325,5 @@ func on_player_win():
 	$SplashEffect.show()
 	$SplashEffect.play("splash")
 	$Sprite.play("collapse")
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	$Sprite.hide()

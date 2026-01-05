@@ -44,6 +44,51 @@ An eager fisher arrives on an island, having paid for "The Ultimate Fishing Adve
 - **Lava - Scientist**: Studies the phenomenon of people fishing in lava and surviving the extreme heat, adding a touch of mystery and science to the area.
 
 
+# Quest System
+
+## Quest Types
+
+### NPC Quests
+- Locals display an exclamation mark above their heads when they have a quest available
+- Quests typically request specific fish local to the area (e.g., "Bring me 3 Carp" or "Catch a Largemouth Bass")
+- Rewards are modest amounts of cash - enough to buy bait restocks or a few upgrades
+- All NPC quests are entirely optional and can be completed at the player's leisure
+- Quests can be abandoned at any time if the player chooses not to complete them
+- Turning in quest fish removes them from the player's inventory (the fish is given to the quest giver)
+
+### Bounty Board Challenges
+- Each area's shop features a bounty board with posted fishing challenges
+- Bounties focus on catching fish with specific requirements: size, weight, quantity, or rarity (e.g., "Catch 5 fish over 10 lbs" or "Catch 3 Rare fish")
+- Bounties are not traditional quests but posted challenges players can complete and turn in
+- There is a limited number of bounties per area, tied to the number of rare and legendary fish in that biome
+- Rewards include more cash than NPC quests, plus hints about how to catch rare and legendary fish
+- As bounties are completed, players receive increasingly valuable information about legendary fish locations and catch conditions
+
+## Quest Flow
+
+### Discovery & Activation
+- Each new area features an initial tutorial quest that provides information about local bait and fishing conditions
+- After the tutorial quest, additional NPC quests become available from various locals throughout the area
+- No quests are required for progression - the only requirement to advance is defeating the area's boss
+- Players are free to skip all quests and rush to the boss if they choose
+
+### Quest Tracking & UI
+- Players can view all active quests and bounties in a quest log/journal menu
+- Quest progress is displayed (e.g., "Caught 2/3 Carp" or "Caught fish weighing 4/10 lbs")
+- Bounty board challenges appear separately from NPC quests for easy reference
+- Players can abandon quests at any time without penalty
+
+### Integration with Boss System
+- There are no special "quest fish" - all fish caught can be used for quests, offerings, or kept in inventory
+- The "offering of three fish" required at guardian doors is completely separate from quest fish
+- Players must choose whether to turn in fish for quest rewards or save them for boss offerings
+- Turning in fish for quests removes them from inventory permanently
+
+## Area-Specific Mechanics
+Each area introduces a unique fishing mechanic or environmental feature alongside its quests:
+- **Jungle/Wetlands**: Bow fishing as an alternative to traditional rod fishing
+- Additional area mechanics to be designed for other biomes
+
 
 # Themes
 

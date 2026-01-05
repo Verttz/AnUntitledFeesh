@@ -37,9 +37,9 @@ func setup_chandeliers():
 	# Place icicle chandeliers above arena
 	for i in range(3):
 		var chandelier_scene = preload("res://scenes/arenas/FrostbiteMaestroChandelier.tscn")
-		var chandelier = chandelier_scene.instance()
+		var chandelier = chandelier_scene.instantiate()
 		chandelier.position = Vector2(200 + i*200, 60)
-		chandelier.connect("shattered", self, "on_chandelier_shattered", [i])
+		chandelier.shattered.connect(func(): on_chandelier_shattered(i))
 		get_parent().add_child(chandelier)
 
 
@@ -93,9 +93,9 @@ func icicle_crescendo():
 	telegraph_attack("icicle_crescendo")
 	for beat in range(4):
 		spawn_icicle_pattern(beat)
-		yield(get_tree().create_timer(0.4 / tempo), "timeout")
+		await get_tree().create_timer(0.4 / tempo).timeout
 	audience_react("gasp")
-	yield(get_tree().create_timer(0.8 / tempo), "timeout")
+	await get_tree().create_timer(0.8 / tempo).timeout
 	next_attack()
 
 func blizzard_waltz():
@@ -104,9 +104,9 @@ func blizzard_waltz():
 	# Apply wind force, spawn snow projectiles in a waltz rhythm
 	for bar in range(3):
 		spawn_blizzard_arc(bar)
-		yield(get_tree().create_timer(0.6 / tempo), "timeout")
+		await get_tree().create_timer(0.6 / tempo).timeout
 	audience_react("applaud")
-	yield(get_tree().create_timer(0.8 / tempo), "timeout")
+	await get_tree().create_timer(0.8 / tempo).timeout
 	next_attack()
 
 func chorus_of_minnows():
@@ -114,9 +114,9 @@ func chorus_of_minnows():
 	telegraph_attack("chorus_of_minnows")
 	for harmony in range(2):
 		spawn_minnow_wave(harmony)
-		yield(get_tree().create_timer(0.7 / tempo), "timeout")
+		await get_tree().create_timer(0.7 / tempo).timeout
 	audience_react("cheer")
-	yield(get_tree().create_timer(0.8 / tempo), "timeout")
+	await get_tree().create_timer(0.8 / tempo).timeout
 	next_attack()
 
 func sheet_music_shred():
@@ -124,9 +124,9 @@ func sheet_music_shred():
 	telegraph_attack("sheet_music_shred")
 	for page in range(3):
 		spawn_sheet_music(page)
-		yield(get_tree().create_timer(0.5 / tempo), "timeout")
+		await get_tree().create_timer(0.5 / tempo).timeout
 	audience_react("gasp")
-	yield(get_tree().create_timer(0.8 / tempo), "timeout")
+	await get_tree().create_timer(0.8 / tempo).timeout
 	next_attack()
 
 func encore_slam():
@@ -134,13 +134,13 @@ func encore_slam():
 	telegraph_attack("encore_slam")
 	spawn_ice_pillar_starburst()
 	audience_react("applaud")
-	yield(get_tree().create_timer(1.2 / tempo), "timeout")
+	await get_tree().create_timer(1.2 / tempo).timeout
 	next_attack()
 
 func fuse_attacks():
 	emit_signal("attack_fused")
 	telegraph_attack("attack_fusion")
-	yield(get_tree().create_timer(0.5 / tempo), "timeout")
+	await get_tree().create_timer(0.5 / tempo).timeout
 	icicle_crescendo()
 	blizzard_waltz()
 	chorus_of_minnows()
@@ -157,14 +157,14 @@ func spawn_icicle_pattern(beat):
 	# Spawn icicles in a musical pattern
 	var icicle_scene = preload("res://scenes/arenas/FrostbiteIcicle.tscn")
 	for i in range(3):
-		var icicle = icicle_scene.instance()
+		var icicle = icicle_scene.instantiate()
 		icicle.position = Vector2(180 + i*180, 80 + beat*40)
 		get_parent().add_child(icicle)
 func spawn_blizzard_arc(bar):
 	# Spawn snow projectiles in a waltz arc
 	var snow_scene = preload("res://scenes/arenas/FrostbiteSnow.tscn")
 	for i in range(8):
-		var snow = snow_scene.instance()
+		var snow = snow_scene.instantiate()
 		snow.position = global_position + Vector2.RIGHT.rotated(deg2rad(i*45 + bar*10)) * 220
 		snow.linear_velocity = Vector2.RIGHT.rotated(deg2rad(i*45 + bar*10)) * 180 * tempo
 		get_parent().add_child(snow)
@@ -172,14 +172,14 @@ func spawn_minnow_wave(harmony):
 	# Spawn minnow projectiles in musical arcs
 	var minnow_scene = preload("res://scenes/arenas/FrostbiteMinnow.tscn")
 	for i in range(6):
-		var minnow = minnow_scene.instance()
+		var minnow = minnow_scene.instantiate()
 		minnow.position = global_position + Vector2.RIGHT.rotated(deg2rad(i*60 + harmony*15)) * 160
 		minnow.linear_velocity = Vector2.RIGHT.rotated(deg2rad(i*60 + harmony*15)) * 200 * tempo
 		get_parent().add_child(minnow)
 func spawn_sheet_music(page):
 	# Spawn ricocheting sheet music
 	var sheet_scene = preload("res://scenes/arenas/FrostbiteSheetMusic.tscn")
-	var sheet = sheet_scene.instance()
+	var sheet = sheet_scene.instantiate()
 	sheet.position = global_position + Vector2(randf_range(-120,120), -40 + page*30)
 	sheet.linear_velocity = Vector2(randf_range(-1,1), 1).normalized() * 260 * tempo
 	get_parent().add_child(sheet)
@@ -187,7 +187,7 @@ func spawn_ice_pillar_starburst():
 	# Spawn ice pillars in a starburst pattern
 	var pillar_scene = preload("res://scenes/arenas/FrostbiteIcePillar.tscn")
 	for i in range(8):
-		var pillar = pillar_scene.instance()
+		var pillar = pillar_scene.instantiate()
 		pillar.position = global_position + Vector2.RIGHT.rotated(deg2rad(i*45)) * 180
 		get_parent().add_child(pillar)
 
@@ -211,7 +211,7 @@ func shatter_chandelier(index):
 	# Spawn falling icicles, freeze floor pattern
 	for i in range(3):
 		var icicle_scene = preload("res://scenes/arenas/FrostbiteIcicle.tscn")
-		var icicle = icicle_scene.instance()
+		var icicle = icicle_scene.instantiate()
 		icicle.position = Vector2(200 + index*200, 100 + i*40)
 		get_parent().add_child(icicle)
 	$ArenaFloor.freeze_pattern(index)
@@ -224,7 +224,7 @@ func on_baton_attacked():
 	$Baton.fumble()
 	$Cape.dull()
 	$ArenaLighting.set_attack_color("vulnerable")
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	vulnerable = false
 	$Cape.restore_glow()
 
@@ -250,5 +250,5 @@ func on_maestro_defeated():
 
 func _on_rhythm_win():
 	set_vulnerable(true)
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)

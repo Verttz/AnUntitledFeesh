@@ -17,15 +17,15 @@ func _ready():
     add_child(day_night)
     add_child(weather)
     # Connect signals to local handlers (expand as needed)
-    day_night.connect("phase_changed", self, "_on_phase_changed")
-    day_night.connect("time_advanced", self, "_on_time_advanced")
-    weather.connect("weather_changed", self, "_on_weather_changed")
+    day_night.phase_changed.connect(_on_phase_changed)
+    day_night.time_advanced.connect(_on_time_advanced)
+    weather.weather_changed.connect(_on_weather_changed)
     # Start timer to advance time/weather every second (10 in-game minutes)
     timer = Timer.new()
     timer.wait_time = 1.0
     timer.autostart = true
     timer.one_shot = false
-    timer.connect("timeout", self, "_on_timer_tick")
+    timer.timeout.connect(_on_timer_tick)
     add_child(timer)
 
 func _on_timer_tick():

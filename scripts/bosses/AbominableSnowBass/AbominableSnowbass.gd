@@ -49,7 +49,7 @@ func _start_timer(time, method, repeat=true):
     var timer = Timer.new()
     timer.wait_time = time
     timer.one_shot = not repeat
-    timer.connect("timeout", self, method)
+    timer.timeout.connect(Callable(self, method))
     add_child(timer)
     timer.start()
     return timer
@@ -67,14 +67,14 @@ func _avalanche_roar():
 func _spawn_ice_chunk(pos):
     # Instance and drop an ice chunk at pos; on impact, break ice tile (create water hazard)
     _telegraph_attack("ice_chunk", pos)
-    yield(get_tree().create_timer(0.5), "timeout")
+    await get_tree().create_timer(0.5).timeout
     if has_node("../Arena"):
         get_node("../Arena").break_ice_tile(pos)
 
 func _spawn_icicle(pos):
     # Instance and drop an icicle at pos; on impact, create spike hazard
     _telegraph_attack("icicle", pos)
-    yield(get_tree().create_timer(0.5), "timeout")
+    await get_tree().create_timer(0.5).timeout
     if has_node("../Arena"):
         get_node("../Arena").spawn_spike_hazard(pos)
 
@@ -100,7 +100,7 @@ func _snowboulder_toss():
 func _spawn_snowboulder(pos):
     # Instance and launch a snowboulder; on break, spawn projectiles/minions/powerups
     _telegraph_attack("snowboulder", pos)
-    yield(get_tree().create_timer(0.5), "timeout")
+    await get_tree().create_timer(0.5).timeout
     if has_node("../Arena"):
         get_node("../Arena").spawn_snowboulder(pos)
 
@@ -135,10 +135,10 @@ func _showboat_moment():
     var timer = Timer.new()
     timer.wait_time = 2.5
     timer.one_shot = true
-    timer.connect("timeout", self, "_on_showboat_end", [interrupted])
+    timer.timeout.connect(func(): _on_showboat_end(interrupted))
     add_child(timer)
     timer.start()
-    yield(self, "showboat_ended")
+    await showboat_ended
     set_vulnerable(false)
 
 func on_player_interrupt_showboat():
@@ -162,7 +162,7 @@ func _pratfall_gag():
     set_vulnerable(true)
     $SnowbassSprite.play("pratfall")
     $AudienceSprite.play("laughter")
-    yield(get_tree().create_timer(2.0), "timeout")
+    await get_tree().create_timer(2.0).timeout
     set_vulnerable(false)
 
 # --- Phase 2: Spotlight Showdown ---
@@ -189,7 +189,7 @@ func _spotlight_ranged_logic():
 
 func _on_ice_cracked():
     set_vulnerable(true)
-    yield(get_tree().create_timer(2.0), "timeout")
+    await get_tree().create_timer(2.0).timeout
     set_vulnerable(false)
 
 # Optionally, override take_damage to add dramatic reactions
@@ -213,6 +213,6 @@ func on_snowbass_defeated():
     # Finale spectacle: slip, spin, crash through ice, crowd celebration
     emit_signal("snowbass_defeated")
     $SnowbassSprite.play("finale_slip_spin")
-    yield(get_tree().create_timer(1.2), "timeout")
+    await get_tree().create_timer(1.2).timeout
     $SnowbassSprite.play("finale_crash")
     $AudienceSprite.play("applause")

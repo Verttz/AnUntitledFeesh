@@ -19,7 +19,7 @@ func cigar_smoke_rings():
 	emit_signal("attack_started", "cigar_smoke_rings")
 	# Fire expanding rings of slow-moving smoke bullets
 	for i in range(3):
-		yield(get_tree().create_timer(0.5 * i), "timeout")
+		await get_tree().create_timer(0.5 * i).timeout
 		fire_circle(global_position, 12, 200 + i*80)
 
 func goon_crossfire():
@@ -56,7 +56,7 @@ func firework_finale():
 # --- Arena Hazards & Events ---
 func trigger_market_lockdown():
 	emit_signal("attack_started", "market_lockdown")
-	var arena = get_tree().get_root().find_node("DonCatfishoniArena", true, false)
+	var arena = get_tree().get_root().find_child("DonCatfishoniArena", true, false)
 	if arena and arena.has_method("lockdown"):
 		arena.lockdown()
 
@@ -90,7 +90,7 @@ func negotiation_interrupt():
 	emit_signal("attack_started", "negotiation_interrupt")
 	# If player acts quickly, open damage window
 	set_vulnerable(true)
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)
 
 func mobster_deal_roulette():
@@ -101,7 +101,7 @@ func mobster_deal_roulette():
 func on_goon_stunned(goon):
 	# If goon is pushed into Don, deal bonus damage and fluster
 	set_vulnerable(true)
-	yield(get_tree().create_timer(1.5), "timeout")
+	await get_tree().create_timer(1.5).timeout
 	set_vulnerable(false)
 
 # --- Victory Flair ---
@@ -115,12 +115,12 @@ func on_player_win():
 	for minion in minions:
 		if minion.has_method("scatter"):
 			minion.scatter()
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	$Sprite.hide()
 
 func telegraph_and_attack(attack_name, telegraph_time := 0.7):
 	emit_signal("telegraph_attack", attack_name)
-	yield(get_tree().create_timer(telegraph_time), "timeout")
+	await get_tree().create_timer(telegraph_time).timeout
 	emit_signal("attack_started", attack_name)
 	# Attack logic handled by timers and methods below
 
@@ -184,10 +184,10 @@ func _goonswarm():
 		var minion_type = minion_types[randi() % minion_types.size()]
 		var scene_path = "res://scripts/bosses/DonCatfishoni/minions/%s.tscn" % minion_type
 		if ResourceLoader.exists(scene_path):
-			var minion = preload(scene_path).instance()
+			var minion = preload(scene_path).instantiate()
 			minion.global_position = global_position + Vector2(randf_range(-200,200), randf_range(-100,100))
 			get_parent().add_child(minion)
-			minion.connect("stunned", self, "on_goon_stunned", [minion])
+			minion.stunned.connect(func(): on_goon_stunned(minion))
 			minions.append(minion)
 			if enraged and minion_type == "TommyGunMinion" and minion.has_method("set_elite"):
 				minion.set_elite(true)
@@ -241,7 +241,7 @@ func _start_timer(time, method, repeat := false):
 	var timer = Timer.new()
 	timer.wait_time = time
 	timer.one_shot = not repeat
-	timer.connect("timeout", self, method)
+	timer.timeout.connect(Callable(self, method))
 	add_child(timer)
 	timer.start()
 	return timer

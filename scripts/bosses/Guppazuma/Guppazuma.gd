@@ -23,7 +23,7 @@ func start_audience_event_timer():
 	audience_event_timer = Timer.new()
 	audience_event_timer.wait_time = 4.0
 	audience_event_timer.one_shot = false
-	audience_event_timer.connect("timeout", self, "_on_audience_event")
+	audience_event_timer.timeout.connect(_on_audience_event)
 	add_child(audience_event_timer)
 	audience_event_timer.start()
 
@@ -45,7 +45,7 @@ func _on_audience_event():
 
 func fruit_toss():
 	var fruit_scene = preload("res://scenes/arenas/Fruit.tscn")
-	var fruit = fruit_scene.instance()
+	var fruit = fruit_scene.instantiate()
 	fruit.position = global_position + Vector2(randf_range(-200,200), -250)
 	fruit.target = favor > 0 ? "Player" : "Guppazuma"
 	get_parent().add_child(fruit)
@@ -55,13 +55,13 @@ func cheer_wave():
 		# Player favored: clear bullets, slow boss
 		emit_signal("cheer_wave_player")
 		set_physics_process(false)
-		yield(get_tree().create_timer(1.0), "timeout")
+		await get_tree().create_timer(1.0).timeout
 		set_physics_process(true)
 	else:
 		# Guppazuma favored: radial bullet burst
 		var proj_scene = preload("res://scenes/arenas/StoneProjectile.tscn")
 		for i in range(12):
-			var proj = proj_scene.instance()
+			var proj = proj_scene.instantiate()
 			proj.position = global_position
 			proj.linear_velocity = Vector2.RIGHT.rotated(deg2rad(i*30)) * 350
 			get_parent().add_child(proj)
@@ -78,32 +78,32 @@ func rotten_fruit_or_peel():
 	var is_peel = randi() % 2 == 0
 	if is_peel:
 		var peel_scene = preload("res://scenes/arenas/BananaPeel.tscn")
-		var peel = peel_scene.instance()
+		var peel = peel_scene.instantiate()
 		peel.position = global_position + Vector2(randf_range(-180,180), 0)
 		get_parent().add_child(peel)
 	else:
 		var rotten_scene = preload("res://scenes/arenas/RottenFruit.tscn")
-		var rotten = rotten_scene.instance()
+		var rotten = rotten_scene.instantiate()
 		rotten.position = global_position + Vector2(randf_range(-180,180), 0)
 		get_parent().add_child(rotten)
 
 func wild_animal_interference():
 	var animal_scene = preload("res://scenes/arenas/WildAnimal.tscn")
-	var animal = animal_scene.instance()
+	var animal = animal_scene.instantiate()
 	animal.position = global_position + Vector2(randf_range(-250,250), -300)
 	animal.target = favor > 0 ? "Guppazuma" : "Player"
 	get_parent().add_child(animal)
 
 func boo_bomb():
 	var bomb_scene = preload("res://scenes/arenas/BooBomb.tscn")
-	var bomb = bomb_scene.instance()
+	var bomb = bomb_scene.instantiate()
 	bomb.position = global_position + Vector2(randf_range(-200,200), -250)
 	get_parent().add_child(bomb)
 func start_voting_timer():
 	voting_timer = Timer.new()
 	voting_timer.wait_time = 12.0
 	voting_timer.one_shot = false
-	voting_timer.connect("timeout", self, "_on_voting_moment")
+	voting_timer.timeout.connect(_on_voting_moment)
 	add_child(voting_timer)
 	voting_timer.start()
 
@@ -113,7 +113,7 @@ func _on_voting_moment():
 		# Player wins vote: Guppazuma stunned
 		set_vulnerable(true)
 		emit_signal("idol_vote_player")
-		yield(get_tree().create_timer(2.0), "timeout")
+		await get_tree().create_timer(2.0).timeout
 		set_vulnerable(false)
 	elif favor < -20:
 		# Guppazuma wins vote: gets buff
@@ -182,7 +182,7 @@ func _start_attack_timer(name, interval):
 	var timer = Timer.new()
 	timer.wait_time = interval
 	timer.one_shot = false
-	timer.connect("timeout", self, "_on_attack_timer", [name])
+	timer.timeout.connect(func(): _on_attack_timer(name))
 	add_child(timer)
 	timer.start()
 	attack_timers[name] = timer
@@ -206,7 +206,7 @@ func stone_piranha_swarm():
 	var directions = [Vector2(-1,0), Vector2(1,0), Vector2(0,-1), Vector2(0,1)]
 	for dir in directions:
 		for i in range(3):
-			var piranha = piranha_scene.instance()
+			var piranha = piranha_scene.instantiate()
 			piranha.position = global_position + dir * 300 + Vector2(randf_range(-40,40), randf_range(-40,40))
 			piranha.linear_velocity = dir * randf_range(200, 350)
 			get_parent().add_child(piranha)
@@ -217,7 +217,7 @@ func idol_beam():
 	if not has_node("../Arena"): return
 	var arena = get_node("../Arena")
 	var beam_scene = preload("res://scenes/arenas/IdolBeam.tscn")
-	var beam = beam_scene.instance()
+	var beam = beam_scene.instantiate()
 	beam.position = global_position
 	beam.rotation = last_mimic_direction.angle() if typeof(last_mimic_direction) == TYPE_VECTOR2 else 0
 	arena.add_child(beam)
@@ -231,7 +231,7 @@ func arena_shift():
 var last_mimic_direction = Vector2.RIGHT
 func mimicry_attack():
 	# Copies player's last attack/move in exaggerated fashion
-	var player = get_tree().get_root().find_node("Player", true, false)
+	var player = get_tree().get_root().find_child("Player", true, false)
 	if not player:
 		return
 	var move_type = player.get_last_move_type() # e.g. "dash", "ranged", "circle"
@@ -260,7 +260,7 @@ func mimic_ranged(direction):
 	# Fire volley of stone projectiles
 	var proj_scene = preload("res://scenes/arenas/StoneProjectile.tscn")
 	for i in range(5):
-		var proj = proj_scene.instance()
+		var proj = proj_scene.instantiate()
 		proj.position = global_position
 		proj.linear_velocity = direction.rotated(deg2rad(-20 + 10*i)) * 400
 		get_parent().add_child(proj)
@@ -273,7 +273,7 @@ func mimic_spin():
 func mimic_taunt():
 	# Flashy pose or dance move (can be interrupted)
 	set_vulnerable(true)
-	yield(get_tree().create_timer(1.5), "timeout")
+	await get_tree().create_timer(1.5).timeout
 	set_vulnerable(false)
 
 func unpredictable_attack():

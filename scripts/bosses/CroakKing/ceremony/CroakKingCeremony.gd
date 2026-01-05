@@ -16,7 +16,7 @@ func start_ceremony(minion_instance, hazard_instance):
 	start_timer()
 
 func start_timer():
-	yield(get_tree().create_timer(ceremony_timer), "timeout")
+	await get_tree().create_timer(ceremony_timer).timeout
 	if ceremony_active:
 		knight_minion()
 

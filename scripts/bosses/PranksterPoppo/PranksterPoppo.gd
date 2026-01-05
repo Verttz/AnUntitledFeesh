@@ -76,7 +76,7 @@ func next_lava_pop():
 	var pop_pool = available_pools[randi() % available_pools.size()]
 	if use_decoy:
 		# Spawn decoy puppet
-		var decoy = poppo_decoy_scene.instance()
+		var decoy = poppo_decoy_scene.instantiate()
 		decoy.position = pop_pool.position
 		get_parent().add_child(decoy)
 		emit_signal("poppo_decoy_popped", pop_pool)
@@ -100,7 +100,7 @@ func poppo_pop(pool):
 	var proj_type = poppo_projectile_types[randi() % poppo_projectile_types.size()]
 	_spawn_projectile(proj_type, pool.position)
 	$PoppoSprite.play("taunt")
-	yield(get_tree().create_timer(1.0), "timeout")
+	await get_tree().create_timer(1.0).timeout
 	if phase == 2 and not fake_defeat_triggered and health <= max_health * 0.25:
 		fake_defeat_triggered = true
 		on_fake_defeat()
@@ -119,7 +119,7 @@ func on_fake_defeat():
 	$PoppoSprite.play("fake_defeat")
 	$Banner.show_text("NOT YET!")
 	$MusicPlayer.play("circus_theme")
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	$Banner.hide()
 	next_lava_pop()
 
@@ -140,7 +140,7 @@ func _telegraph_pop(pool):
 # Helper: spawn projectile at pool
 func _spawn_projectile(type, pos):
 	var scene = preload("res://scenes/arenas/PoppoProjectile_" + type + ".tscn")
-	var proj = scene.instance()
+	var proj = scene.instantiate()
 	proj.position = pos
 	get_parent().add_child(proj)
 

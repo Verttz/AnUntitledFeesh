@@ -116,7 +116,7 @@ func bouncer_bash(fast=false):
 func bubblegum_bomb(fast=false):
 	# Spit bubblegum at player, sticks and requires button mash
 	emit_signal("attack_started", "bubblegum_bomb")
-	var player = get_tree().get_root().find_node("Player", true, false)
+	var player = get_tree().get_root().find_child("Player", true, false)
 	if player:
 		fire_aimed(global_position, player.global_position, fast ? 700 : 500)
 		# If hit, player must mash to escape, else slowed/vulnerable (stub: call player method)
@@ -133,11 +133,11 @@ func velvet_rope_control(double=false):
 func guest_list_gimmick():
 	# Checks guest list, pauses if player stands still, cross off minions
 	emit_signal("attack_started", "guest_list_gimmick")
-	var player = get_tree().get_root().find_node("Player", true, false)
+	var player = get_tree().get_root().find_child("Player", true, false)
 	if player and player.is_standing_still():
 		# Pause attacks, open counterattack window
 		set_vulnerable(true)
-		yield(get_tree().create_timer(1.5), "timeout")
+		await get_tree().create_timer(1.5).timeout
 		set_vulnerable(false)
 
 func ruffian_roll_call(fast=false):
@@ -145,11 +145,11 @@ func ruffian_roll_call(fast=false):
 	emit_signal("attack_started", "ruffian_roll_call")
 	var count = fast ? 5 : 3
 	for i in range(count):
-		var minion = preload("res://scripts/bosses/FinDiesel/RuffianMinion.tscn").instance()
+		var minion = preload("res://scripts/bosses/FinDiesel/RuffianMinion.tscn").instantiate()
 		minion.global_position = Vector2(100 + i*80, 600)
 		get_parent().add_child(minion)
-		minion.connect("defeated", self, "on_minion_defeated", ["Ruffian %d" % (i+1)])
-		minion.connect("knocked_into_boss", self, "_on_minion_knocked_into_boss")
+		minion.defeated.connect(func(): on_minion_defeated("Ruffian %d" % (i+1)))
+		minion.knocked_into_boss.connect(_on_minion_knocked_into_boss)
 		ruffian_minions.append(minion)
 
 func no_splash_zone(fast=false):
@@ -165,7 +165,7 @@ func beach_crowd_interference(fast=false):
 	var count = fast ? 6 : 3
 	for i in range(count):
 		var item_type = item_types[randi() % item_types.size()]
-		var item = preload("res://scripts/bosses/FinDiesel/CrowdItem_%s.tscn" % item_type.capitalize()).instance()
+		var item = preload("res://scripts/bosses/FinDiesel/CrowdItem_%s.tscn" % item_type.capitalize()).instantiate()
 		item.global_position = Vector2(randf_range(100,700), randf_range(200,500))
 		get_parent().add_child(item)
 		crowd_items.append(item)
@@ -195,7 +195,7 @@ func play_victory_animation():
 
 func open_club_door():
 	club_door_open = true
-	var arena = get_tree().get_root().find_node("FinDieselArena", true, false)
+	var arena = get_tree().get_root().find_child("FinDieselArena", true, false)
 	if arena and arena.has_method("open_club_door"):
 		arena.open_club_door()
 	emit_signal("club_door_opened")
@@ -203,11 +203,11 @@ func open_club_door():
 func _on_stunned():
 	stunned = true
 	set_vulnerable(true)
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)
 	stunned = false
 
 func _on_stunned():
 	set_vulnerable(true)
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)

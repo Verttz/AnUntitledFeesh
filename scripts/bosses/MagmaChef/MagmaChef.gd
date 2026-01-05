@@ -137,5 +137,5 @@ func start_attack(attack_name):
 
 func _on_pot_lid_opened():
 	set_vulnerable(true)
-	yield(get_tree().create_timer(1.5), "timeout")
+	await get_tree().create_timer(1.5).timeout
 	set_vulnerable(false)

@@ -98,3 +98,23 @@ func print_equipment():
 	print("Equipment:")
 	for k in slots.keys():
 		print("- %s: %s" % [k.capitalize(), slots[k] if slots[k] != null else "(empty)"])
+
+func to_dict() -> Dictionary:
+	"""
+	Serializes the equipment state to a dictionary for saving.
+	Returns a dictionary with all equipped items.
+	"""
+	return slots.duplicate()
+
+func from_dict(data: Dictionary):
+	"""
+	Deserializes the equipment state from a dictionary for loading.
+	Restores all equipped items from the provided data.
+	"""
+	if typeof(data) == TYPE_DICTIONARY:
+		for slot in slots.keys():
+			if slot in data:
+				slots[slot] = data[slot]
+			else:
+				slots[slot] = null
+

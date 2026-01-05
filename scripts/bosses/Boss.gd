@@ -1,7 +1,7 @@
 extends Node2D
 
 # --- Bullet Hell & Movement Utilities ---
-export (PackedScene) var bullet_scene
+@export var bullet_scene: PackedScene
 var move_speed := 200
 var move_target := null
 var move_tolerance := 8
@@ -29,7 +29,7 @@ func _physics_process(delta):
 # --- Bullet Spawning & Patterns ---
 func spawn_bullet(pos: Vector2, velocity: Vector2, bullet_type: String = "default"):
 	if bullet_scene:
-		var bullet = bullet_scene.instance()
+		var bullet = bullet_scene.instantiate()
 		bullet.global_position = pos
 		bullet.velocity = velocity
 		bullet.bullet_type = bullet_type
@@ -70,7 +70,7 @@ signal attack_started(attack_name)
 signal vulnerable()
 signal defeated()
 
-export var max_health := 100
+@export var max_health := 100
 var health := 100
 var phase := 1
 var is_vulnerable := false

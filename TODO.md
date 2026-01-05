@@ -8,7 +8,7 @@
 
 - [x] Expanded and improved in-code documentation for all major systems (Oct 2025)
 - [x] Created/updated boss banter and dialogue scripts in /docs (Oct 2025)
-- [ ] Implement save/load system for player progress
+- [x] Implement save/load system for player progress (Nov 2025)
 - [ ] Polish and connect all shop UI and inventory interactions
 - [ ] Implement all TODOs and placeholder comments in scripts (search for TODO)
 - [ ] UI for fishing, inventory, tension meter, etc.

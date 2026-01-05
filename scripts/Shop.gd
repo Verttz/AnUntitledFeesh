@@ -38,8 +38,8 @@ func open(shopkeeper_name, items_for_sale, buy_prices_dict, sell_prices_dict, hi
 	shop_menu = ShopMenu.instantiate()
 	add_child(shop_menu)
 	shop_menu.open(shopkeeper, inventory, buy_prices, sell_prices, player_inventory, player_node.player_gold)
-	shop_menu.connect("item_bought", self, "_on_item_bought")
-	shop_menu.connect("item_sold", self, "_on_item_sold")
+	shop_menu.item_bought.connect(_on_item_bought)
+	shop_menu.item_sold.connect(_on_item_sold)
 
 func _on_item_bought(item_name):
 	"""

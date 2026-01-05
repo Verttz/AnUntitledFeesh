@@ -67,15 +67,15 @@ func start_boss_battle_by_name(boss_name: String):
 func start_boss_battle(boss_scene_path: String, arena_scene_path: String):
 	# Load and instance arena
 	arena_scene = load(arena_scene_path)
-	arena_instance = arena_scene.instance()
+	arena_instance = arena_scene.instantiate()
 	add_child(arena_instance)
 
 	# Load and instance boss
 	boss_scene = load(boss_scene_path)
-	boss_instance = boss_scene.instance()
+	boss_instance = boss_scene.instantiate()
 	add_child(boss_instance)
 
-	boss_instance.connect("defeated", self, "_on_boss_defeated")
+	boss_instance.defeated.connect(_on_boss_defeated)
 	emit_signal("boss_spawned", boss_instance)
 	emit_signal("battle_started")
 
