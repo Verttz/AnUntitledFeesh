@@ -3,7 +3,6 @@ extends "res://scripts/bosses/Boss.gd"
 
 # Captain Pinchbeard – Pirate Crab Boss (Ferry Arena)
 
-var phase = 1
 var parrotfish_active = false
 var ferry_crew_help_timer = null
 var pinchbeard_greedy = false
@@ -14,12 +13,12 @@ signal parrotfish_called
 signal treasure_tossed
 signal ferry_crew_helped
 signal pinchbeard_stunned
-signal phase_changed
 signal lifeboat_escape_started
 signal pinchbeard_defeated
 
 
 func _ready():
+	max_health = 35000
 	health = max_health
 	setup_ferry_arena()
 	start_phase(1)
@@ -32,7 +31,7 @@ func setup_ferry_arena():
 
 func start_phase(new_phase):
 	phase = new_phase
-	emit_signal("phase_changed", phase)
+	phase_changed.emit(phase)
 	if phase == 1:
 		start_attack("cannonball_salvo")
 		start_attack("pinch_and_plunder")
@@ -49,17 +48,12 @@ func start_phase(new_phase):
 
 
 func check_phase_transition():
-<<<<<<< HEAD:scripts/bosses/CaptainPinchbeard.gd
 	if health <= max_health * 0.3 and phase == 1:
 		start_phase(2)
-=======
-	   if health <= max_health * 0.3 and phase == 1:
-		   start_phase(2)
->>>>>>> 3fe13fc1f46515387972da63f01b65573430dd76:scripts/bosses/CaptainPinchbeard/CaptainPinchbeard.gd
 
 
 func start_attack(attack_name, fast=false):
-	emit_signal("attack_started", attack_name)
+	attack_started.emit(attack_name)
 	match attack_name:
 		"cannonball_salvo":
 			cannonball_salvo(fast)
@@ -76,21 +70,21 @@ func cannonball_salvo(fast=false):
 	# Fires bouncing/rolling cannonballs
 	# Player can reflect cannonballs for extra damage
 	var cannonball_scene = preload("res://scenes/arenas/Cannonball.tscn")
-	var count = fast ? 5 : 3
+	var count = 5 if fast else 3
 	for i in range(count):
 		 var cannonball = cannonball_scene.instantiate()
 		 cannonball.position = position + Vector2(randf_range(-100,100), -50)
 		 cannonball.linear_velocity = Vector2(randf_range(-200,200), 400)
 		 get_parent().add_child(cannonball)
-		 emit_signal("cannonball_fired", cannonball)
+		 cannonball_fired.emit(cannonball)
 
 func pinch_and_plunder(fast=false):
 	# Charges and, if grabbing the player, slams them down for damage
 	var player = get_tree().get_root().find_child("Player", true, false)
 	if player and (player.position - position).length() < 300:
 		 # Simulate grab and slam
-		 player.take_damage(fast ? 2 : 1)
-		 emit_signal("pinchbeard_stunned")
+		 player.take_damage(2 if fast else 1)
+		 pinchbeard_stunned.emit()
 
 func parrotfish_call(fast=false):
 	# Parrotfish sidekick swoops in to attack or drop water bombs
@@ -99,7 +93,7 @@ func parrotfish_call(fast=false):
 	var parrotfish = parrotfish_scene.instantiate()
 	parrotfish.position = position + Vector2(150, -100)
 	get_parent().add_child(parrotfish)
-	emit_signal("parrotfish_called", parrotfish)
+	parrotfish_called.emit(parrotfish)
 	# If bribed, drop bonus
 	if fast and randi() % 2 == 0:
 		 parrotfish.drop_bonus()
@@ -108,12 +102,12 @@ func treasure_toss(fast=false):
 	# Pinchbeard and ferry crew throw coins/gems onto the deck
 	# Tempts player near edges, lures Pinchbeard to break pattern
 	var coin_scene = preload("res://scenes/arenas/Coin.tscn")
-	var count = fast ? 8 : 4
+	var count = 8 if fast else 4
 	for i in range(count):
 		 var coin = coin_scene.instantiate()
 		 coin.position = position + Vector2(randf_range(-200,200), randf_range(-50,50))
 		 get_parent().add_child(coin)
-		 emit_signal("treasure_tossed", coin)
+		 treasure_tossed.emit(coin)
 
 func pirate_crew():
 	# Summon pirate crab minions with swords/hats
@@ -122,7 +116,7 @@ func pirate_crew():
 		 var minion = minion_scene.instantiate()
 		 minion.position = position + Vector2(randf_range(-120,120), randf_range(50,150))
 		 get_parent().add_child(minion)
-		 emit_signal("ferry_crew_helped", minion)
+		 ferry_crew_helped.emit(minion)
 
 func start_ferry_crew_help_timer():
 	# Ferry crew occasionally throws helpful treasure/items
@@ -138,7 +132,7 @@ func _on_ferry_crew_help():
 	var item = item_scene.instantiate()
 	item.position = position + Vector2(randf_range(-180,180), -60)
 	get_parent().add_child(item)
-	emit_signal("ferry_crew_helped", item)
+	ferry_crew_helped.emit(item)
 
 func on_player_near_edge():
 	# If player falls overboard, damage and teleport to safe spot
@@ -150,7 +144,7 @@ func on_player_near_edge():
 func on_cannonball_reflected():
 	# Extra damage to Pinchbeard
 	take_damage(3)
-	emit_signal("pinchbeard_stunned")
+	pinchbeard_stunned.emit()
 
 func on_parrotfish_bribed():
 	# Parrotfish drops a bonus
@@ -161,7 +155,7 @@ func on_parrotfish_bribed():
 
 func start_lifeboat_escape():
 	lifeboat_escape = true
-	emit_signal("lifeboat_escape_started")
+	lifeboat_escape_started.emit()
 	# Pinchbeard tries to escape, boat springs a leak, big damage window
 	var ferry = get_tree().get_root().find_child("CaptainPinchbeardArena", true, false)
 	if ferry and ferry.has_method("swerve_and_tilt"):
@@ -171,7 +165,7 @@ func start_lifeboat_escape():
 	set_vulnerable(false)
 
 func on_pinchbeard_defeated():
-	emit_signal("pinchbeard_defeated")
+	pinchbeard_defeated.emit()
 	# Pinchbeard is flung overboard, parrotfish squawks, ferry captain thanks player
 	$VictoryEffect.show()
 	$VictoryEffect.play("victory")

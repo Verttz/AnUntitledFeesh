@@ -6,8 +6,8 @@ signal roulette_result(result)
 var possible_results = ["extra_hazards", "minion_betrayal", "visual_gag"]
 
 func start_roulette():
-	emit_signal("roulette_started")
+	roulette_started.emit()
 	var result = possible_results[randi() % possible_results.size()]
 	await get_tree().create_timer(1.0).timeout
-	emit_signal("roulette_result", result)
+	roulette_result.emit(result)
 	# Implement result logic in boss or arena

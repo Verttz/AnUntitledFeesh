@@ -9,7 +9,6 @@ var ruffian_minions = []
 var crowd_items = []
 var rope_sprites = []
 var guest_list = []
-var phase = 1
 var stunned = false
 var serious_mode = false
 var club_door_open = false
@@ -23,6 +22,7 @@ signal victory_flair
 
 
 func _ready():
+	max_health = 45000
 	health = max_health
 	setup_arena()
 	setup_guest_list()
@@ -30,13 +30,15 @@ func _ready():
 
 func setup_arena():
 	# Initialize velvet ropes, hazards, and crowd
-	velvet_ropes = [create_velvet_rope(pos) for pos in get_rope_positions()]
+	velvet_ropes = []
+	for pos in get_rope_positions():
+		velvet_ropes.append(create_velvet_rope(pos))
 	crowd_items = []
 	# ...setup beachgoers, sandcastles, etc.
 
 func setup_guest_list():
 	guest_list = ["Big Tuna", "Gill Murray", "Sal Monella", "Ruffian 1", "Ruffian 2", "Ruffian 3"]
-	emit_signal("guest_list_updated", guest_list)
+	guest_list_updated.emit(guest_list)
 
 func get_rope_positions():
 	# Return positions for velvet ropes
@@ -57,7 +59,7 @@ func create_velvet_rope(pos):
 
 func start_phase(new_phase):
 	phase = new_phase
-	emit_signal("phase_changed", phase)
+	phase_changed.emit(phase)
 	if phase == 1:
 		start_attack("bouncer_bash")
 		start_attack("bubblegum_bomb")
@@ -78,17 +80,12 @@ func start_phase(new_phase):
 
 
 func check_phase_transition():
-<<<<<<< HEAD:scripts/bosses/FinDiesel.gd
 	if health <= max_health * 0.3 and phase == 1:
 		start_phase(2)
-=======
-	   if health <= max_health * 0.3 and phase == 1:
-		   start_phase(2)
->>>>>>> 3fe13fc1f46515387972da63f01b65573430dd76:scripts/bosses/FinDiesel/FinDiesel.gd
 
 
 func start_attack(attack_name, fast=false, double=false):
-	emit_signal("attack_started", attack_name)
+	attack_started.emit(attack_name)
 	match attack_name:
 		"bouncer_bash":
 			bouncer_bash(fast)
@@ -107,23 +104,23 @@ func start_attack(attack_name, fast=false, double=false):
 
 func bouncer_bash(fast=false):
 	# Swings fists, sends shockwaves, interacts with sandcastles/beach balls
-	var speed = fast ? 2.0 : 1.0
-	emit_signal("attack_started", "bouncer_bash")
+	var speed = 2.0 if fast else 1.0
+	attack_started.emit("bouncer_bash")
 	# Fire shockwave arc
-	fire_arc(global_position, fast ? 10 : 6, 90, fast ? 600 : 400)
+	fire_arc(global_position, 10 if fast else 6, 90, 600 if fast else 400)
 	# Knock over sandcastles and bounce beach balls (stub: call arena/scene methods)
 
 func bubblegum_bomb(fast=false):
 	# Spit bubblegum at player, sticks and requires button mash
-	emit_signal("attack_started", "bubblegum_bomb")
+	attack_started.emit("bubblegum_bomb")
 	var player = get_tree().get_root().find_child("Player", true, false)
 	if player:
-		fire_aimed(global_position, player.global_position, fast ? 700 : 500)
+		fire_aimed(global_position, player.global_position, 700 if fast else 500)
 		# If hit, player must mash to escape, else slowed/vulnerable (stub: call player method)
 
 func velvet_rope_control(double=false):
 	# Manipulate velvet ropes, possibly electrified
-	emit_signal("attack_started", "velvet_rope_control")
+	attack_started.emit("velvet_rope_control")
 	for i in range(2 if double else 1):
 		var idx = i % velvet_ropes.size()
 		var rope = velvet_ropes[idx]
@@ -132,7 +129,7 @@ func velvet_rope_control(double=false):
 
 func guest_list_gimmick():
 	# Checks guest list, pauses if player stands still, cross off minions
-	emit_signal("attack_started", "guest_list_gimmick")
+	attack_started.emit("guest_list_gimmick")
 	var player = get_tree().get_root().find_child("Player", true, false)
 	if player and player.is_standing_still():
 		# Pause attacks, open counterattack window
@@ -142,8 +139,8 @@ func guest_list_gimmick():
 
 func ruffian_roll_call(fast=false):
 	# Summon ruffians from club entrance, can be knocked into boss
-	emit_signal("attack_started", "ruffian_roll_call")
-	var count = fast ? 5 : 3
+	attack_started.emit("ruffian_roll_call")
+	var count = 5 if fast else 3
 	for i in range(count):
 		var minion = preload("res://scripts/bosses/FinDiesel/RuffianMinion.tscn").instantiate()
 		minion.global_position = Vector2(100 + i*80, 600)
@@ -154,18 +151,18 @@ func ruffian_roll_call(fast=false):
 
 func no_splash_zone(fast=false):
 	# Slam ground, create wave hazard
-	emit_signal("attack_started", "no_splash_zone")
+	attack_started.emit("no_splash_zone")
 	# Fire a wide arc of water bullets to push player
-	fire_arc(global_position, fast ? 14 : 8, 120, fast ? 700 : 400)
+	fire_arc(global_position, 14 if fast else 8, 120, 700 if fast else 400)
 
 func beach_crowd_interference(fast=false):
 	# Beachgoers toss items, some helpful, some hazards
-	emit_signal("attack_started", "beach_crowd_interference")
+	attack_started.emit("beach_crowd_interference")
 	var item_types = ["snack", "buff", "sunscreen", "sand_bucket"]
-	var count = fast ? 6 : 3
+	var count = 6 if fast else 3
 	for i in range(count):
 		var item_type = item_types[randi() % item_types.size()]
-		var item = preload("res://scripts/bosses/FinDiesel/CrowdItem_%s.tscn" % item_type.capitalize()).instantiate()
+		var item = load("res://scripts/bosses/FinDiesel/CrowdItem_%s.tscn" % item_type.capitalize()).instantiate()
 		item.global_position = Vector2(randf_range(100,700), randf_range(200,500))
 		get_parent().add_child(item)
 		crowd_items.append(item)
@@ -179,11 +176,11 @@ func on_minion_defeated(minion_name):
 	# Cross off minion from guest list
 	if minion_name in guest_list:
 		guest_list.erase(minion_name)
-		emit_signal("guest_list_updated", guest_list)
+		guest_list_updated.emit(guest_list)
 
 func on_player_win():
 	# Victory flair: Fin Diesel collapses, reaches for rope, falls unconscious
-	emit_signal("victory_flair")
+	victory_flair.emit()
 	play_victory_animation()
 	open_club_door()
 
@@ -198,7 +195,7 @@ func open_club_door():
 	var arena = get_tree().get_root().find_child("FinDieselArena", true, false)
 	if arena and arena.has_method("open_club_door"):
 		arena.open_club_door()
-	emit_signal("club_door_opened")
+	club_door_opened.emit()
 
 func _on_stunned():
 	stunned = true
@@ -206,8 +203,3 @@ func _on_stunned():
 	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)
 	stunned = false
-
-func _on_stunned():
-	set_vulnerable(true)
-	await get_tree().create_timer(2.0).timeout
-	set_vulnerable(false)

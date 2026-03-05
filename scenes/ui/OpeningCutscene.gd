@@ -1,7 +1,7 @@
 extends Control
 
 func _ready():
-    yield(get_tree().create_timer(2.5), "timeout")
+    await get_tree().create_timer(2.5).timeout
     _end_cutscene()
 
 func _end_cutscene():

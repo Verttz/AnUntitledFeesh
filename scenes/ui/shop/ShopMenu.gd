@@ -32,7 +32,7 @@ func open(shopkeeper_name, items_for_sale, buy_prices_dict, sell_prices_dict, pl
     _populate_player()
 
 func _ready():
-    close_button.connect("pressed", self, "_on_close_pressed")
+    close_button.pressed.connect(_on_close_pressed)
     visible = false
 
 func _on_close_pressed():
@@ -53,15 +53,15 @@ func _populate_player():
 
 func _create_item_icon(item_name, price, is_shop):
     var btn = Button.new()
-    btn.text = str(item_name) + (price > 0 ? " (" + str(price) + ")" : "")
+    btn.text = str(item_name) + (" (" + str(price) + ")" if price > 0 else "")
     btn.draggable = true
     btn.set_meta("item_name", item_name)
     btn.set_meta("is_shop", is_shop)
-    btn.connect("gui_input", self, "_on_item_icon_gui_input", [item_name, price, is_shop, btn])
+    btn.gui_input.connect(_on_item_icon_gui_input.bind(item_name, price, is_shop, btn))
     return btn
 
 func _on_item_icon_gui_input(event, item_name, price, is_shop, btn):
-    if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
+    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
         btn.grab_focus()
     if event is InputEventMouseMotion and btn.has_focus():
         var drag_data = {
@@ -79,6 +79,6 @@ func can_drop_data(position, data):
 func drop_data(position, data):
     # Determine if buying or selling
     if data.is_shop:
-        emit_signal("item_bought", data.item_name)
+        item_bought.emit(data.item_name)
     else:
-        emit_signal("item_sold", data.item_name)
+        item_sold.emit(data.item_name)

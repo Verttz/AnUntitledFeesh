@@ -4,7 +4,6 @@ extends "res://scripts/bosses/Boss.gd"
 # Prankster Poppo (Lava Pool Jester Boss)
 # Pops in and out of lava pools, taunts, uses puppet decoys, and is defeated by blocking all pools.
 
-var phase = 1
 var lava_pools = []
 var blocked_pools = []
 var poppo_decoy_scene = preload("res://scenes/arenas/PoppoDecoy.tscn")
@@ -20,6 +19,7 @@ signal real_defeat
 
 
 func _ready():
+	max_health = 100000
 	health = max_health
 	setup_lava_pools()
 	start_phase(1)
@@ -32,7 +32,7 @@ func setup_lava_pools():
 
 func start_phase(new_phase):
 	phase = new_phase
-	emit_signal("phase_changed", phase)
+	phase_changed.emit(phase)
 	if phase == 1:
 		next_lava_pop()
 	elif phase == 2:
@@ -41,17 +41,12 @@ func start_phase(new_phase):
 
 
 func check_phase_transition():
-<<<<<<< HEAD:scripts/bosses/PranksterPoppo.gd
 	if health <= max_health * 0.3 and phase == 1:
 		start_phase(2)
-=======
-	   if health <= max_health * 0.3 and phase == 1:
-		   start_phase(2)
->>>>>>> 3fe13fc1f46515387972da63f01b65573430dd76:scripts/bosses/PranksterPoppo/PranksterPoppo.gd
 
 
 func start_attack(attack_name):
-	emit_signal("attack_started", attack_name)
+	attack_started.emit(attack_name)
 	# Attack Logic:
 	# - Based on attack_name, call the corresponding attack function (e.g., poppo_projectile, decoy_pop, taunt).
 	# - Each attack should have its own telegraph, animation, and effect logic.
@@ -79,7 +74,7 @@ func next_lava_pop():
 		var decoy = poppo_decoy_scene.instantiate()
 		decoy.position = pop_pool.position
 		get_parent().add_child(decoy)
-		emit_signal("poppo_decoy_popped", pop_pool)
+		poppo_decoy_popped.emit(pop_pool)
 		# Real Poppo pops from another pool
 		var other_pools = available_pools.filter(func(p): return p != pop_pool)
 		if other_pools.size() > 0:
@@ -93,7 +88,7 @@ func next_lava_pop():
 func poppo_pop(pool):
 	# Poppo emerges, taunts, and attacks
 	_telegraph_pop(pool)
-	emit_signal("poppo_popped", pool)
+	poppo_popped.emit(pool)
 	$PoppoSprite.position = pool.position
 	$PoppoSprite.play("pop_out")
 	$AudienceSprite.play("laughter")
@@ -110,12 +105,12 @@ func poppo_pop(pool):
 func block_pool(pool):
 	if pool not in blocked_pools:
 		blocked_pools.append(pool)
-		emit_signal("pool_blocked", pool)
+		pool_blocked.emit(pool)
 		pool.block()
 		$AudienceSprite.play("applause")
 
 func on_fake_defeat():
-	emit_signal("fake_defeat")
+	fake_defeat.emit()
 	$PoppoSprite.play("fake_defeat")
 	$Banner.show_text("NOT YET!")
 	$MusicPlayer.play("circus_theme")
@@ -124,7 +119,7 @@ func on_fake_defeat():
 	next_lava_pop()
 
 func on_real_defeat():
-	emit_signal("real_defeat")
+	real_defeat.emit()
 	$PoppoSprite.play("stuck_and_explode")
 	$ConfettiBurst.show()
 	$ConfettiBurst.play()
@@ -139,7 +134,7 @@ func _telegraph_pop(pool):
 
 # Helper: spawn projectile at pool
 func _spawn_projectile(type, pos):
-	var scene = preload("res://scenes/arenas/PoppoProjectile_" + type + ".tscn")
+	var scene = load("res://scenes/arenas/PoppoProjectile_" + type + ".tscn")
 	var proj = scene.instantiate()
 	proj.position = pos
 	get_parent().add_child(proj)

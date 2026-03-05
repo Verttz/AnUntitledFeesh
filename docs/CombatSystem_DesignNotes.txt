@@ -1,0 +1,406 @@
+================================================================================
+COMBAT SYSTEM SPEC — An Untitled Feesh
+================================================================================
+
+
+================================================================================
+CORE FLOW
+================================================================================
+
+    1. Player selects 3 fish as tribute (fighter select screen)
+    2. Cutscene: guard leads player to arena, boss appears, banter dialogue
+    3. Player chooses which of the 3 fish to start with
+    4. Twin-stick bullet hell: WASD moves, mouse aims, click fires
+    5. On fish death: dramatic animation → boss pauses → remaining bullets
+       clear → selection UI → new fish spawns at start position → boss resumes
+    6. All 3 die: player expelled, all 3 fish lost (must re-catch)
+    7. Boss defeated: surviving fish run off (also lost), dead fish left behind.
+       All 3 are consumed regardless of outcome
+
+
+================================================================================
+STAT INFLATION (x10)
+================================================================================
+
+All fish stats multiplied by 10 for display and gameplay feel:
+
+    Rarity            HP              Attack      Defense     Speed (unchanged)
+    ─────────────     ──────────      ────────    ────────    ─────────────────
+    Common (0)        240–360         50–80       10–20       4–8
+    Uncommon (1)      360–600         80–120      20–40       5–9
+    Rare (2)          650–900         120–200     30–60       6–9
+    Legendary (3)     1,000–1,500     180–280     60–100      2–11
+    Mythic (4)        2,000           350         150         3
+
+Notes:
+  - Speed stays raw (used as movement speed multiplier, not a damage stat).
+  - rarity_multiplier stays raw — affects gold/reward payouts on boss defeat,
+    not combat.
+
+
+================================================================================
+DAMAGE FORMULAS
+================================================================================
+
+Player → Boss:
+    damage_per_hit = fish_attack × weapon_modifier
+
+    No boss "defense" stat — boss HP is the balancing lever. Some bosses have
+    armored phases where damage is halved (broken by armor_break or completing
+    a mechanic).
+
+Boss → Player:
+    effective_damage = bullet_base_damage × (100 / (100 + fish_defense))
+    minimum damage = 1
+
+    This is percentage-based reduction — defense never makes you immune, but
+    high defense meaningfully reduces incoming damage.
+
+i-frames:
+    1.0 second of invulnerability after taking a hit (industry standard).
+    Fish flashes during i-frames.
+
+
+================================================================================
+WEAPON CLASSES
+================================================================================
+
+Every fish has a dedicated weapon mapped to one of 11 weapon classes. Each
+class defines the attack behavior, range, speed, and damage modifier. Higher
+modifiers mean fewer attacks per second (and vice versa), so DPS roughly
+normalizes — but melee classes have ~30-50% higher DPS than ranged to
+compensate for risk.
+
+Reference DPS (attack stat 100, per class):
+
+MELEE CLASSES
+    Class           Behavior                            Range                       Speed       Modifier    ~DPS
+    ─────────────   ─────────────────────────────────   ─────────────────────────   ─────────   ────────    ────
+    SLASH           Arc swing toward cursor              Short (50px), 90° arc       2.5/sec     1.0x        250
+    HEAVY_SLASH     Wide devastating swing               Med (65px), 140° arc        1.5/sec     1.5x        225
+    THRUST          Straight-line lunge                  Med-Long (80–100px)         2.0/sec     1.1x        220
+    SMASH           Overhead slam, small AoE on impact   Short (40px), 30px radius   1.3/sec     1.5x        195
+    WHIP            Medium-range thin sweep              Med (90px), 30° thin arc    2.0/sec     0.9x        180
+
+RANGED CLASSES
+    Class           Behavior                                        Range                       Speed           Modifier        ~DPS
+    ─────────────   ─────────────────────────────────────────────   ─────────────────────────   ─────────────   ─────────────   ────
+    SINGLE_SHOT     Hold to charge, release to fire                 Full arena                  1.2/sec         1.8x            216
+    BOOMERANG       Thrown + returns, hits twice                     200px out+back              1.5/sec         0.6x per hit    180
+    BLASTER         Standard aimed projectile                       Full arena                  2.5/sec         0.6x            150
+    BEAM            Hold to fire continuous line (2s on/1s recharge) Long line                   8 ticks/sec     0.25x/tick      ~134
+    RAPID_FIRE      Spray of weak projectiles                       Full arena                  9/sec           0.13x           117
+    LOBBED          Arced throw, explodes on landing (AoE)          Med-Long (aimed landing)    1.0/sec         1.3x            130
+
+Design intent:
+    Melee fish are high-risk/high-reward — you deal more damage but must dodge
+    bullet patterns point-blank. Ranged fish are safer but slower kills. This
+    makes tribute selection meaningful: skilled players pick melee fish for fast
+    clears, cautious players pick ranged for safety.
+
+
+================================================================================
+ALL 102 FISH — WEAPON CLASS ASSIGNMENTS
+================================================================================
+
+────────────────────────────────────────
+FOREST (26)
+────────────────────────────────────────
+    Fish                    Weapon                  Class           Special
+    ──────────────────────  ──────────────────────  ──────────────  ───────────
+    Bluegill                toothpick sword         SLASH           —
+    Largemouth Bass         fish bone bow           SINGLE_SHOT     multi_shot
+    Catfish                 frying pan              SMASH           stun
+    Trout                   fork spear              THRUST          —
+    Salmon                  mini-gun                RAPID_FIRE      berserk
+    Pike                    harpoon                 THRUST          charge
+    Perch                   spork                   SLASH           —
+    Walleye                 dagger                  THRUST          bleed
+    Crappie                 egg whisk               SLASH           —
+    Sunfish                 cookie cutter           SLASH           —
+    Smallmouth Bass         nunchaku                WHIP            stun
+    Carp                    corncob club            SMASH           —
+    Sturgeon                warhammer               SMASH           armor_break
+    Gar                     rapier                  THRUST          bleed
+    Bowfin                  axe                     SLASH           —
+    Shad                    dagger                  THRUST          —
+    Drum                    tambourine              SMASH           —
+    Sucker                  plunger                 SMASH           —
+    Whitefish               fillet knife            SLASH           —
+    Muskellunge             greatsword              HEAVY_SLASH     berserk
+    Redear Sunfish          egg slicer              SLASH           —
+    Rubber Boot             boot dropkick           SMASH           stun
+    Golden Duck             feather blade           SLASH           multi_shot
+    Ghost Fish              spectral scythe         HEAVY_SLASH     reflect
+    Radioactive Carp        radioactive raygun      BEAM            poison
+    Pizza Fish              pizza cutter            SLASH           heal
+
+────────────────────────────────────────
+OCEAN (20)
+────────────────────────────────────────
+    Fish                    Weapon                  Class           Special
+    ──────────────────────  ──────────────────────  ──────────────  ───────────
+    Clownfish               frying pan              SMASH           —
+    Tuna                    fish bone bow           SINGLE_SHOT     multi_shot
+    Marlin                  trident                 THRUST          reflect
+    Anglerfish              deepsea lantern club    SMASH           stun
+    King Neptune's Beardfish neptune's trident      THRUST          summon
+    Swordfish               sword                   THRUST          charge
+    Mahi-Mahi               boomerang fin           BOOMERANG       multi_shot
+    Barracuda               dual daggers            SLASH           bleed
+    Flying Fish             slingshot               BLASTER         —
+    Parrotfish              parrot beak             SLASH           —
+    Blobfish                blob slam               SMASH           heal
+    Moonfish                moon boomerang          BOOMERANG       reflect
+    Seahorse                bubble wand             BEAM            —
+    Octopus                 ink blaster             BLASTER         stun
+    Sunken Boot             boot kick               SMASH           stun
+    Mermaid's Purse         purse whip              WHIP            heal
+    Jellyfish               electric lash           WHIP            stun
+    Treasure Chestfish      cannon                  SINGLE_SHOT     multi_shot
+    Narwhal                 narwhal lance           THRUST          charge
+    Angry Hermit Crab Shell crab claw               HEAVY_SLASH     summon
+
+────────────────────────────────────────
+JUNGLE (19)
+────────────────────────────────────────
+    Fish                    Weapon                  Class           Special
+    ──────────────────────  ──────────────────────  ──────────────  ───────────
+    Piranha                 machete                 SLASH           —
+    Arapaima                spear                   THRUST          charge
+    Electric Eel            taser                   WHIP            stun
+    Rainbow Dartfish        dart gun                RAPID_FIRE      multi_shot
+    Jungle Banana Grouper   banana boomerang        BOOMERANG       heal
+    Oscar                   club                    SMASH           —
+    Discus                  chakram                 BOOMERANG       pierce
+    Peacock Bass            peacock fan             BOOMERANG       reflect
+    Redtail Catfish         cat tail                WHIP            charge
+    Butterfly Fish          fan blade               SLASH           —
+    Hatchetfish             hatchet                 SLASH           bleed
+    Leaf Fish               leaf blade              SLASH           —
+    Glass Catfish           glass sword             SLASH           —
+    Mudskipper              mud bomb                LOBBED          —
+    Banana Eater            banana gun              RAPID_FIRE      multi_shot
+    Jungle Loach            boomerang               BOOMERANG       —
+    Frogfish                tongue lash             WHIP            stun
+    Amazonian Starfish      star boomerang          BOOMERANG       multi_shot
+    Jungle Boot             jungle boot punt        SMASH           stun
+
+────────────────────────────────────────
+FROZEN MOUNTAIN (18)
+────────────────────────────────────────
+    Fish                    Weapon                  Class           Special
+    ──────────────────────  ──────────────────────  ──────────────  ───────────
+    Arctic Char             ice pick                THRUST          —
+    Icefish                 ice dagger              THRUST          —
+    Frostfin Pike           frost spear             THRUST          charge
+    Snowflake Sturgeon      snowflake axe           HEAVY_SLASH     multi_shot
+    Yeti Fish               yeti club               SMASH           berserk
+    Ice Carp                ice mallet              SMASH           —
+    Glacier Salmon          glacier blade           SLASH           reflect
+    Snow Trout              snowball launcher       LOBBED          —
+    Crystal Perch           crystal sword           SLASH           pierce
+    Frostbite Eel           eel whip                WHIP            bleed
+    Icicle Minnow           icicle dart             BLASTER         —
+    Frozen Boot             frost boot bash         SMASH           stun
+    Snowy Loach             snow shovel             SMASH           —
+    Frosty Drum             ice drum mallet         SMASH           —
+    Ice Lanternfish         frost lantern flail     WHIP            stun
+    Penguinfish             penguin flipper         BOOMERANG       multi_shot
+    Avalanche Catfish       avalanche hammer        SMASH           armor_break
+    Snowball Sunfish        snowball launcher       LOBBED          heal
+
+────────────────────────────────────────
+LAVA (19)
+────────────────────────────────────────
+    Fish                    Weapon                  Class           Special
+    ──────────────────────  ──────────────────────  ──────────────  ───────────
+    Magma Carp              magma spit              RAPID_FIRE      —
+    Ember Eel               ember lash              WHIP            bleed
+    Molten Bass             molten slam             SMASH           burn
+    Inferno Dragonfish      inferno breath          BEAM            firestorm
+    Hotdogfish              hotdog skewer           THRUST          —
+    Lava Lamprey            lamprey bite            THRUST          —
+    Pyrocatfish             pyro claw               SLASH           burn
+    Charred Trout           charred pebble shot     BLASTER         —
+    Ashfin Grouper          ashfin slap             SLASH           —
+    Volcano Perch           volcano pebble shot     BLASTER         —
+    Molten Boot             boot stomp              SMASH           stun
+    Firefly Fish            firefly beam            BEAM            heal
+    Cinder Loach            cinder toss             LOBBED          —
+    Lava Lanternfish        lava lantern bomb       LOBBED          burn
+    Salamanderfish          salamander dash         THRUST          dash
+    Obsidian Sturgeon       obsidian crush          HEAVY_SLASH     armor_break
+    Dragonbone Minnow       dragonbone spear        THRUST          pierce
+    Pepper Pike             pepper spray            RAPID_FIRE      burn
+    Sooty Sunfish           soot cloud              LOBBED          —
+
+Class distribution: Melee 71 (70%) / Ranged 31 (30%). Ranged fish become
+prized finds.
+
+
+================================================================================
+SPECIAL ABILITIES
+================================================================================
+
+PASSIVE (proc on weapon hits):
+    Ability         Effect                      Proc/Behavior                                           Fish Count
+    ─────────────   ─────────────────────────   ─────────────────────────────────────────────────────   ──────────
+    stun            Brief boss freeze           15% chance, 0.5s freeze, 5s internal cooldown           13
+    bleed           Damage over time            Every hit stacks bleed (atk×0.1/sec, 3s, max 3)        6
+    burn            Fire DoT                    Hits apply burn (atk×0.15/sec, 4s, refreshes)           4
+    poison          DoT + slow                  Hits apply poison (atk×0.1/sec, 5s, boss 15% slower)   1
+    pierce          Ignore boss armor phases    Attacks always deal full damage during armored phases   3
+    multi_shot      Double attacks              Every attack fires/swings twice (2nd hit at 70% dmg)   10
+
+ACTIVE (press ability button, timer cooldown):
+    Ability         Effect                                              Duration    Cooldown    Fish Count
+    ─────────────   ─────────────────────────────────────────────────   ────────    ────────    ──────────
+    berserk         +100% atk speed, +50% damage, take 30% more dmg    5s          20s         3
+    charge          Dash lunge dealing 3× attack, brief i-frames       instant     8s          6
+    reflect         Deploy shield reflecting boss bullets as damage     3s          15s         5
+    heal            Restore 20% max HP                                 instant     25s         6
+    summon          Spawn ally fish that auto-attacks (50% of atk)     10s         30s         2
+    firestorm       Screen-wide AoE burst dealing 5× attack           instant     45s         1
+    dash            Invulnerable dash in move direction, 150px         instant     3s          1
+    armor_break     Next 3 hits deal 2× dmg, strips boss armor 5s     5s          18s         3
+
+
+================================================================================
+BOSS HP PER FIGHT
+================================================================================
+
+Target fight durations based on mid-skill player with biome-appropriate Rare
+fish (~60% attack uptime):
+
+    Boss                    Biome               HP          Role
+    ──────────────────────  ──────────────────  ──────────  ─────────────────────────────
+    TheGreatFisherduck      Forest              20,000      First boss, teaches mechanics
+    DonCatfishoni           Forest              30,000      Forest challenge
+    CaptainPinchbeard       Ocean               35,000      Ocean standard
+    FinDiesel               Ocean               45,000      Ocean challenge
+    Guppazuma               Jungle              50,000      Jungle standard
+    CroakKing               Jungle              60,000      Jungle challenge
+    AbominableSnowbass      FrozenMountain      65,000      FrozenMountain standard
+    FrostbiteMaestro        FrozenMountain      75,000      FrozenMountain challenge
+    MagmaChef               Lava                80,000      Lava standard
+    PranksterPoppo          Lava                100,000     Final boss
+
+
+================================================================================
+BOSS BULLET DAMAGE TIERS
+================================================================================
+
+    Bullet Type         Base Damage     Description
+    ──────────────────  ─────────────   ─────────────────────────────────────────────────
+    Small bullet        40–60           Frequent pattern filler
+    Large bullet        80–120          Slow, telegraphed projectiles
+    Boss slam/charge    150–250         Highly telegraphed, dodge or eat massive damage
+    Stage hazard        40–80           Environmental ongoing damage (lava, ice patches)
+    Phase 2+            All × 1.25–1.5  Damage scales with boss phase
+
+Survivability math (hits to kill a fish from small bullets, base 50 damage):
+
+    Fish Tier       Defense     Effective Damage    HP Range        Hits to Die
+    ─────────────   ────────    ────────────────    ─────────────   ───────────
+    Common          15          43                  260–360         6–8
+    Uncommon        30          38                  360–600         9–16
+    Rare            50          33                  650–900         20–27
+    Legendary       80          28                  1,000–1,500     36–54
+
+With 1-second i-frames, a Common survives minimum 6–8 seconds of continuous
+hits. Realistically, getting hit every ~5 seconds by a dodging player, each
+Common fish lasts 30–40 seconds. Three Commons = 1.5–2 minutes of total error
+budget.
+
+
+================================================================================
+FIGHT DURATION VALIDATION
+================================================================================
+
+Early boss (TheGreatFisherduck, 20,000 HP):
+
+    Scenario            Fish Attack     DPS     Uptime      Effective DPS   Time
+    ──────────────────  ───────────     ─────   ────────    ─────────────   ────────
+    Master + Common     60              150     80%         120             2.8 min
+    Mid + Uncommon      100             250     60%         150             2.2 min
+    Slow + Common       60              150     40%         60              5.6 min
+
+Late boss (PranksterPoppo, 100,000 HP):
+
+    Scenario            Fish Attack     DPS     Uptime      Effective DPS   Time
+    ──────────────────  ───────────     ─────   ────────    ─────────────   ────────
+    Master + Rare       160             400     80%         320             5.2 min
+    Mid + Rare          160             400     60%         240             6.9 min
+    Mid + Legendary     250             625     60%         375             4.4 min
+    Slow + Rare         160             400     40%         160             10.4 min
+
+These assume using one fish the whole time. With 3 fish and swapping, effective
+DPS averages across all three — a mixed party (1 Legendary + 2 Common)
+averages lower total DPS but has more survivability buffer.
+
+
+================================================================================
+DESIGN DECISIONS (RESOLVED)
+================================================================================
+
+Ability Philosophy:
+    Common fish = weapon class IS their identity. Simple, basic fighters.
+    Specials concentrate on Legendaries, sprinkle into Rares, and a few
+    Uncommons per biome get something minor. Not every fish needs a unique
+    special — weapon class variety is enough for commons.
+
+Melee HP Bonus:
+    Melee classes (SLASH, HEAVY_SLASH, THRUST, SMASH, WHIP) get +15% HP bonus
+    applied at combat load time. This compensates for the risk of closing
+    distance in a bullet hell. Base data stays clean; bonus is a combat modifier.
+
+        Tier            Base HP     With +15%   Extra Hits Survived (vs 50 base bullet)
+        ─────────────   ────────    ─────────   ───────────────────────────────────────
+        Common          300         345         +1
+        Uncommon        480         552         +1–2
+        Rare            750         863         +2–3
+        Legendary       1,200       1,380       +3–4
+
+Ability Distribution (per biome):
+    Every biome has access to key ability categories. Abilities were
+    redistributed to prevent biome-lock of important tools:
+
+        Ability         Forest  Ocean   Jungle  FrozenMtn   Lava    Total
+        ─────────────   ──────  ──────  ──────  ─────────   ──────  ─────
+        stun            3       4       3       2           1       13
+        bleed           2       1       1       1           1       6
+        burn            0       0       0       0           4       4
+        poison          1       0       0       0           0       1
+        pierce          0       0       1       1           1       3
+        multi_shot      2       3       3       2           0       10
+        armor_break     1       0       0       1           1       3
+        charge          1       2       2       1           0       6
+        reflect         1       2       1       1           0       5
+        heal            1       2       1       1           1       6
+        berserk         2       0       0       1           0       3
+        summon          0       2       0       0           0       2
+        firestorm       0       0       0       0           1       1
+        dash            0       0       0       0           1       1
+
+    Changes made from original:
+      - Sturgeon (Forest):        stun → armor_break (warhammer breaks armor)
+      - Barracuda (Ocean):        null → bleed (dual daggers cause bleeding)
+      - Discus (Jungle):          null → pierce (chakram cuts through)
+      - Hatchetfish (Jungle):     null → bleed (hatchet strikes bleed)
+      - Frostbite Eel (FrozenMtn): stun → bleed (whip lashes bleed)
+      - Crystal Perch (FrozenMtn): null → pierce (crystal sword cuts through)
+      - Snowball Sunfish (FrozenMtn): null → heal (heal option for FrozenMtn)
+      - Avalanche Catfish (FrozenMtn): charge → armor_break (hammer smashes armor)
+      - Ember Eel (Lava):         null → bleed (lash weapon, bleeds)
+      - Firefly Fish (Lava):      null → heal (heal option for Lava)
+
+Crits:
+    No global crit system. A few specific weapons or fish may have crit as
+    their unique shtick — to be determined on fish-by-fish basis if needed.
+
+Balance Philosophy:
+    Every boss is beatable with the worst fish in the game. Skill and pattern
+    recognition are king. Better fish make it easier, not trivially so.
+    Legendary fish = much easier time, but still a challenge. Not a faceroll.
+

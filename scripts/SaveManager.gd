@@ -77,7 +77,7 @@ func load_game():
         push_error("Failed to open save file for reading.")
         return false
     
-    save_data = file.get_var()
+    save_data = file.get_var(true)
     file.close()
     
     if save_data == null or typeof(save_data) != TYPE_DICTIONARY:
@@ -182,7 +182,7 @@ func get_save_info() -> Dictionary:
     if not file:
         return {}
     
-    var data = file.get_var()
+    var data = file.get_var(true)
     file.close()
     
     if data == null or typeof(data) != TYPE_DICTIONARY:

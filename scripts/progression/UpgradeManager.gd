@@ -19,6 +19,6 @@ func purchase_upgrade(upgrade_name, cost):
 	if can_purchase(upgrade_name, cost):
 		fish_currency -= cost
 		purchased_upgrades.append(upgrade_name)
-		emit_signal("upgrade_purchased", upgrade_name)
+		upgrade_purchased.emit(upgrade_name)
 		return true
 	return false

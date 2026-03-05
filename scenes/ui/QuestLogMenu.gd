@@ -1,7 +1,3 @@
-func show_quest_log():
-    if quest_manager:
-        visible = true
-        _populate()
 extends Control
 
 # QuestLogMenu.gd: UI for displaying active and completed quests
@@ -12,13 +8,16 @@ extends Control
 
 var quest_manager = null
 
-func open(manager):
-    quest_manager = manager
+func open(manager = null):
+    if manager:
+        quest_manager = manager
+    elif has_node("/root/QuestManager"):
+        quest_manager = get_node("/root/QuestManager")
     visible = true
     _populate()
 
 func _ready():
-    close_button.connect("pressed", self, "_on_close_pressed")
+    close_button.pressed.connect(_on_close_pressed)
     visible = false
 
 func _on_close_pressed():
@@ -27,8 +26,12 @@ func _on_close_pressed():
 func _populate():
     active_list.clear()
     completed_list.clear()
-    if quest_manager:
-        for quest in quest_manager.get_active_quests():
-            active_list.add_item(quest.title + ": " + quest.description)
-        for quest in quest_manager.get_completed_quests():
-            completed_list.add_item(quest.title)
+    if not quest_manager:
+        return
+    for quest in quest_manager.get_active_quests():
+        var progress_str = ""
+        if quest.requirements.size() > 0:
+            progress_str = " [" + quest.get_progress_string(0) + "]"
+        active_list.add_item(quest.title + ": " + quest.description + progress_str)
+    for quest in quest_manager.get_completed_quests():
+        active_list.add_item(quest.title + " (COMPLETE)")

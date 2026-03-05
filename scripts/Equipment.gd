@@ -41,9 +41,17 @@ func get_combined_stats():
 			if "cast_distance" in data:
 				stats["cast_distance"] = max(stats["cast_distance"], data["cast_distance"])
 			if "tension_safe_min" in data:
-				stats["tension_safe_min"] = data["tension_safe_min"]
+				# Best (lowest) tension_safe_min across all gear
+				if stats["tension_safe_min"] == null:
+					stats["tension_safe_min"] = data["tension_safe_min"]
+				else:
+					stats["tension_safe_min"] = min(stats["tension_safe_min"], data["tension_safe_min"])
 			if "tension_safe_max" in data:
-				stats["tension_safe_max"] = data["tension_safe_max"]
+				# Best (highest) tension_safe_max across all gear
+				if stats["tension_safe_max"] == null:
+					stats["tension_safe_max"] = data["tension_safe_max"]
+				else:
+					stats["tension_safe_max"] = max(stats["tension_safe_max"], data["tension_safe_max"])
 			if "depth" in data:
 				stats["depth"] = data["depth"]
 			if "bite_bonus" in data:

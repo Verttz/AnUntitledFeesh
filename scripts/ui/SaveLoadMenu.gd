@@ -69,7 +69,7 @@ func _on_save_pressed():
 	if success:
 		if info_label:
 			info_label.text = "Game saved successfully!"
-		emit_signal("save_completed")
+		save_completed.emit()
 	else:
 		if info_label:
 			info_label.text = "Failed to save game."
@@ -93,7 +93,7 @@ func _on_load_pressed():
 	if success:
 		if info_label:
 			info_label.text = "Game loaded successfully!"
-		emit_signal("load_completed")
+		load_completed.emit()
 	else:
 		if info_label:
 			info_label.text = "Failed to load game."
@@ -118,7 +118,7 @@ func _on_delete_pressed():
 	if success:
 		if info_label:
 			info_label.text = "Save file deleted."
-		emit_signal("save_deleted")
+		save_deleted.emit()
 	else:
 		if info_label:
 			info_label.text = "Failed to delete save file."

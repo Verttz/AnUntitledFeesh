@@ -8,7 +8,7 @@ func show_notification():
     visible = true
     modulate.a = 0.9
     create_tween().tween_property(self, "modulate:a", 0.9, 0.1)
-    yield(get_tree().create_timer(show_time), "timeout")
+    await get_tree().create_timer(show_time).timeout
     create_tween().tween_property(self, "modulate:a", 0.0, fade_time)
-    yield(get_tree().create_timer(fade_time), "timeout")
+    await get_tree().create_timer(fade_time).timeout
     visible = false

@@ -14,14 +14,14 @@ var player_node := null
 func _ready():
     if tribute_menu:
         tribute_menu.visible = false
-        tribute_menu.connect("tribute_changed", self, "_on_tribute_changed")
+        tribute_menu.tribute_changed.connect(_on_tribute_changed)
 
 func interact(player):
     player_node = player
     var fish_list = player.get_fish_inventory()
     if fish_list.size() < required_fish_count:
         show_dialogue("You need to bring me 3 fish as tribute before you may face the guardian!")
-        emit_signal("tribute_rejected")
+        tribute_rejected.emit()
         return
     # Show tribute selection UI
     if tribute_menu:
@@ -39,7 +39,7 @@ func _on_tribute_changed(selected_fish):
         # Remove tribute fish from player inventory
         for fish in tribute_fish:
             player_node.remove_fish_from_inventory(fish)
-        emit_signal("tribute_accepted", tribute_fish)
+        tribute_accepted.emit(tribute_fish)
 
 func show_dialogue(text):
     # TODO: Replace with actual dialogue UI

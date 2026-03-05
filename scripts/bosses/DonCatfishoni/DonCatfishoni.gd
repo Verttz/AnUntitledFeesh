@@ -9,21 +9,21 @@ var minion_types = ["BrassKnuckleMinion", "TommyGunMinion"]
 var minions = []
 
 func tommy_gun_squirt():
-	emit_signal("attack_started", "tommy_gun_squirt")
+	attack_started.emit("tommy_gun_squirt")
 	# Fire rapid streams of water bullets in sweeping patterns
 	for i in range(5):
 		var angle = -30 + i * 15
 		fire_arc(global_position, 8, 60, 600, angle_offset=angle)
 
 func cigar_smoke_rings():
-	emit_signal("attack_started", "cigar_smoke_rings")
+	attack_started.emit("cigar_smoke_rings")
 	# Fire expanding rings of slow-moving smoke bullets
 	for i in range(3):
 		await get_tree().create_timer(0.5 * i).timeout
 		fire_circle(global_position, 12, 200 + i*80)
 
 func goon_crossfire():
-	emit_signal("attack_started", "goon_crossfire")
+	attack_started.emit("goon_crossfire")
 	# Line up all TommyGunMinions at arena edge and fire spreads
 	var arena_bounds = Rect2(Vector2(0,0), Vector2(1024,768))
 	var edge_y = arena_bounds.position.y + 40
@@ -39,14 +39,14 @@ func goon_crossfire():
 			minion.fire_crossfire()
 
 func whisker_sweep():
-	emit_signal("attack_started", "whisker_sweep")
+	attack_started.emit("whisker_sweep")
 	# Sweep whiskers, launch curved bullet trails
 	for i in range(3):
 		var angle = -60 + i * 60
 		fire_arc(global_position, 10, 120, 400, angle_offset=angle)
 
 func firework_finale():
-	emit_signal("attack_started", "firework_finale")
+	attack_started.emit("firework_finale")
 	# Firework Fishes launch starburst patterns
 	# (Stub: call firework fish scripts to launch starbursts)
 	for i in range(5):
@@ -55,46 +55,46 @@ func firework_finale():
 
 # --- Arena Hazards & Events ---
 func trigger_market_lockdown():
-	emit_signal("attack_started", "market_lockdown")
+	attack_started.emit("market_lockdown")
 	var arena = get_tree().get_root().find_child("DonCatfishoniArena", true, false)
 	if arena and arena.has_method("lockdown"):
 		arena.lockdown()
 
 func trigger_police_raid():
-	emit_signal("attack_started", "police_raid")
+	attack_started.emit("police_raid")
 	var raid = preload("res://scripts/bosses/DonCatfishoni/hazards/PoliceRaid.gd").new()
 	get_parent().add_child(raid)
 	raid.start_raid()
 
 func trigger_contraband_crate():
-	emit_signal("attack_started", "contraband_crate")
+	attack_started.emit("contraband_crate")
 	var crate = preload("res://scripts/bosses/DonCatfishoni/hazards/ContrabandCrate.gd").new()
 	crate.position = global_position + Vector2(randf_range(-150,150), randf_range(-80,80))
 	get_parent().add_child(crate)
 
 func trigger_fireworks_cache():
-	emit_signal("attack_started", "fireworks_cache")
+	attack_started.emit("fireworks_cache")
 	var cache = preload("res://scripts/bosses/DonCatfishoni/hazards/FireworksCache.gd").new()
 	cache.position = global_position + Vector2(randf_range(-180,180), randf_range(-100,100))
 	get_parent().add_child(cache)
 	cache.launch_fireworks()
 
 func trigger_market_flood():
-	emit_signal("attack_started", "market_flood")
+	attack_started.emit("market_flood")
 	var flood = preload("res://scripts/bosses/DonCatfishoni/hazards/MarketFlood.gd").new()
 	get_parent().add_child(flood)
 	flood.start_flood()
 
 # --- Unique Mechanics ---
 func negotiation_interrupt():
-	emit_signal("attack_started", "negotiation_interrupt")
+	attack_started.emit("negotiation_interrupt")
 	# If player acts quickly, open damage window
 	set_vulnerable(true)
 	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)
 
 func mobster_deal_roulette():
-	emit_signal("attack_started", "mobster_deal_roulette")
+	attack_started.emit("mobster_deal_roulette")
 	# (Stub: spin wheel, apply random effect)
 	pass
 
@@ -119,9 +119,9 @@ func on_player_win():
 	$Sprite.hide()
 
 func telegraph_and_attack(attack_name, telegraph_time := 0.7):
-	emit_signal("telegraph_attack", attack_name)
+	telegraph_attack.emit(attack_name)
 	await get_tree().create_timer(telegraph_time).timeout
-	emit_signal("attack_started", attack_name)
+	attack_started.emit(attack_name)
 	# Attack logic handled by timers and methods below
 
 
@@ -136,14 +136,13 @@ var sitdown_timer = null
 var enraged = false
 
 func _ready():
+	max_health = 30000
 	health = max_health
 	start_phase(1)
 
 func start_phase(new_phase):
-	# Default: telegraph, then attack
-	telegraph_and_attack(attack_name)
 	phase = new_phase
-	emit_signal("phase_changed", phase)
+	phase_changed.emit(phase)
 	if phase == 1:
 		start_attack("goonswarm")
 		goon_timer = _start_timer(3.0, "_goonswarm")
@@ -164,27 +163,22 @@ func start_phase(new_phase):
 		enraged = true
 
 func check_phase_transition():
-	# Phase 2: Buff up, more aggressive, new patterns, more hazards
-	start_phase(2)
-	# Example: Add new attack patterns and increase hazard frequency
-	# (You can expand this logic as needed for more phases)
-	   if health <= max_health * 0.3 and phase == 1:
-		   # Phase 2: Buff up, more aggressive
-		   start_phase(2)
+	if health <= max_health * 0.3 and phase == 1:
+		start_phase(2)
 
 func start_attack(attack_name):
-	emit_signal("attack_started", attack_name)
+	attack_started.emit(attack_name)
 	# Attack logic handled by timers and methods below
 
 # --- Attack Patterns ---
 func _goonswarm():
-	emit_signal("attack_started", "goonswarm")
-	var count = enraged ? 5 : 3
+	attack_started.emit("goonswarm")
+	var count = 5 if enraged else 3
 	for i in range(count):
 		var minion_type = minion_types[randi() % minion_types.size()]
 		var scene_path = "res://scripts/bosses/DonCatfishoni/minions/%s.tscn" % minion_type
 		if ResourceLoader.exists(scene_path):
-			var minion = preload(scene_path).instantiate()
+			var minion = load(scene_path).instantiate()
 			minion.global_position = global_position + Vector2(randf_range(-200,200), randf_range(-100,100))
 			get_parent().add_child(minion)
 			minion.stunned.connect(func(): on_goon_stunned(minion))
@@ -193,7 +187,7 @@ func _goonswarm():
 				minion.set_elite(true)
 
 func _pearl_bomb():
-	emit_signal("attack_started", "pearl_bomb")
+	attack_started.emit("pearl_bomb")
 	# Spit bouncing pearls that explode after a delay
 	# In phase 2, leave sticky cement puddles
 	if enraged:
@@ -201,40 +195,38 @@ func _pearl_bomb():
 		pass
 
 func _protection_racket():
-	emit_signal("attack_started", "protection_racket")
+	attack_started.emit("protection_racket")
 	# Demand tribute: spawn coins in arena
 	# If player doesn't collect enough, Don attacks faster for a short time
 	pass
 
 func _cigar_smoke():
-	emit_signal("attack_started", "cigar_smoke")
+	attack_started.emit("cigar_smoke")
 	# Obscure part of the arena with smoke, hide goons/hazards
 	pass
 
 func _concrete_shoes():
-	emit_signal("attack_started", "concrete_shoes")
+	attack_started.emit("concrete_shoes")
 	# Slam ground, concrete shoes rise, trap player if not dodged
 	pass
 
 func _bribe_break():
-	emit_signal("attack_started", "bribe_break")
+	attack_started.emit("bribe_break")
 	# Toss money bag: if collected, buff player but summon more goons
 	pass
 
 func _sitdown_minigame():
-	emit_signal("attack_started", "sitdown_minigame")
+	attack_started.emit("sitdown_minigame")
 	# Quick negotiation minigame: bluff, pay, or threaten for effects
 	pass
 
 func _offer_you_cant_refuse():
-	emit_signal("attack_started", "offer_you_cant_refuse")
+	attack_started.emit("offer_you_cant_refuse")
 	# Surprise attack if player stands still too long
 	pass
 
 # --- Unique Mechanic: Turn goons against Don ---
-func on_goon_stunned(goon):
-	# If goon is pushed into Don, deal bonus damage and fluster
-	pass
+# (Handled by on_goon_stunned above)
 
 # --- Timer Utility ---
 func _start_timer(time, method, repeat := false):

@@ -33,8 +33,8 @@ func _ready():
     boss_guard = preload("res://scenes/overworld/BossGateGuard_with_tribute.tscn").instantiate()
     boss_guard.position = Vector2(400, 200)
     add_child(boss_guard)
-    boss_guard.connect("tribute_accepted", self, "_on_tribute_accepted")
-    boss_guard.connect("tribute_rejected", self, "_on_tribute_rejected")
+    boss_guard.tribute_accepted.connect(_on_tribute_accepted)
+    boss_guard.tribute_rejected.connect(_on_tribute_rejected)
     # Add DayNightWeatherManager as child (handles day/night and weather systems)
     var daynight_weather_manager = preload("res://scripts/DayNightWeatherManager.gd").new()
     add_child(daynight_weather_manager)
@@ -67,4 +67,4 @@ func _unhandled_input(event):
             boss_guard.interact(player)
 
 func on_player_reach_edge(direction):
-    emit_signal("screen_exit", direction)
+    screen_exit.emit(direction)

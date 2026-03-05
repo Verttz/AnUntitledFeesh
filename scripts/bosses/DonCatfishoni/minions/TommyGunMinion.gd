@@ -12,7 +12,7 @@ func _process(delta):
 		return
 	var to_player = player.global_position - global_position
 	if abs(to_player.length() - preferred_distance) > 16:
-		move_and_slide((to_player.normalized() * (to_player.length() > preferred_distance ? speed : -speed)))
+		move_and_slide((to_player.normalized() * (speed if to_player.length() > preferred_distance else -speed)))
 	else:
 		burst_timer -= delta
 		if burst_timer <= 0.0:

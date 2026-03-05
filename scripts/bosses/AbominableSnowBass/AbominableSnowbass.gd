@@ -10,13 +10,18 @@ var spotlight_timer = null
 var spotlight_state = null
 var is_melee_player = true # This should be set based on player fish type
 
+signal showboat_ended
+signal showboat_interrupted
+signal snowbass_defeated
+
 func _ready():
+    max_health = 65000
     health = max_health
     start_phase(1)
 
 func start_phase(new_phase):
     phase = new_phase
-    emit_signal("phase_changed", phase)
+    phase_changed.emit(phase)
     if phase == 1:
         _start_phase1_attacks()
     elif phase == 2:
@@ -146,15 +151,15 @@ func on_player_interrupt_showboat():
     if is_vulnerable:
         $SnowbassSprite.play("showboat_interrupted")
         $AudienceSprite.play("gasp")
-        emit_signal("showboat_interrupted")
+        showboat_interrupted.emit()
         take_damage(2)
-        emit_signal("showboat_ended")
+        showboat_ended.emit()
 
 func _on_showboat_end(interrupted):
     if not interrupted:
         $SnowbassSprite.play("showboat_bow")
         $AudienceSprite.play("applause")
-    emit_signal("showboat_ended")
+    showboat_ended.emit()
 
 func _pratfall_gag():
     start_attack("pratfall")
@@ -211,7 +216,7 @@ func _telegraph_attack(type, pos):
     $AudienceSprite.play("gasp")
 func on_snowbass_defeated():
     # Finale spectacle: slip, spin, crash through ice, crowd celebration
-    emit_signal("snowbass_defeated")
+    snowbass_defeated.emit()
     $SnowbassSprite.play("finale_slip_spin")
     await get_tree().create_timer(1.2).timeout
     $SnowbassSprite.play("finale_crash")

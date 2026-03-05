@@ -12,6 +12,7 @@ var junk_types = ["boot", "can", "lawn_chair", "tackle_box"]
 var max_junk = 12
 
 func _ready():
+	max_health = 20000
 	health = max_health
 	start_phase(1)
 
@@ -21,7 +22,7 @@ func start_phase(new_phase):
 	$PhaseChangeEffect.play()
 	$QuackSound.play()
 	phase = new_phase
-	emit_signal("phase_changed", phase)
+	phase_changed.emit(phase)
 	if phase == 1:
 		start_attack("rod_and_reel")
 		start_attack("multi_lure_mayhem")
@@ -41,17 +42,12 @@ func start_phase(new_phase):
 		start_attack("dive_bomb", fast=true)
 
 func check_phase_transition():
-<<<<<<< HEAD:scripts/bosses/TheGreatFisherduck.gd
 	if health <= max_health * 0.3 and phase == 1:
 		start_phase(2)
-=======
-	   if health <= max_health * 0.3 and phase == 1:
-		   start_phase(2)
->>>>>>> 3fe13fc1f46515387972da63f01b65573430dd76:scripts/bosses/TheGreatFisherduck/TheGreatFisherduck.gd
 
 
 func start_attack(attack_name, fast=false):
-	emit_signal("attack_started", attack_name)
+	attack_started.emit(attack_name)
 	match attack_name:
 		"rod_and_reel":
 			rod_and_reel(fast)
@@ -81,8 +77,8 @@ func rod_and_reel(fast=false):
 		# Slap with fish or whack with tackle box
 		player.take_damage(1)
 		# Fire a quick arc of water bullets as a follow-up
-		fire_arc(global_position, fast ? 7 : 5, 60, fast ? 500 : 350, angle_offset=0)
-		emit_signal("attack_started", "rod_and_reel")
+		fire_arc(global_position, 7 if fast else 5, 60, 500 if fast else 350, angle_offset=0)
+		attack_started.emit("rod_and_reel")
 
 # Multi-Lure Mayhem: Casts several lures with different effects
 func multi_lure_mayhem(fast=false):
@@ -93,7 +89,7 @@ func multi_lure_mayhem(fast=false):
 	for i in range(effects.size()):
 		var angle = -30 + i * 20
 		var pos = global_position + Vector2(randf_range(-50,50), randf_range(-50,50))
-		var speed = fast ? 700 : 500
+		var speed = 700 if fast else 500
 		if player:
 			fire_aimed(pos, player.global_position, speed)
 		var lure = spawn_junk("can", pos)
@@ -103,9 +99,9 @@ func multi_lure_mayhem(fast=false):
 func tangled_line(fast=false):
 	$AttackTelegraph.show()
 	$AttackTelegraph.play("tangled_line")
-	var hook_count = fast ? 8 : 5
-	fire_circle(global_position, hook_count, fast ? 600 : 400)
-	emit_signal("attack_started", "tangled_line")
+	var hook_count = 8 if fast else 5
+	fire_circle(global_position, hook_count, 600 if fast else 400)
+	attack_started.emit("tangled_line")
 
 # Trophy Toss: Throws a trophy catch at the player
 func trophy_toss(fast=false):
@@ -116,7 +112,7 @@ func trophy_toss(fast=false):
 	var pos = global_position + Vector2(randf_range(-100,100), randf_range(-50,50))
 	var player = get_tree().get_root().find_child("Player", true, false)
 	if player:
-		fire_aimed(pos, player.global_position, fast ? 900 : 700)
+		fire_aimed(pos, player.global_position, 900 if fast else 700)
 	var trophy_obj = spawn_junk(trophy, pos)
 
 # Bait-and-Switch: Throws glowing bait, can spawn mini Fisherduck or heal player
@@ -144,7 +140,7 @@ func _on_bait_attacked(bait):
 func duckling_gang(fast=false):
 	$AttackTelegraph.show()
 	$AttackTelegraph.play("duckling_gang")
-	var count = fast ? 8 : 5
+	var count = 8 if fast else 5
 	for i in range(count):
 		var duckling = preload("res://scenes/arenas/Duckling.tscn").instantiate()
 		duckling.position = global_position + Vector2(randf_range(-150,150), randf_range(-100,100))
@@ -157,7 +153,7 @@ func dive_bomb(fast=false):
 	# Fisherduck disappears (hide sprite, disable collision)
 	$Sprite.hide()
 	set_physics_process(false)
-	emit_signal("attack_started", "dive_bomb_start")
+	attack_started.emit("dive_bomb_start")
 	await get_tree().create_timer(0.7).timeout
 	# Reappear at a random location in the arena
 	var arena_bounds = Rect2(Vector2(0,0), Vector2(1024,768)) # Example bounds, adjust as needed
@@ -165,30 +161,30 @@ func dive_bomb(fast=false):
 	global_position = new_pos
 	$Sprite.show()
 	set_physics_process(true)
-	emit_signal("attack_started", "dive_bomb_reappear")
+	attack_started.emit("dive_bomb_reappear")
 	# Drop a barrage of fish or junk and fire a spiral of water bullets
-	var barrage_count = fast ? 10 : 6
+	var barrage_count = 10 if fast else 6
 	for i in range(barrage_count):
-		var drop_type = (randi() % 2 == 0) ? "giant_fish" : "boot"
+		var drop_type = "giant_fish" if (randi() % 2 == 0) else "boot"
 		var drop_pos = global_position + Vector2(randf_range(-80,80), randf_range(-40,40))
 		var drop = spawn_junk(drop_type, drop_pos)
 		drop.apply_impulse(Vector2(0, 600 + randf() * 200))
-	fire_spiral(global_position, fast ? 18 : 12, fast ? 500 : 350, rotations=1.5)
-	emit_signal("attack_started", "dive_bomb_barrage")
+	fire_spiral(global_position, 18 if fast else 12, 500 if fast else 350, rotations=1.5)
+	attack_started.emit("dive_bomb_barrage")
 
 # Disarm mechanic: Player can hook hat or rod
 func on_player_hooks_disarm():
 	$StunEffect.show()
 	$StunEffect.play("stun")
 	set_vulnerable(true)
-	emit_signal("attack_started", "disarmed")
+	attack_started.emit("disarmed")
 	await get_tree().create_timer(2.0).timeout
 	set_vulnerable(false)
 
 # Phase 2 erratic behavior
 func on_phase2_erratic():
 	# Hat falls over eyes, attacks become wild
-	emit_signal("attack_started", "erratic")
+	attack_started.emit("erratic")
 
 func _on_disarmed():
 	$StunEffect.show()
@@ -280,7 +276,7 @@ func _clear_arena_junk():
 	$SplashEffect.global_position = global_position
 	$SplashEffect.show()
 	$SplashEffect.play("splash")
-	emit_signal("attack_started", "arena_clear")
+	attack_started.emit("arena_clear")
 
 # Junk/attack interactions
 func on_lure_hits_junk(junk):
@@ -289,17 +285,17 @@ func on_lure_hits_junk(junk):
 		# Snap line
 		$StunEffect.show()
 		$StunEffect.play("stun")
-		emit_signal("attack_started", "line_snapped")
+		attack_started.emit("line_snapped")
 	elif outcome == 1:
 		# Pull junk to Fisherduck, hit and stun
 		junk.move_toward(global_position)
 		$StunEffect.show()
 		$StunEffect.play("stun")
-		emit_signal("attack_started", "junk_stun")
+		attack_started.emit("junk_stun")
 	elif outcome == 2:
 		# Swing junk at player
 		junk.swing_at_player()
-		emit_signal("attack_started", "junk_swing")
+		attack_started.emit("junk_swing")
 
 # Boots/cans can be hit by player or projectiles
 func on_junk_hit(junk, direction):

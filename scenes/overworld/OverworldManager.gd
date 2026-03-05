@@ -15,14 +15,14 @@ func load_screen(path):
         current_screen.queue_free()
     # Autosave on screen transition (exploration only)
     var did_autosave = false
-    if typeof(SaveManager) != TYPE_NIL and SaveManager.can_save("exploration"):
-        SaveManager.autosave()
+    if has_node("/root/SaveManager") and get_node("/root/SaveManager").can_save("exploration"):
+        get_node("/root/SaveManager").autosave()
         did_autosave = true
     fade_out()
-    yield(get_tree().create_timer(0.5), "timeout")
-    current_screen = load(path).instance()
+    await get_tree().create_timer(0.5).timeout
+    current_screen = load(path).instantiate()
     add_child(current_screen)
-    current_screen.connect("screen_exit", self, "on_screen_exit")
+    current_screen.screen_exit.connect(on_screen_exit)
     fade_in()
     # Show autosave notification if possible
     if did_autosave and current_screen and current_screen.has_method("show_save_notification"):
@@ -44,5 +44,5 @@ func fade_out():
 
 func fade_in():
     fade_layer.create_tween().tween_property(fade_layer, "modulate:a", 0, 0.5)
-    yield(get_tree().create_timer(0.5), "timeout")
+    await get_tree().create_timer(0.5).timeout
     fade_layer.hide()

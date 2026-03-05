@@ -9,7 +9,7 @@ var unlocked_bait := []
 func unlock_bait(bait_name):
 	if not unlocked_bait.has(bait_name):
 		unlocked_bait.append(bait_name)
-		emit_signal("bait_unlocked", bait_name)
+		bait_unlocked.emit(bait_name)
 
 func has_bait(bait_name):
 	return unlocked_bait.has(bait_name)

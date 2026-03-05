@@ -25,10 +25,7 @@ enum QuestType {
 @export var can_abandon: bool = true
 
 # Progress tracking
-var progress: Dictionary = {} # Tracks current progress per requirement
-
-# Progress tracking
-var progress: Dictionary = {} # Tracks current progress per requirement
+var progress: Dictionary = {}
 
 func _init():
 	"""

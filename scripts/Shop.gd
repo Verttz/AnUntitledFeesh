@@ -31,13 +31,13 @@ func open(shopkeeper_name, items_for_sale, buy_prices_dict, sell_prices_dict, hi
 	sell_prices = sell_prices_dict
 	notice_board_hints = hints
 	player_inventory = player_inv
-	player_node = get_parent() # Assumes Player is parent
+	player_node = get_parent()
 	print("Welcome to the shop! I am " + shopkeeper)
 	# Show new ShopMenu UI
-	var ShopMenu = preload("res://scenes/ui/shop/ShopMenu.tscn")
+	var ShopMenu = load("res://scenes/ui/shop/ShopMenu.tscn")
 	shop_menu = ShopMenu.instantiate()
 	add_child(shop_menu)
-	shop_menu.open(shopkeeper, inventory, buy_prices, sell_prices, player_inventory, player_node.player_gold)
+	shop_menu.open(shopkeeper, inventory, buy_prices, sell_prices, player_inventory, player_node.player_gold if player_node else 0)
 	shop_menu.item_bought.connect(_on_item_bought)
 	shop_menu.item_sold.connect(_on_item_sold)
 
@@ -72,8 +72,15 @@ func sell_fish(fish_name):
 	if fish_name in sell_prices:
 		var price = sell_prices[fish_name]
 		if player_node:
-			if fish_name in player_inventory:
-				player_node.remove_fish_from_inventory(fish_name)
+			var fish_list = player_node.backpack.items.get(fish_name, [])
+			if fish_list is Array and fish_list.size() > 0:
+				player_node.backpack.items[fish_name].remove_at(0)
+				if player_node.backpack.items[fish_name].size() == 0:
+					player_node.backpack.items.erase(fish_name)
+				player_node.add_gold(price)
+				print("Sold " + fish_name + " for " + str(price) + " gold.")
+			elif fish_list is int and fish_list > 0:
+				player_node.backpack.remove_item(fish_name, 1)
 				player_node.add_gold(price)
 				print("Sold " + fish_name + " for " + str(price) + " gold.")
 			else:

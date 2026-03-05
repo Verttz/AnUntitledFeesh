@@ -13,13 +13,14 @@ class_name BountyBoard
 signal bounty_posted(bounty: Quest)
 signal bounty_completed(bounty: Quest)
 
-@export var area_name: String = "" # e.g., "Lake", "Ocean", "Jungle", etc.
-@export var max_active_bounties: int = 3 # How many bounties can be active at once
+@export var area_name: String = ""
+@export var max_active_bounties: int = 3
 
-var available_bounties: Array = [] # Pool of all bounties for this area
-var posted_bounties: Array = [] # Currently posted on the board
-var completed_bounties: Array = [] # Completed bounties
-var quest_manager: Node = null # Reference to QuestManager
+var available_bounties: Array = []
+var posted_bounties: Array = []
+var completed_bounties: Array = []
+var quest_manager: Node = null
+var total_bounties: int = 0  # Fixed total for accurate percentage
 
 func _ready():
 	"""
@@ -50,6 +51,7 @@ func _load_area_bounties():
 			available_bounties.append(bounty)
 	
 	# Post initial bounties
+	total_bounties = available_bounties.size()
 	_post_bounties()
 
 func _get_bounty_ids_for_area(area: String) -> Array:
@@ -58,10 +60,10 @@ func _get_bounty_ids_for_area(area: String) -> Array:
 	These should be registered in QuestFactory.
 	"""
 	var bounty_map = {
-		"Lake": ["bounty_lake_weight", "bounty_lake_rare", "bounty_lake_legendary"],
+		"Forest": ["bounty_forest_weight", "bounty_forest_rare", "bounty_forest_legendary"],
 		"Ocean": ["bounty_ocean_weight", "bounty_ocean_rare", "bounty_ocean_legendary"],
 		"Jungle": ["bounty_jungle_weight", "bounty_jungle_rare", "bounty_jungle_legendary"],
-		"Mountain": ["bounty_mountain_weight", "bounty_mountain_rare", "bounty_mountain_legendary"],
+		"FrozenMountain": ["bounty_frozenmountain_weight", "bounty_frozenmountain_rare", "bounty_frozenmountain_legendary"],
 		"Lava": ["bounty_lava_weight", "bounty_lava_rare", "bounty_lava_legendary"]
 	}
 	
@@ -122,13 +124,9 @@ func is_bounty_completed(bounty_id: String) -> bool:
 	return false
 
 func get_completion_percentage() -> float:
-	"""
-	Returns the percentage of bounties completed for this area.
-	"""
-	var total = available_bounties.size() + posted_bounties.size() + completed_bounties.size()
-	if total == 0:
+	if total_bounties == 0:
 		return 0.0
-	return float(completed_bounties.size()) / float(total)
+	return float(completed_bounties.size()) / float(total_bounties)
 
 func get_hints_unlocked() -> Array:
 	"""

@@ -32,19 +32,21 @@ func advance_weather():
 func set_random_weather():
     """
     Picks a random weather type and sets duration.
+    Always assigns a new duration even if same weather is re-rolled.
     """
     var new_weather = weather_types[randi() % weather_types.size()]
-    set_weather(new_weather)
+    weather_duration = 60 + randi() % 120
+    if new_weather != current_weather:
+        current_weather = new_weather
+        weather_changed.emit(current_weather)
 
 func set_weather(new_weather):
     """
-    Sets the current weather and emits signal if changed.
+    Sets the current weather and emits signal. For scripted weather changes.
     """
-    if new_weather != current_weather:
-        current_weather = new_weather
-        weather_duration = 60 + randi() % 120 # 1-3 hours
-        emit_signal("weather_changed", current_weather)
-        # TODO: Trigger visual/audio/UI changes for new weather
+    current_weather = new_weather
+    weather_duration = 60 + randi() % 120
+    weather_changed.emit(current_weather)
 
 func get_weather():
     return current_weather

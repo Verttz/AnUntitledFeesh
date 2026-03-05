@@ -34,11 +34,11 @@ func advance_time():
     if current_time["hour"] >= 24:
         current_time["hour"] = 0
         current_time["day"] += 1
-    emit_signal("time_advanced", current_time)
+    time_advanced.emit(current_time)
     var new_phase = get_phase()
     if new_phase != phase:
         phase = new_phase
-        emit_signal("phase_changed", phase)
+        phase_changed.emit(phase)
         # TODO: Trigger lighting/music/UI changes for new phase
 
 func get_phase():

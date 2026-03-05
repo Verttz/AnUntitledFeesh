@@ -25,11 +25,14 @@ signal quest_progress_updated(quest: Quest)
 
 func _ready():
 	"""
-	Initializes the quest manager.
+	Initializes the quest manager. Auto-connects to player when available.
 	"""
-	# Load available quests (could be loaded from data files or created here)
-	# For demo, we can add sample quests
-	pass
+	# Deferred so the scene tree is fully built
+	call_deferred("_find_player")\n
+func _find_player():
+	var p = get_tree().get_root().find_child("Player", true, false)
+	if p:
+		player = p
 
 func make_quest_available(quest_id: String):
 	"""
@@ -132,10 +135,7 @@ func turn_in_quest(quest: Quest):
 	quest_completed.emit(quest)
 
 func set_player(p):
-    """
-    Sets the player reference for quest progress and reward handling.
-    """
-    player = p
+	player = p
 
 func get_active_quests() -> Array:
 	"""

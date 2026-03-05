@@ -2,14 +2,14 @@ extends Node
 
 # Tracks player progression state
 
-var current_biome := "Pond"
+var current_biome := "Forest"
 var unlocked_bait := []
 var completed_quests := []
 var upgrades := []
 var fish_collected := {}
 
 func reset_progress():
-	current_biome = "Pond"
+	current_biome = "Forest"
 	unlocked_bait.clear()
 	completed_quests.clear()
 	upgrades.clear()

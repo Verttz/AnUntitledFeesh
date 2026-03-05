@@ -2,6 +2,10 @@ extends Node2D
 
 # Ceremony Interaction Logic for Croak King
 
+signal minion_converted(minion)
+signal minion_knighted(minion)
+signal ceremony_interrupted(minion)
+
 var ceremony_active := false
 var minion := null
 var hazard := null
@@ -24,18 +28,21 @@ func interrupt_by_player():
 	if ceremony_active:
 		minion.convert()
 		play_fanfare("deflated")
+		ceremony_interrupted.emit(minion)
 		end_ceremony()
 
 func interrupt_by_hazard():
 	if ceremony_active:
 		minion.convert()
 		play_fanfare("deflated")
+		minion_converted.emit(minion)
 		end_ceremony()
 
 func knight_minion():
 	if ceremony_active:
 		minion.empower()
 		play_fanfare("success")
+		minion_knighted.emit(minion)
 		end_ceremony()
 
 func kill_minion():

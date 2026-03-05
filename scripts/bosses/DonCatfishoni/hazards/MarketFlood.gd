@@ -4,9 +4,9 @@ signal flood_started
 signal flood_ended
 
 func start_flood():
-	emit_signal("flood_started")
+	flood_started.emit()
 	# Implement water rising, slowing movement, and washing away hazards/minions
 
 func end_flood():
-	emit_signal("flood_ended")
+	flood_ended.emit()
 	# Restore arena to normal

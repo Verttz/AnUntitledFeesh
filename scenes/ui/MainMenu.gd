@@ -3,10 +3,10 @@ extends Control
 var settings_menu = null
 
 func _ready():
-    $VBoxContainer/NewGameButton.connect("pressed", self, "_on_new_game")
-    $VBoxContainer/ContinueButton.connect("pressed", self, "_on_continue")
-    $VBoxContainer/SettingsButton.connect("pressed", self, "_on_settings")
-    $VBoxContainer/QuitButton.connect("pressed", self, "_on_quit")
+    $VBoxContainer/NewGameButton.pressed.connect(_on_new_game)
+    $VBoxContainer/ContinueButton.pressed.connect(_on_continue)
+    $VBoxContainer/SettingsButton.pressed.connect(_on_settings)
+    $VBoxContainer/QuitButton.pressed.connect(_on_quit)
     _update_continue_button()
     # Add settings menu as child
     settings_menu = preload("res://scenes/ui/SettingsMenuV2.tscn").instantiate()

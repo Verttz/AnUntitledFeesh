@@ -7,7 +7,7 @@ signal item_selected(item_name, item_data)
 var inventory_ref = null # Reference to Inventory.gd instance
 
 func _ready():
-    $Panel/CloseButton.connect("pressed", self, "hide")
+    $Panel/CloseButton.pressed.connect(hide)
     hide()
 
 func open(inventory):
@@ -25,8 +25,8 @@ func _populate_items():
         var count = items[item_name]
         var btn = Button.new()
         btn.text = str(item_name) + (" x" + str(count) if typeof(count) == TYPE_INT else "")
-        btn.connect("pressed", self, "_on_item_pressed", [item_name, count])
+        btn.pressed.connect(_on_item_pressed.bind(item_name, count))
         grid.add_child(btn)
 
 func _on_item_pressed(item_name, item_data):
-    emit_signal("item_selected", item_name, item_data)
+    item_selected.emit(item_name, item_data)

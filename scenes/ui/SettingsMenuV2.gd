@@ -5,22 +5,22 @@ extends Control
 var settings = {}
 
 func _ready():
-    $Panel/VBoxContainer/MasterVolumeSlider.connect("value_changed", self, "_on_master_volume_changed")
-    $Panel/VBoxContainer/MusicVolumeSlider.connect("value_changed", self, "_on_music_volume_changed")
-    $Panel/VBoxContainer/SFXVolumeSlider.connect("value_changed", self, "_on_sfx_volume_changed")
-    $Panel/VBoxContainer/MuteAll.connect("toggled", self, "_on_mute_all_toggled")
-    $Panel/VBoxContainer/ScreenModeOption.connect("item_selected", self, "_on_screen_mode_selected")
-    $Panel/VBoxContainer/ResolutionOption.connect("item_selected", self, "_on_resolution_selected")
-    $Panel/VBoxContainer/VSync.connect("toggled", self, "_on_vsync_toggled")
-    $Panel/VBoxContainer/Subtitles.connect("toggled", self, "_on_subtitles_toggled")
-    $Panel/VBoxContainer/TextSpeedSlider.connect("value_changed", self, "_on_text_speed_changed")
-    $Panel/VBoxContainer/ColorblindMode.connect("toggled", self, "_on_colorblind_toggled")
-    $Panel/VBoxContainer/LanguageOption.connect("item_selected", self, "_on_language_selected")
-    $Panel/VBoxContainer/BackButton.connect("pressed", self, "_on_back_pressed")
+    $Panel/VBoxContainer/MasterVolumeSlider.value_changed.connect(_on_master_volume_changed)
+    $Panel/VBoxContainer/MusicVolumeSlider.value_changed.connect(_on_music_volume_changed)
+    $Panel/VBoxContainer/SFXVolumeSlider.value_changed.connect(_on_sfx_volume_changed)
+    $Panel/VBoxContainer/MuteAll.toggled.connect(_on_mute_all_toggled)
+    $Panel/VBoxContainer/ScreenModeOption.item_selected.connect(_on_screen_mode_selected)
+    $Panel/VBoxContainer/ResolutionOption.item_selected.connect(_on_resolution_selected)
+    $Panel/VBoxContainer/VSync.toggled.connect(_on_vsync_toggled)
+    $Panel/VBoxContainer/Subtitles.toggled.connect(_on_subtitles_toggled)
+    $Panel/VBoxContainer/TextSpeedSlider.value_changed.connect(_on_text_speed_changed)
+    $Panel/VBoxContainer/ColorblindMode.toggled.connect(_on_colorblind_toggled)
+    $Panel/VBoxContainer/LanguageOption.item_selected.connect(_on_language_selected)
+    $Panel/VBoxContainer/BackButton.pressed.connect(_on_back_pressed)
     # Load settings from SettingsManager
-    if typeof(SettingsManager) != TYPE_NIL:
-        SettingsManager.load_settings()
-        settings = SettingsManager.settings.duplicate()
+    if has_node("/root/SettingsManager"):
+        get_node("/root/SettingsManager").load_settings()
+        settings = get_node("/root/SettingsManager").settings.duplicate()
 
 func open():
     visible = true
@@ -45,17 +45,17 @@ func _sync_ui_to_settings():
 
 func _on_master_volume_changed(value):
     settings.master_volume = value
-    AudioServer.set_bus_volume_db(0, linear2db(value))
+    AudioServer.set_bus_volume_db(0, linear_to_db(value))
     _save_settings()
 
 func _on_music_volume_changed(value):
     settings.music_volume = value
-    AudioServer.set_bus_volume_db(1, linear2db(value))
+    AudioServer.set_bus_volume_db(1, linear_to_db(value))
     _save_settings()
 
 func _on_sfx_volume_changed(value):
     settings.sfx_volume = value
-    AudioServer.set_bus_volume_db(2, linear2db(value))
+    AudioServer.set_bus_volume_db(2, linear_to_db(value))
     _save_settings()
 
 func _on_mute_all_toggled(pressed):
@@ -81,7 +81,7 @@ func _on_resolution_selected(idx):
 
 func _on_vsync_toggled(pressed):
     settings.vsync = pressed
-    DisplayServer.window_set_vsync_mode(pressed ? DisplayServer.VSYNC_ENABLED : DisplayServer.VSYNC_DISABLED)
+    DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if pressed else DisplayServer.VSYNC_DISABLED)
     _save_settings()
 
 func _on_subtitles_toggled(pressed):
@@ -109,11 +109,6 @@ func _on_back_pressed():
     close()
 
 func _save_settings():
-    if typeof(SettingsManager) != TYPE_NIL:
-        SettingsManager.settings = settings.duplicate()
-        SettingsManager.save_settings()
-
-func linear2db(linear):
-    if linear <= 0:
-        return -80
-    return 20 * log10(linear)
+    if has_node("/root/SettingsManager"):
+        get_node("/root/SettingsManager").settings = settings.duplicate()
+        get_node("/root/SettingsManager").save_settings()

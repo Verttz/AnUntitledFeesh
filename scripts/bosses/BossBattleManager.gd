@@ -1,91 +1,253 @@
 extends Node
 
-# Handles boss battle flow, arena setup, and player/boss state
+# Handles boss battle flow: tribute selection, fish spawning/swapping,
+# boss lifecycle, victory/defeat, and fish consumption.
 
 signal boss_spawned(boss)
 signal boss_defeated(boss)
 signal battle_started()
 signal battle_ended(victory: bool)
+signal fish_died(fish_index: int)
+signal fish_swapped(new_fish_index: int)
+signal tribute_consumed(fish_list: Array)
+signal swap_ui_requested(remaining_fish: Array)
 
-var boss_scene : PackedScene
-var boss_instance : Node = null
-var arena_scene : PackedScene
-var arena_instance : Node = null
+enum BattleState { INACTIVE, TRIBUTE_SELECT, FIGHTING, FISH_SWAP, PAUSED, VICTORY, DEFEAT }
+
+var state: int = BattleState.INACTIVE
+
+var boss_scene: PackedScene
+var boss_instance: Node = null
+var arena_scene: PackedScene
+var arena_instance: Node = null
+
+# Tribute fish (3 Fish resources selected by player)
+var tribute_fish: Array = []     # Array[Fish] — the 3 chosen fish
+var current_fish_index: int = -1
+var combat_fish_instance: CombatFish = null
+
+@export var combat_fish_scene: PackedScene  # CombatFish.tscn
+var fish_spawn_position: Vector2 = Vector2(400, 300)  # Default, set by arena
 
 # Mapping of boss names to their scene and arena paths
 var boss_data = {
+	"TheGreatFisherduck": {
+		"boss_scene": "res://scenes/arenas/TheGreatFisherduckArena.tscn",
+		"arena_scene": "res://scenes/arenas/TheGreatFisherduckArena.tscn"
+	},
 	"DonCatfishoni": {
-		"boss_scene": "res://scripts/bosses/DonCatfishoni.gd",
+		"boss_scene": "res://scenes/arenas/DonCatfishoniArena.tscn",
 		"arena_scene": "res://scenes/arenas/DonCatfishoniArena.tscn"
 	},
+	"CaptainPinchbeard": {
+		"boss_scene": "res://scenes/arenas/CaptainPinchbeardArena.tscn",
+		"arena_scene": "res://scenes/arenas/CaptainPinchbeardArena.tscn"
+	},
 	"FinDiesel": {
-		"boss_scene": "res://scripts/bosses/FinDiesel.gd",
+		"boss_scene": "res://scenes/arenas/FinDieselArena.tscn",
 		"arena_scene": "res://scenes/arenas/FinDieselArena.tscn"
 	},
 	"Guppazuma": {
-		"boss_scene": "res://scripts/bosses/Guppazuma.gd",
+		"boss_scene": "res://scenes/arenas/GuppazumaArena.tscn",
 		"arena_scene": "res://scenes/arenas/GuppazumaArena.tscn"
 	},
-	"FrostbiteMaestro": {
-		"boss_scene": "res://scripts/bosses/FrostbiteMaestro.gd",
-		"arena_scene": "res://scenes/arenas/FrostbiteMaestroArena.tscn"
-	},
-	"PranksterPoppo": {
-		"boss_scene": "res://scripts/bosses/PranksterPoppo.gd",
-		"arena_scene": "res://scenes/arenas/PranksterPoppoArena.tscn"
-	},
-	"TheGreatFisherduck": {
-		"boss_scene": "res://scripts/bosses/TheGreatFisherduck.gd",
-		"arena_scene": "res://scenes/arenas/TheGreatFisherduckArena.tscn"
-	},
-	"CaptainPinchbeard": {
-		"boss_scene": "res://scripts/bosses/CaptainPinchbeard.gd",
-		"arena_scene": "res://scenes/arenas/CaptainPinchbeardArena.tscn"
-	},
 	"CroakKing": {
-		"boss_scene": "res://scripts/bosses/CroakKing.gd",
+		"boss_scene": "res://scenes/arenas/CroakKingArena.tscn",
 		"arena_scene": "res://scenes/arenas/CroakKingArena.tscn"
 	},
 	"AbominableSnowbass": {
-		"boss_scene": "res://scripts/bosses/AbominableSnowbass.gd",
+		"boss_scene": "res://scenes/arenas/AbominableSnowbassArena.tscn",
 		"arena_scene": "res://scenes/arenas/AbominableSnowbassArena.tscn"
 	},
+	"FrostbiteMaestro": {
+		"boss_scene": "res://scenes/arenas/FrostbiteMaestroArena.tscn",
+		"arena_scene": "res://scenes/arenas/FrostbiteMaestroArena.tscn"
+	},
 	"MagmaChef": {
-		"boss_scene": "res://scripts/bosses/MagmaChef.gd",
+		"boss_scene": "res://scenes/arenas/MagmaChefArena.tscn",
 		"arena_scene": "res://scenes/arenas/MagmaChefArena.tscn"
+	},
+	"PranksterPoppo": {
+		"boss_scene": "res://scenes/arenas/PranksterPoppoArena.tscn",
+		"arena_scene": "res://scenes/arenas/PranksterPoppoArena.tscn"
 	}
 }
 
-func start_boss_battle_by_name(boss_name: String):
-	if boss_data.has(boss_name):
-		var boss_scene_path = boss_data[boss_name]["boss_scene"]
-		var arena_scene_path = boss_data[boss_name]["arena_scene"]
-		start_boss_battle(boss_scene_path, arena_scene_path)
-	else:
-		push_error("Unknown boss name: %s" % boss_name)
 
-func start_boss_battle(boss_scene_path: String, arena_scene_path: String):
-	# Load and instance arena
-	arena_scene = load(arena_scene_path)
+# ==========================================================================
+# TRIBUTE SELECTION
+# ==========================================================================
+
+func begin_tribute_selection(boss_name: String, available_fish: Array) -> void:
+	if not boss_data.has(boss_name):
+		push_error("Unknown boss: %s" % boss_name)
+		return
+	state = BattleState.TRIBUTE_SELECT
+	# UI calls confirm_tribute() once the player picks 3
+
+func confirm_tribute(boss_name: String, selected_fish: Array) -> void:
+	if selected_fish.size() != 3:
+		push_error("Must select exactly 3 fish as tribute")
+		return
+	tribute_fish = selected_fish
+	_start_battle(boss_name)
+
+
+# ==========================================================================
+# BATTLE LIFECYCLE
+# ==========================================================================
+
+func _start_battle(boss_name: String) -> void:
+	var data = boss_data[boss_name]
+
+	# Load arena
+	arena_scene = load(data["arena_scene"])
 	arena_instance = arena_scene.instantiate()
 	add_child(arena_instance)
 
-	# Load and instance boss
-	boss_scene = load(boss_scene_path)
-	boss_instance = boss_scene.instantiate()
-	add_child(boss_instance)
+	# Find spawn position marker if arena has one
+	var spawn_marker = arena_instance.find_child("FishSpawn", true, false)
+	if spawn_marker:
+		fish_spawn_position = spawn_marker.global_position
 
-	boss_instance.defeated.connect(_on_boss_defeated)
-	emit_signal("boss_spawned", boss_instance)
-	emit_signal("battle_started")
+	# Load boss (arena .tscn should contain the boss node, or load separately)
+	var boss_node = arena_instance.find_child("Boss", true, false)
+	if boss_node:
+		boss_instance = boss_node
+	else:
+		# Fallback: instantiate boss from arena scene root children
+		for child in arena_instance.get_children():
+			if child.is_in_group("boss"):
+				boss_instance = child
+				break
 
-func _on_boss_defeated():
-	emit_signal("boss_defeated", boss_instance)
+	if boss_instance:
+		boss_instance.defeated.connect(_on_boss_defeated)
+		boss_spawned.emit(boss_instance)
+
+	state = BattleState.FIGHTING
+	battle_started.emit()
+
+	# Spawn first fish — player picks which of the 3 to start
+	swap_ui_requested.emit(tribute_fish)
+
+
+func spawn_fish(fish_index: int) -> void:
+	if fish_index < 0 or fish_index >= tribute_fish.size():
+		return
+	var fish: Fish = tribute_fish[fish_index]
+	if fish == null:
+		return  # Already dead
+
+	current_fish_index = fish_index
+
+	if combat_fish_instance:
+		combat_fish_instance.queue_free()
+
+	if combat_fish_scene:
+		combat_fish_instance = combat_fish_scene.instantiate()
+	else:
+		combat_fish_instance = CombatFish.new()
+
+	combat_fish_instance.global_position = fish_spawn_position
+	combat_fish_instance.setup(fish)
+	combat_fish_instance.died.connect(_on_fish_died)
+	add_child(combat_fish_instance)
+
+	state = BattleState.FIGHTING
+	fish_swapped.emit(fish_index)
+
+
+# ==========================================================================
+# FISH DEATH & SWAP
+# ==========================================================================
+
+func _on_fish_died() -> void:
+	state = BattleState.FISH_SWAP
+	fish_died.emit(current_fish_index)
+
+	# Mark this fish as dead (null it out)
+	tribute_fish[current_fish_index] = null
+
+	# Clear bullets from the arena
+	_clear_bullets()
+
+	# Check if any fish remain
+	var remaining := _get_remaining_fish()
+	if remaining.is_empty():
+		_on_defeat()
+		return
+
+	# Pause boss, show swap UI
+	if boss_instance and boss_instance.has_method("set_physics_process"):
+		boss_instance.set_physics_process(false)
+	swap_ui_requested.emit(remaining)
+
+
+func select_swap_fish(fish_index: int) -> void:
+	# Called by swap UI when player picks their next fish
+	if boss_instance and boss_instance.has_method("set_physics_process"):
+		boss_instance.set_physics_process(true)
+	spawn_fish(fish_index)
+
+
+func _get_remaining_fish() -> Array:
+	var remaining := []
+	for i in tribute_fish.size():
+		if tribute_fish[i] != null:
+			remaining.append(i)
+	return remaining
+
+
+func _clear_bullets() -> void:
+	for bullet in get_tree().get_nodes_in_group("boss_bullet"):
+		bullet.queue_free()
+
+
+# ==========================================================================
+# VICTORY / DEFEAT
+# ==========================================================================
+
+func _on_boss_defeated() -> void:
+	state = BattleState.VICTORY
+	if combat_fish_instance:
+		combat_fish_instance.set_physics_process(false)
+	boss_defeated.emit(boss_instance)
+	_consume_tribute()
 	end_boss_battle(true)
 
-func end_boss_battle(victory: bool):
-	if boss_instance:
+
+func _on_defeat() -> void:
+	state = BattleState.DEFEAT
+	_consume_tribute()
+	end_boss_battle(false)
+
+
+func _consume_tribute() -> void:
+	# All 3 fish are consumed win or lose
+	tribute_consumed.emit(tribute_fish)
+
+
+func end_boss_battle(victory: bool) -> void:
+	state = BattleState.INACTIVE
+	if combat_fish_instance:
+		combat_fish_instance.queue_free()
+		combat_fish_instance = null
+	if boss_instance and is_instance_valid(boss_instance):
 		boss_instance.queue_free()
+		boss_instance = null
 	if arena_instance:
 		arena_instance.queue_free()
-	emit_signal("battle_ended", victory)
+		arena_instance = null
+	battle_ended.emit(victory)
+
+
+# ==========================================================================
+# LEGACY API (kept for compatibility)
+# ==========================================================================
+
+func start_boss_battle_by_name(boss_name: String) -> void:
+	if boss_data.has(boss_name):
+		begin_tribute_selection(boss_name, [])
+	else:
+		push_error("Unknown boss name: %s" % boss_name)

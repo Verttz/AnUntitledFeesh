@@ -8,17 +8,26 @@ Boss script for the Croak King. Handles phase transitions, minion ceremonies, an
 """
 
 # --- Boss State ---
+signal ceremony_started
+signal arena_flooded
+signal throne_destroyed
+signal throne_hopped
+signal finale_wild_enrage
+signal finale_composed_enrage
+signal croak_king_defeated
+
 var throne = null # Reference to the throne node
 var ceremony_timer = null # Timer for knighting ceremonies
 var flood_timer = null # Timer for arena flooding
 var finale = false # Finale state
-var throne_destroyed = false # Whether the throne has been destroyed
+var is_throne_destroyed = false # Whether the throne has been destroyed
 var converted_minions = [] # List of minions converted to the player's side
 
 func _ready():
 	"""
 	Initializes boss state, finds throne, and starts phase and event timers.
 	"""
+	max_health = 60000
 	health = max_health
 	if has_node("../Throne"): throne = get_node("../Throne")
 	start_phase(1)
@@ -30,7 +39,7 @@ func start_phase(new_phase):
 	Changes the boss phase and starts appropriate attacks for the phase.
 	"""
 	phase = new_phase
-	emit_signal("phase_changed", phase)
+	phase_changed.emit(phase)
 	if phase == 1:
 		start_attack("lily_pad_barrage")
 	elif phase == 2:
@@ -53,7 +62,7 @@ func start_attack(attack_name):
 	"""
 	Starts the specified attack by name.
 	"""
-	emit_signal("attack_started", attack_name)
+	attack_started.emit(attack_name)
 	match attack_name:
 		"lily_pad_barrage":
 			lily_pad_barrage()
@@ -89,9 +98,9 @@ func bug_buffet():
 
 func throne_hop():
 	# Jumps to throne or lily pad, creates waves
-	if throne and not throne_destroyed:
+	if throne and not is_throne_destroyed:
 		position = throne.position + Vector2(randf_range(-40,40), -20)
-		emit_signal("throne_hop")
+		throne_hopped.emit()
 
 func start_ceremony_timer():
 	ceremony_timer = Timer.new()
@@ -110,7 +119,7 @@ func _on_ceremony():
 	ceremony.minion_knighted.connect(on_minion_knighted)
 	ceremony.ceremony_interrupted.connect(on_ceremony_interrupted)
 	get_parent().add_child(ceremony)
-	emit_signal("ceremony_started", ceremony)
+	ceremony_started.emit(ceremony)
 
 func on_minion_converted(minion):
 	converted_minions.append(minion)
@@ -135,12 +144,12 @@ func _on_flood_event():
 	var arena = get_tree().get_root().find_child("CroakKingArena", true, false)
 	if arena and arena.has_method("toggle_flood"):
 		arena.toggle_flood()
-	emit_signal("arena_flooded")
+	arena_flooded.emit()
 
 func on_throne_damaged():
-	if throne and throne.health <= 0 and not throne_destroyed:
-		throne_destroyed = true
-		emit_signal("throne_destroyed")
+	if throne and throne.health <= 0 and not is_throne_destroyed:
+		is_throne_destroyed = true
+		throne_destroyed.emit()
 		check_finale_state()
 
 func check_finale_state():
@@ -149,26 +158,26 @@ func check_finale_state():
 
 func start_finale():
 	finale = true
-	if throne_destroyed:
+	if is_throne_destroyed:
 		# Wild enrage, mass minion conversion, unstable arena
 		for m in get_tree().get_nodes_in_group("minions"):
 			if m.loyalty != "player":
 				m.set_loyalty("player")
 				converted_minions.append(m)
-		emit_signal("finale_wild_enrage")
+		finale_wild_enrage.emit()
 		# Hazards trigger randomly
 		for i in range(3):
 			mud_toss()
 			bug_buffet()
 	else:
 		# Composed enrage, desperate defense
-		emit_signal("finale_composed_enrage")
+		finale_composed_enrage.emit()
 		start_attack("royal_croak")
 		start_attack("minion_frogs")
 
 func on_croak_king_defeated():
 	# Victory flair: buried in mud, minion celebration
-	emit_signal("croak_king_defeated")
+	croak_king_defeated.emit()
 	$VictoryEffect.show()
 	$VictoryEffect.play("victory")
 	$Sprite.play("buried_in_mud")

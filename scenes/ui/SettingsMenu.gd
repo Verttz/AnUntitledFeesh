@@ -3,8 +3,8 @@ extends Control
 # Simple settings menu for volume control
 
 func _ready():
-    $Panel/VBoxContainer/VolumeSlider.connect("value_changed", self, "_on_volume_changed")
-    $Panel/VBoxContainer/BackButton.connect("pressed", self, "_on_back_pressed")
+    $Panel/VBoxContainer/VolumeSlider.value_changed.connect(_on_volume_changed)
+    $Panel/VBoxContainer/BackButton.pressed.connect(_on_back_pressed)
     $Panel/VBoxContainer/VolumeSlider.value = AudioServer.get_bus_volume_db(0)
 
 func open():
@@ -16,12 +16,7 @@ func close():
 
 func _on_volume_changed(value):
     # Set master bus volume (bus 0)
-    AudioServer.set_bus_volume_db(0, linear2db(value))
+    AudioServer.set_bus_volume_db(0, linear_to_db(value))
 
 func _on_back_pressed():
     close()
-
-func linear2db(linear):
-    if linear <= 0:
-        return -80
-    return 20 * log10(linear)

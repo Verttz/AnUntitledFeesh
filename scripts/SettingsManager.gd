@@ -23,6 +23,9 @@ var settings = {
     "language": 0          # Language index
 }
 
+func _ready():
+    load_settings()
+
 func save_settings():
     """
     Saves the current settings to disk.
@@ -35,13 +38,19 @@ func save_settings():
 
 func load_settings():
     """
-    Loads settings from disk, or uses defaults if no file is found.
+    Loads settings from disk, merging with defaults so new keys are preserved.
     """
     if not FileAccess.file_exists(settings_path):
         print("No settings file found. Using defaults.")
         return
     var file = FileAccess.open(settings_path, FileAccess.READ)
     if file:
-        settings = file.get_var()
+        var loaded = file.get_var(true)
         file.close()
-        print("Settings loaded.")
+        if loaded != null and typeof(loaded) == TYPE_DICTIONARY:
+            for key in settings.keys():
+                if key in loaded:
+                    settings[key] = loaded[key]
+            print("Settings loaded.")
+        else:
+            print("Invalid settings data. Using defaults.")

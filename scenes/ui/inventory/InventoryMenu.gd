@@ -18,7 +18,7 @@ func open(backpack, tacklebox):
     _populate_tacklebox()
 
 func _ready():
-    close_button.connect("pressed", self, "_on_close_pressed")
+    close_button.pressed.connect(_on_close_pressed)
     visible = false
     # Connect drag-and-drop handlers to backpack grid
     if backpack_grid:
@@ -108,9 +108,9 @@ func _populate_tacklebox():
 
 func _create_item_icon(item_name, amount):
     var btn = Button.new()
-    btn.text = str(item_name) + (amount > 1 ? " x" + str(amount) : "")
+    btn.text = str(item_name) + (" x" + str(amount) if amount > 1 else "")
     btn.draggable = true
-    btn.connect("gui_input", self, "_on_item_icon_gui_input", [item_name, amount, btn])
+    btn.gui_input.connect(_on_item_icon_gui_input.bind(item_name, amount, btn))
     btn.set_meta("item_name", item_name)
     btn.set_meta("amount", amount)
     # TODO: Set icon texture, tooltip, signals
@@ -118,7 +118,7 @@ func _create_item_icon(item_name, amount):
 
 # Drag-and-drop logic for item icons
 func _on_item_icon_gui_input(event, item_name, amount, btn):
-    if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
+    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
         btn.grab_focus()
     if event is InputEventMouseMotion and btn.has_focus():
         var drag_data = {

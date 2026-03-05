@@ -3,6 +3,14 @@ extends "res://scripts/bosses/Boss.gd"
 
 ## Guppazuma the Idol King - Finalized Design Implementation
 
+signal cheer_wave_player
+signal confetti_safe_zones
+signal confetti_hazard
+signal idol_vote_player
+signal idol_vote_guppazuma
+signal idol_vote_tie
+signal guppazuma_defeated
+
 var favor = 0 # -100 (crowd loves Guppazuma) to 100 (crowd loves player)
 var favor_totems = null
 var crowd_audio = null
@@ -12,6 +20,7 @@ var phase_thresholds = [75, 50, 25]
 var current_phase = 1
 
 func _ready():
+	max_health = 50000
 	health = max_health
 	current_phase = 1
 	if has_node("../FavorTotems"): favor_totems = get_node("../FavorTotems")
@@ -47,13 +56,13 @@ func fruit_toss():
 	var fruit_scene = preload("res://scenes/arenas/Fruit.tscn")
 	var fruit = fruit_scene.instantiate()
 	fruit.position = global_position + Vector2(randf_range(-200,200), -250)
-	fruit.target = favor > 0 ? "Player" : "Guppazuma"
+	fruit.target = "Player" if favor > 0 else "Guppazuma"
 	get_parent().add_child(fruit)
 
 func cheer_wave():
 	if favor > 0:
 		# Player favored: clear bullets, slow boss
-		emit_signal("cheer_wave_player")
+		cheer_wave_player.emit()
 		set_physics_process(false)
 		await get_tree().create_timer(1.0).timeout
 		set_physics_process(true)
@@ -63,16 +72,16 @@ func cheer_wave():
 		for i in range(12):
 			var proj = proj_scene.instantiate()
 			proj.position = global_position
-			proj.linear_velocity = Vector2.RIGHT.rotated(deg2rad(i*30)) * 350
+			proj.linear_velocity = Vector2.RIGHT.rotated(deg_to_rad(i*30)) * 350
 			get_parent().add_child(proj)
 
 func confetti_storm():
 	if favor > 0:
 		# Player favored: highlight safe zones
-		emit_signal("confetti_safe_zones")
+		confetti_safe_zones.emit()
 	else:
 		# Guppazuma favored: obscure vision
-		emit_signal("confetti_hazard")
+		confetti_hazard.emit()
 
 func rotten_fruit_or_peel():
 	var is_peel = randi() % 2 == 0
@@ -91,7 +100,7 @@ func wild_animal_interference():
 	var animal_scene = preload("res://scenes/arenas/WildAnimal.tscn")
 	var animal = animal_scene.instantiate()
 	animal.position = global_position + Vector2(randf_range(-250,250), -300)
-	animal.target = favor > 0 ? "Guppazuma" : "Player"
+	animal.target = "Guppazuma" if favor > 0 else "Player"
 	get_parent().add_child(animal)
 
 func boo_bomb():
@@ -112,22 +121,22 @@ func _on_voting_moment():
 	if favor > 20:
 		# Player wins vote: Guppazuma stunned
 		set_vulnerable(true)
-		emit_signal("idol_vote_player")
+		idol_vote_player.emit()
 		await get_tree().create_timer(2.0).timeout
 		set_vulnerable(false)
 	elif favor < -20:
 		# Guppazuma wins vote: gets buff
-		emit_signal("idol_vote_guppazuma")
+		idol_vote_guppazuma.emit()
 		# Example: speed up attacks
 		for t in attack_timers.values():
 			t.wait_time = max(1.0, t.wait_time * 0.7)
 	else:
 		# Tie: both get minor effects
-		emit_signal("idol_vote_tie")
+		idol_vote_tie.emit()
 
 func start_phase(new_phase):
 	phase = new_phase
-	emit_signal("phase_changed", phase)
+	phase_changed.emit(phase)
 	if phase == 1:
 		_start_phase1()
 	elif phase == 2:
@@ -262,7 +271,7 @@ func mimic_ranged(direction):
 	for i in range(5):
 		var proj = proj_scene.instantiate()
 		proj.position = global_position
-		proj.linear_velocity = direction.rotated(deg2rad(-20 + 10*i)) * 400
+		proj.linear_velocity = direction.rotated(deg_to_rad(-20 + 10*i)) * 400
 		get_parent().add_child(proj)
 
 func mimic_spin():
@@ -331,7 +340,7 @@ func take_damage(amount):
 			check_phase_transition()
 func on_guppazuma_defeated():
 	# Victory flair: bow, crack, gems/confetti shower, crowd goes wild
-	emit_signal("guppazuma_defeated")
+	guppazuma_defeated.emit()
 	$VictoryEffect.show()
 	$VictoryEffect.play("victory")
 	$Sprite.play("bow_and_crack")
