@@ -21,6 +21,11 @@ signal club_door_opened
 signal victory_flair
 
 
+var _attack_queue := []
+var _attack_index := 0
+var _rotation_timer: Timer = null
+
+
 func _ready():
 	max_health = 45000
 	health = max_health
@@ -60,23 +65,36 @@ func create_velvet_rope(pos):
 func start_phase(new_phase):
 	phase = new_phase
 	phase_changed.emit(phase)
+	if _rotation_timer:
+		_rotation_timer.stop()
+		_rotation_timer.queue_free()
+		_rotation_timer = null
 	if phase == 1:
-		start_attack("bouncer_bash")
-		start_attack("bubblegum_bomb")
-		start_attack("velvet_rope_control")
-		start_attack("guest_list_gimmick")
-		start_attack("ruffian_roll_call")
-		start_attack("no_splash_zone")
-		start_attack("beach_crowd_interference")
+		_attack_queue = ["bouncer_bash", "bubblegum_bomb", "velvet_rope_control", "guest_list_gimmick", "ruffian_roll_call", "no_splash_zone", "beach_crowd_interference"]
+		_attack_index = 0
+		_start_rotation(3.5)
 	elif phase == 2:
 		serious_mode = true
 		rip_off_bowtie()
-		start_attack("bouncer_bash", fast=true)
-		start_attack("bubblegum_bomb", fast=true)
-		start_attack("velvet_rope_control", double=true)
-		start_attack("ruffian_roll_call", fast=true)
-		start_attack("no_splash_zone", fast=true)
-		start_attack("beach_crowd_interference", fast=true)
+		_attack_queue = ["bouncer_bash", "bubblegum_bomb", "velvet_rope_control", "ruffian_roll_call", "no_splash_zone", "beach_crowd_interference"]
+		_attack_index = 0
+		_start_rotation(2.5)
+
+func _start_rotation(interval: float) -> void:
+	_rotation_timer = Timer.new()
+	_rotation_timer.wait_time = interval
+	_rotation_timer.one_shot = false
+	_rotation_timer.timeout.connect(_next_queued_attack)
+	add_child(_rotation_timer)
+	_rotation_timer.start()
+	_next_queued_attack()
+
+func _next_queued_attack() -> void:
+	if _attack_queue.is_empty():
+		return
+	var attack_name = _attack_queue[_attack_index]
+	_attack_index = (_attack_index + 1) % _attack_queue.size()
+	start_attack(attack_name, phase == 2)
 
 
 func check_phase_transition():

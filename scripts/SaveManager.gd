@@ -9,7 +9,9 @@ Singleton for save/load and autosave functionality. Handles serialization of pla
 
 # --- Save Data Structure ---
 var save_path := "user://savegame.dat" # Path to save file
+const SAVE_VERSION := 1
 var save_data = {
+    "version": SAVE_VERSION,
     "player": {},   # Player inventory, gold, equipment, position
     "world": {},    # World state (biomes, bosses, etc.)
     "progress": {}, # Quest and unlock progress
@@ -17,12 +19,19 @@ var save_data = {
     "settings": {}  # Player settings/preferences
 }
 
+func _get_player() -> Node:
+    var players = get_tree().get_nodes_in_group("player")
+    if players.size() > 0:
+        return players[0]
+    return get_tree().get_root().find_child("Player", true, false)
+
 func save_game():
     """
     Saves the current game state to disk. Serializes all player data, world state, and progression.
     """
+    save_data["version"] = SAVE_VERSION
     # Save player data
-    var player = get_tree().get_root().find_child("Player", true, false)
+    var player = _get_player()
     if player:
         save_data["player"]["backpack"] = player.backpack.to_dict()
         save_data["player"]["tacklebox"] = player.tacklebox.to_dict()
@@ -84,8 +93,11 @@ func load_game():
         push_error("Invalid save data.")
         return false
     
+    # Migrate old save formats
+    _migrate_save_data()
+    
     # Restore player data
-    var player = get_tree().get_root().find_child("Player", true, false)
+    var player = _get_player()
     if player and "player" in save_data:
         if "backpack" in save_data["player"]:
             player.backpack.from_dict(save_data["player"]["backpack"])
@@ -214,3 +226,13 @@ func get_save_info() -> Dictionary:
 #   SaveManager.get_save_info()
 
 # Make sure to add SaveManager.gd as an autoload singleton in your project settings.
+
+func _migrate_save_data() -> void:
+    var version = save_data.get("version", 0)
+    if version < 1:
+        # Pre-versioned saves: ensure all expected keys exist
+        for key in ["player", "world", "progress", "quests", "settings"]:
+            if key not in save_data:
+                save_data[key] = {}
+        save_data["version"] = SAVE_VERSION
+    # Future migrations: if version < 2: ... etc.

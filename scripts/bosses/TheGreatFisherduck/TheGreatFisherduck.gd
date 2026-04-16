@@ -11,6 +11,10 @@ var junk_list = []
 var junk_types = ["boot", "can", "lawn_chair", "tackle_box"]
 var max_junk = 12
 
+var _attack_queue := []
+var _attack_index := 0
+var _rotation_timer: Timer = null
+
 func _ready():
 	max_health = 20000
 	health = max_health
@@ -23,23 +27,35 @@ func start_phase(new_phase):
 	$QuackSound.play()
 	phase = new_phase
 	phase_changed.emit(phase)
+	if _rotation_timer:
+		_rotation_timer.stop()
+		_rotation_timer.queue_free()
+		_rotation_timer = null
 	if phase == 1:
-		start_attack("rod_and_reel")
-		start_attack("multi_lure_mayhem")
-		start_attack("tangled_line")
-		start_attack("trophy_toss")
-		start_attack("bait_and_switch")
-		start_attack("duckling_gang")
-		start_attack("dive_bomb")
+		_attack_queue = ["rod_and_reel", "multi_lure_mayhem", "tangled_line", "trophy_toss", "bait_and_switch", "duckling_gang", "dive_bomb"]
+		_attack_index = 0
+		_start_rotation(3.0)
 	elif phase == 2:
 		start_attack("giant_golden_duckling")
-		start_attack("rod_and_reel", fast=true)
-		start_attack("multi_lure_mayhem", fast=true)
-		start_attack("tangled_line", fast=true)
-		start_attack("trophy_toss", fast=true)
-		start_attack("bait_and_switch", fast=true)
-		start_attack("duckling_gang", fast=true)
-		start_attack("dive_bomb", fast=true)
+		_attack_queue = ["rod_and_reel", "multi_lure_mayhem", "tangled_line", "trophy_toss", "bait_and_switch", "duckling_gang", "dive_bomb"]
+		_attack_index = 0
+		_start_rotation(2.0)
+
+func _start_rotation(interval: float) -> void:
+	_rotation_timer = Timer.new()
+	_rotation_timer.wait_time = interval
+	_rotation_timer.one_shot = false
+	_rotation_timer.timeout.connect(_next_queued_attack)
+	add_child(_rotation_timer)
+	_rotation_timer.start()
+	_next_queued_attack()
+
+func _next_queued_attack() -> void:
+	if _attack_queue.is_empty():
+		return
+	var attack_name = _attack_queue[_attack_index]
+	_attack_index = (_attack_index + 1) % _attack_queue.size()
+	start_attack(attack_name, phase == 2)
 
 func check_phase_transition():
 	if health <= max_health * 0.3 and phase == 1:
@@ -186,13 +202,6 @@ func on_phase2_erratic():
 	# Hat falls over eyes, attacks become wild
 	attack_started.emit("erratic")
 
-func _on_disarmed():
-	$StunEffect.show()
-	$StunEffect.play("stun")
-	set_vulnerable(true)
-	await get_tree().create_timer(2.0).timeout
-	set_vulnerable(false)
-
 func spawn_giant_golden_duckling():
 	$SparkleEffect.show()
 	$SparkleEffect.play("sparkle")
@@ -234,7 +243,7 @@ func spawn_junk(junk_type, pos):
 	var arena_bounds = Rect2(Vector2(0,0), Vector2(1024,768))
 	var clamped_pos = pos.clamped(arena_bounds.size) + arena_bounds.position
 	var scene_path = "res://scenes/arenas/Junk_%s.tscn" % junk_type.capitalize()
-	var junk = preload(scene_path).instantiate()
+	var junk = load(scene_path).instantiate()
 	junk.position = clamped_pos
 	get_parent().add_child(junk)
 	junk_list.append(junk)

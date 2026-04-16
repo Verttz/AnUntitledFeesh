@@ -1,0 +1,163 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/CombatHUD.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/FishSwapPanel.tscn" id="2"]
+
+[node name="CombatHUD" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1")
+
+# === TOP PANEL: Boss info ===
+[node name="TopPanel" type="PanelContainer" parent="."]
+anchors_preset = 10
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="BossNameLabel" type="Label" parent="TopPanel"]
+layout_mode = 2
+offset_left = 10.0
+offset_top = 4.0
+offset_right = 300.0
+offset_bottom = 24.0
+text = "Boss Name"
+horizontal_alignment = 0
+
+[node name="BossPhaseLabel" type="Label" parent="TopPanel"]
+layout_mode = 2
+offset_left = 310.0
+offset_top = 4.0
+offset_right = 500.0
+offset_bottom = 24.0
+text = "Phase 1"
+horizontal_alignment = 0
+
+[node name="BossHPBar" type="ProgressBar" parent="TopPanel"]
+layout_mode = 2
+offset_left = 10.0
+offset_top = 28.0
+offset_right = 1270.0
+offset_bottom = 48.0
+max_value = 5000.0
+value = 5000.0
+show_percentage = false
+
+[node name="BossHPLabel" type="Label" parent="TopPanel"]
+layout_mode = 2
+offset_left = 540.0
+offset_top = 28.0
+offset_right = 740.0
+offset_bottom = 48.0
+text = "5000 / 5000"
+horizontal_alignment = 1
+
+# === BOTTOM PANEL: Fish info ===
+[node name="BottomPanel" type="PanelContainer" parent="."]
+anchors_preset = 12
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -90.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="FishNameLabel" type="Label" parent="BottomPanel"]
+layout_mode = 2
+offset_left = 10.0
+offset_top = 4.0
+offset_right = 250.0
+offset_bottom = 24.0
+text = "Fish Name"
+horizontal_alignment = 0
+
+[node name="WeaponLabel" type="Label" parent="BottomPanel"]
+layout_mode = 2
+offset_left = 260.0
+offset_top = 4.0
+offset_right = 600.0
+offset_bottom = 24.0
+text = "Weapon (Type)"
+horizontal_alignment = 0
+
+[node name="SpecialLabel" type="Label" parent="BottomPanel"]
+layout_mode = 2
+offset_left = 610.0
+offset_top = 4.0
+offset_right = 850.0
+offset_bottom = 24.0
+text = "Special: None"
+horizontal_alignment = 0
+
+[node name="FishHPBar" type="ProgressBar" parent="BottomPanel"]
+layout_mode = 2
+offset_left = 10.0
+offset_top = 28.0
+offset_right = 910.0
+offset_bottom = 48.0
+max_value = 1000.0
+value = 1000.0
+show_percentage = false
+
+[node name="FishHPLabel" type="Label" parent="BottomPanel"]
+layout_mode = 2
+offset_left = 360.0
+offset_top = 28.0
+offset_right = 560.0
+offset_bottom = 48.0
+text = "1000 / 1000"
+horizontal_alignment = 1
+
+[node name="SpecialCDBar" type="ProgressBar" parent="BottomPanel"]
+layout_mode = 2
+offset_left = 10.0
+offset_top = 56.0
+offset_right = 250.0
+offset_bottom = 72.0
+max_value = 20.0
+value = 0.0
+show_percentage = false
+
+# === SWAP PANEL: Fish selection on death ===
+[node name="SwapPanel" parent="." instance=ExtResource("2")]
+
+# === RESULT PANEL: Victory/Defeat ===
+[node name="ResultPanel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -80.0
+offset_right = 250.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResultLabel" type="Label" parent="ResultPanel"]
+layout_mode = 2
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 480.0
+offset_bottom = 140.0
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+
+# === INFO LABEL: Controls hint ===
+[node name="InfoLabel" type="Label" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -110.0
+offset_right = 400.0
+offset_bottom = -94.0
+text = "WASD: Move | Click: Attack | Right-Click: Special | R: Restart"
+horizontal_alignment = 1

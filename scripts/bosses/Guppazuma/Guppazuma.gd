@@ -240,11 +240,14 @@ func arena_shift():
 var last_mimic_direction = Vector2.RIGHT
 func mimicry_attack():
 	# Copies player's last attack/move in exaggerated fashion
-	var player = get_tree().get_root().find_child("Player", true, false)
-	if not player:
-		return
-	var move_type = player.get_last_move_type() # e.g. "dash", "ranged", "circle"
-	last_mimic_direction = player.get_last_move_direction()
+	var combat_fish = get_tree().get_first_node_in_group("combat_fish") if get_tree().has_group("combat_fish") else null
+	if combat_fish == null:
+		combat_fish = get_tree().get_root().find_child("CombatFish", true, false)
+	var move_type = "dash"
+	if combat_fish and combat_fish.has_method("get_last_move_type"):
+		move_type = combat_fish.get_last_move_type()
+	if combat_fish and combat_fish.has_method("get_last_move_direction"):
+		last_mimic_direction = combat_fish.get_last_move_direction()
 	match move_type:
 		"dash":
 			# Heavy sliding dash with shockwave

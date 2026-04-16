@@ -17,6 +17,14 @@ var unlocked_bait := []
 var completed_quests := []
 var upgrades := []
 var fish_collected := {}
+var fish_currency := 0
+var available_upgrades := ["Rod1", "Rod2", "Boat", "BaitBag"]
+
+func add_fish_currency(amount: int) -> void:
+	fish_currency += amount
+
+func can_purchase(upgrade_name: String, cost: int) -> bool:
+	return fish_currency >= cost and not upgrades.has(upgrade_name)
 
 func enter_biome(biome_name):
 	current_biome = biome_name
@@ -80,7 +88,7 @@ func transition_to_next_biome():
 
 func get_next_biome():
 	# Updated biome order
-	var biome_order = ["RiverLake", "Ocean", "JungleWetlands", "FrozenMountain", "Lava", "FishingSanctum"]
+	var biome_order = ["Forest", "Ocean", "Jungle", "FrozenMountain", "Lava", "FishingSanctum"]
 	var idx = biome_order.find(current_biome)
 	if idx != -1 and idx < biome_order.size() - 1:
 		return biome_order[idx + 1]

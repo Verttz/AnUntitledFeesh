@@ -9,7 +9,7 @@ func show_inventory(player):
         inventory_menu = preload("res://scenes/ui/inventory/InventoryMenu.tscn").instantiate()
         get_tree().get_root().add_child(inventory_menu)
     inventory_menu.open(player.backpack, player.tacklebox)
-    inventory_menu.raise_()
+    inventory_menu.move_to_front()
     inventory_menu.visible = true
 
 func hide_inventory():

@@ -1,6 +1,6 @@
+# DEPRECATED — This file is superseded by scenes/ui/inventory/InventoryMenu.gd
+# Safe to delete this file and scenes/ui/InventoryUI.tscn
 extends Control
-
-# InventoryUI.gd: Handles displaying and interacting with the player's inventory
 
 signal item_selected(item_name, item_data)
 
@@ -17,7 +17,8 @@ func open(inventory):
 
 func _populate_items():
     var grid = $Panel/ItemGrid
-    grid.clear()
+    for child in grid.get_children():
+        child.queue_free()
     if not inventory_ref:
         return
     var items = inventory_ref.get_items()

@@ -5,7 +5,10 @@ extends Control
 func _ready():
     $Panel/VBoxContainer/VolumeSlider.value_changed.connect(_on_volume_changed)
     $Panel/VBoxContainer/BackButton.pressed.connect(_on_back_pressed)
-    $Panel/VBoxContainer/VolumeSlider.value = AudioServer.get_bus_volume_db(0)
+    $Panel/VBoxContainer/VolumeSlider.min_value = 0.0
+    $Panel/VBoxContainer/VolumeSlider.max_value = 1.0
+    $Panel/VBoxContainer/VolumeSlider.step = 0.01
+    $Panel/VBoxContainer/VolumeSlider.value = db_to_linear(AudioServer.get_bus_volume_db(0))
 
 func open():
     visible = true

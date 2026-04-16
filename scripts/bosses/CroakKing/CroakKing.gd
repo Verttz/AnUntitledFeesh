@@ -23,6 +23,10 @@ var finale = false # Finale state
 var is_throne_destroyed = false # Whether the throne has been destroyed
 var converted_minions = [] # List of minions converted to the player's side
 
+var _attack_queue := []
+var _attack_index := 0
+var _rotation_timer: Timer = null
+
 func _ready():
 	"""
 	Initializes boss state, finds throne, and starts phase and event timers.
@@ -40,13 +44,34 @@ func start_phase(new_phase):
 	"""
 	phase = new_phase
 	phase_changed.emit(phase)
+	if _rotation_timer:
+		_rotation_timer.stop()
+		_rotation_timer.queue_free()
+		_rotation_timer = null
 	if phase == 1:
-		start_attack("lily_pad_barrage")
+		_attack_queue = ["lily_pad_barrage"]
+		_attack_index = 0
+		_start_rotation(4.0)
 	elif phase == 2:
-		start_attack("royal_croak")
-		start_attack("mud_toss")
-		start_attack("bug_buffet")
-		start_attack("throne_hop")
+		_attack_queue = ["royal_croak", "mud_toss", "bug_buffet", "throne_hop"]
+		_attack_index = 0
+		_start_rotation(3.0)
+
+func _start_rotation(interval: float) -> void:
+	_rotation_timer = Timer.new()
+	_rotation_timer.wait_time = interval
+	_rotation_timer.one_shot = false
+	_rotation_timer.timeout.connect(_next_queued_attack)
+	add_child(_rotation_timer)
+	_rotation_timer.start()
+	_next_queued_attack()
+
+func _next_queued_attack() -> void:
+	if _attack_queue.is_empty():
+		return
+	var attack_name = _attack_queue[_attack_index]
+	_attack_index = (_attack_index + 1) % _attack_queue.size()
+	start_attack(attack_name)
 
 func check_phase_transition():
 	"""
@@ -226,9 +251,8 @@ func _on_tongue_grabbed():
 	await get_tree().create_timer(1.5).timeout
 	set_vulnerable(false)
 func take_damage(amount):
-	health -= amount
+	super(amount)
 	if health <= 0:
-		health = 0
 		on_croak_king_defeated()
 	else:
 		check_phase_transition()

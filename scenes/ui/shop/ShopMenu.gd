@@ -39,46 +39,61 @@ func _on_close_pressed():
     visible = false
 
 func _populate_shop():
-    shop_grid.clear()
+    for child in shop_grid.get_children():
+        child.queue_free()
     for item in shop_inventory:
         var icon = _create_item_icon(item, buy_prices.get(item, 0), true)
         shop_grid.add_child(icon)
 
 func _populate_player():
-    player_grid.clear()
+    for child in player_grid.get_children():
+        child.queue_free()
     var items = player_inventory.get_items()
     for k in items.keys():
         var icon = _create_item_icon(k, sell_prices.get(k, 0), false)
         player_grid.add_child(icon)
 
 func _create_item_icon(item_name, price, is_shop):
-    var btn = Button.new()
-    btn.text = str(item_name) + (" (" + str(price) + ")" if price > 0 else "")
-    btn.draggable = true
-    btn.set_meta("item_name", item_name)
-    btn.set_meta("is_shop", is_shop)
-    btn.gui_input.connect(_on_item_icon_gui_input.bind(item_name, price, is_shop, btn))
-    return btn
+    var slot = _ShopSlot.new()
+    slot.item_name = item_name
+    slot.price = price
+    slot.is_shop = is_shop
+    slot.shop_menu = self
+    slot.custom_minimum_size = Vector2(64, 64)
+    var label = Label.new()
+    label.text = str(item_name) + (" (" + str(price) + "g)" if price > 0 else "")
+    label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+    slot.add_child(label)
+    return slot
 
-func _on_item_icon_gui_input(event, item_name, price, is_shop, btn):
-    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-        btn.grab_focus()
-    if event is InputEventMouseMotion and btn.has_focus():
-        var drag_data = {
-            "item_name": item_name,
-            "price": price,
-            "is_shop": is_shop
-        }
-        btn.release_focus()
-        set_drag_preview(btn.duplicate())
-        set_drag_data(drag_data, btn)
-
-func can_drop_data(position, data):
+func _can_drop_data(_at_position, data):
     return typeof(data) == TYPE_DICTIONARY and data.has("item_name")
 
-func drop_data(position, data):
-    # Determine if buying or selling
-    if data.is_shop:
-        item_bought.emit(data.item_name)
+func _drop_data(_at_position, data):
+    if data.get("is_shop", false):
+        item_bought.emit(data["item_name"])
     else:
-        item_sold.emit(data.item_name)
+        item_sold.emit(data["item_name"])
+
+
+# Inner class: draggable shop item slot using Godot 4 API
+class _ShopSlot extends Panel:
+    var item_name: String = ""
+    var price: int = 0
+    var is_shop: bool = false
+    var shop_menu = null
+
+    func _get_drag_data(_at_position):
+        var data = {"item_name": item_name, "price": price, "is_shop": is_shop}
+        var preview = Label.new()
+        preview.text = item_name
+        set_drag_preview(preview)
+        return data
+
+    func _can_drop_data(_at_position, data):
+        return typeof(data) == TYPE_DICTIONARY and data.has("item_name")
+
+    func _drop_data(_at_position, data):
+        if shop_menu:
+            shop_menu._drop_data(_at_position, data)

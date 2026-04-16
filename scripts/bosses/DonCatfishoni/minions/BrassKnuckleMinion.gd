@@ -6,13 +6,15 @@ var attack_range := 32
 var attack_cooldown := 1.2
 var attack_timer := 0.0
 
-func _process(delta):
+func _physics_process(delta):
 	if not is_instance_valid(player):
 		return
 	var to_player = player.global_position - global_position
 	if to_player.length() > attack_range:
-		move_and_slide(to_player.normalized() * speed)
+		velocity = to_player.normalized() * speed
+		move_and_slide()
 	else:
+		velocity = Vector2.ZERO
 		attack_timer -= delta
 		if attack_timer <= 0.0:
 			attack_player()

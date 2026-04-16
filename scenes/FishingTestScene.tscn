@@ -1,0 +1,179 @@
+[gd_scene load_steps=4 format=3 uid="uid://fishing_test"]
+
+[ext_resource type="Script" path="res://scenes/FishingTestScene.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/Player.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/FishingHUD.tscn" id="3"]
+
+[node name="FishingTestScene" type="Node2D"]
+script = ExtResource("1")
+
+# ============================================================
+# Ground / Background
+# ============================================================
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1024.0
+offset_bottom = 600.0
+color = Color(0.18, 0.35, 0.18)
+
+[node name="WaterRect" type="ColorRect" parent="."]
+offset_left = 400.0
+offset_top = 0.0
+offset_right = 1024.0
+offset_bottom = 600.0
+color = Color(0.15, 0.3, 0.55, 0.6)
+
+[node name="WaterLabel" type="Label" parent="WaterRect"]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 200.0
+offset_bottom = 30.0
+text = "~ Water ~"
+
+# ============================================================
+# Player
+# ============================================================
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(200, 300)
+script = ExtResource("2")
+
+[node name="PlayerBody" type="ColorRect" parent="Player"]
+offset_left = -12.0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 12.0
+color = Color(1.0, 0.85, 0.3)
+
+[node name="PlayerLabel" type="Label" parent="Player"]
+offset_left = -20.0
+offset_top = -30.0
+offset_right = 20.0
+offset_bottom = -14.0
+text = "You"
+horizontal_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+
+# ============================================================
+# Fishing Spots (proximity-based interaction)
+# ============================================================
+[node name="FishingSpots" type="Node2D" parent="."]
+
+[node name="LakeSpot" type="Node2D" parent="FishingSpots"]
+position = Vector2(450, 200)
+
+[node name="Marker" type="ColorRect" parent="FishingSpots/LakeSpot"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.2, 0.5, 1.0, 0.7)
+
+[node name="Label" type="Label" parent="FishingSpots/LakeSpot"]
+offset_left = -30.0
+offset_top = -38.0
+offset_right = 30.0
+offset_bottom = -22.0
+text = "Lake"
+horizontal_alignment = 1
+
+[node name="RangeCircle" type="ColorRect" parent="FishingSpots/LakeSpot"]
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+color = Color(0.2, 0.5, 1.0, 0.1)
+
+[node name="PondSpot" type="Node2D" parent="FishingSpots"]
+position = Vector2(550, 420)
+
+[node name="Marker" type="ColorRect" parent="FishingSpots/PondSpot"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.3, 0.7, 0.9, 0.7)
+
+[node name="Label" type="Label" parent="FishingSpots/PondSpot"]
+offset_left = -30.0
+offset_top = -38.0
+offset_right = 30.0
+offset_bottom = -22.0
+text = "Pond"
+horizontal_alignment = 1
+
+[node name="RangeCircle" type="ColorRect" parent="FishingSpots/PondSpot"]
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+color = Color(0.3, 0.7, 0.9, 0.1)
+
+[node name="RiverSpot" type="Node2D" parent="FishingSpots"]
+position = Vector2(700, 150)
+
+[node name="Marker" type="ColorRect" parent="FishingSpots/RiverSpot"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.1, 0.4, 0.8, 0.7)
+
+[node name="Label" type="Label" parent="FishingSpots/RiverSpot"]
+offset_left = -30.0
+offset_top = -38.0
+offset_right = 30.0
+offset_bottom = -22.0
+text = "River"
+horizontal_alignment = 1
+
+[node name="RangeCircle" type="ColorRect" parent="FishingSpots/RiverSpot"]
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+color = Color(0.1, 0.4, 0.8, 0.1)
+
+[node name="CreekSpot" type="Node2D" parent="FishingSpots"]
+position = Vector2(850, 350)
+
+[node name="Marker" type="ColorRect" parent="FishingSpots/CreekSpot"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.4, 0.65, 0.85, 0.7)
+
+[node name="Label" type="Label" parent="FishingSpots/CreekSpot"]
+offset_left = -30.0
+offset_top = -38.0
+offset_right = 30.0
+offset_bottom = -22.0
+text = "Creek"
+horizontal_alignment = 1
+
+[node name="RangeCircle" type="ColorRect" parent="FishingSpots/CreekSpot"]
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+color = Color(0.4, 0.65, 0.85, 0.1)
+
+# ============================================================
+# Instructions overlay
+# ============================================================
+[node name="Instructions" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 380.0
+offset_bottom = 120.0
+text = "FISHING TEST
+WASD = Move
+Walk to a blue spot, press SPACE to cast
+When you see BITE!, press SPACE to hook
+HOLD SPACE to reel — keep tension in green
+ESC = cancel cast"
+
+# ============================================================
+# Fishing HUD
+# ============================================================
+[node name="FishingHUD" parent="." instance=ExtResource("3")]

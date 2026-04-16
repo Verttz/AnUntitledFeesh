@@ -150,9 +150,9 @@ List comprehensions (`[x for x in y]`) are **not valid GDScript syntax**. Must u
 ---
 
 ### ~~2.10 — `preload()` with dynamic strings (multiple files)~~
-**Files:** `TheGreatFisherduck.gd`, `DonCatfishoni.gd`, `FinDiesel.gd`, `PranksterPoppo.gd`
+**Files:** ~~`DonCatfishoni.gd`~~, ~~`FinDiesel.gd`~~, ~~`PranksterPoppo.gd`~~, ~~`TheGreatFisherduck.gd`~~
 
-GDScript's `preload()` requires a **compile-time constant string literal**. These files pass variables or string concatenation to `preload()`, which causes a parse-time error. Must use `load()` instead.
+GDScript's `preload()` requires a **compile-time constant string literal**. All four files have been fixed (use `load()` or literal strings).
 
 ---
 
@@ -224,47 +224,41 @@ Full of Godot 3 API that was renamed in Godot 4:
 
 ---
 
-### 3.3 — Drag-and-drop API broken across all UI
+### ~~3.3 — Drag-and-drop API broken across all UI~~
 **Files:** `ShopMenu.gd`, `InventoryMenu.gd`, `TributeSlot.gd`
 
-All three files use a Godot 3 drag-and-drop approach:
-- `set_drag_data()` — does not exist in Godot 4
-- `btn.draggable = true` — not a real property
-- `can_drop_data` / `drop_data` as regular methods — should be `_can_drop_data()` / `_drop_data()` virtual overrides
-- `set_drag_preview()` — must be moved to `_get_drag_data()` override
-
-None of the drag-and-drop interactions work.
+~~All three files use a Godot 3 drag-and-drop approach~~ — fixed. Rewrote InventoryMenu and ShopMenu with inner slot classes using `_get_drag_data()`, `_can_drop_data()`, `_drop_data()` virtual overrides. TributeSlot was already correct.
 
 ---
 
-### 3.4 — `GridContainer.clear()` called throughout UI
+### ~~3.4 — `GridContainer.clear()` called throughout UI~~
 **Files:** `InventoryUI.gd`, `InventoryMenu.gd`, `ShopMenu.gd`
 
-`clear()` is a method on `ItemList`, not `GridContainer`. If these nodes are GridContainers, every call fails. Must free children manually with a loop.
+~~`clear()` is a method on `ItemList`, not `GridContainer`.~~ Fixed: all `.clear()` calls replaced with child-freeing loops.
 
 ---
 
-### 3.5 — `InventoryMenu.gd` uses renamed property
+### ~~3.5 — `InventoryMenu.gd` uses renamed property~~
 **File:** `scenes/ui/inventory/InventoryMenu.gd`, line ~112
 
-`slot.rect_min_size` — renamed to `custom_minimum_size` in Godot 4. Will error.
+~~`slot.rect_min_size`~~ — fixed to `custom_minimum_size`.
 
 ---
 
-### 3.6 — `ObliqueCamera2D.gd` uses deprecated properties
+### ~~3.6 — `ObliqueCamera2D.gd` uses deprecated properties~~
 **File:** `scenes/overworld/ObliqueCamera2D.gd`
 
-- `smoothing_enabled` → `position_smoothing_enabled` in Godot 4
-- `smoothing_speed` → `position_smoothing_speed` in Godot 4
-- Zoom direction is inverted: "zoom_in" action decreases zoom (zooms out in Godot 4)
-- No actual camera following code despite being named "follows player"
+~~`smoothing_enabled` → `position_smoothing_enabled`~~ — fixed
+~~`smoothing_speed` → `position_smoothing_speed`~~ — fixed
+~~Zoom direction inverted~~ — fixed (zoom_in now increases zoom)
+- No actual camera following code despite being named "follows player" (still needs implementing)
 
 ---
 
-### 3.7 — Biome name mismatch in `ProgressionManager.gd`
+### ~~3.7 — Biome name mismatch in `ProgressionManager.gd`~~
 **File:** `scripts/progression/ProgressionManager.gd`, line ~76
 
-`biome_order` uses `["RiverLake", "Ocean", "JungleWetlands", "FrozenMountain", "Lava", "FishingSanctum"]`. Every other file in the project uses `["Forest", "Ocean", "Jungle", "FrozenMountain", "Lava", "FishingSanctum"]`. Biome lookups, transitions, and fish filtering will all silently fail.
+~~`biome_order` used wrong names~~ — fixed to `["Forest", "Ocean", "Jungle", "FrozenMountain", "Lava", "FishingSanctum"]`, matching all other files.
 
 ---
 
@@ -317,26 +311,26 @@ References `quest.title` and `quest.description`, but ProgressionManager stores 
 
 ---
 
-### 3.15 — `SettingsMenu.gd` volume slider in dB
+### ~~3.15 — `SettingsMenu.gd` volume slider in dB~~
 **File:** `scenes/ui/SettingsMenu.gd`
 
-Sets slider value to `AudioServer.get_bus_volume_db(0)` — a negative dB value. Slider likely expects 0.0–1.0 linear. Should use `db_to_linear()`.
+~~Sets slider value to raw dB~~ — fixed. Slider now uses `db_to_linear()` for init and has explicit 0.0–1.0 range with step 0.01.
 
 ---
 
-### 3.16 — Missing `Minion.gd` base class
+### ~~3.16 — Missing `Minion.gd` base class~~
 **Files:** `scripts/bosses/DonCatfishoni/minions/TommyGunMinion.gd`, `BrassKnuckleMinion.gd`
 
-Both extend `res://scripts/bosses/Minion.gd` which does not exist in the project. Additionally, both call `move_and_slide()` with a direct argument — Godot 4's `move_and_slide()` takes no arguments (uses the `velocity` property).
+~~Both extend `res://scripts/bosses/Minion.gd` which does not exist~~ — fixed. Created `Minion.gd` base class. Fixed both minion scripts: `_process` → `_physics_process`, `move_and_slide(velocity_arg)` → `velocity = ...; move_and_slide()`.
 
 ---
 
 ## 4. Medium-Severity Issues (Code Smells & Conflicts)
 
-### 4.1 — Five overlapping progression systems
+### ~~4.1 — Five overlapping progression systems~~
 **Files:** `PlayerProgress.gd`, `BiomeManager.gd`, `UpgradeManager.gd`, `BaitManager.gd`, `ProgressionManager.gd`
 
-All five scripts track overlapping state (current biome, unlocked bait, completed quests, upgrades, fish collected). There is no clear owner. This needs to be consolidated into one authoritative system.
+~~All five scripts track overlapping state~~ — fixed. ProgressionManager is now the single authority. PlayerProgress, BiomeManager, BaitManager, and UpgradeManager rewritten as thin facades with property getters/setters that delegate to ProgressionManager.
 
 ---
 
@@ -389,10 +383,10 @@ The base `Boss._ready()` calls `add_to_group("boss")` then `start_phase(1)`. Eve
 
 ---
 
-### 4.8 — Boss attack scheduling issue
-**Files:** `TheGreatFisherduck.gd`, `DonCatfishoni.gd`, others
+### ~~4.8 — Boss attack scheduling issue~~
+**Files:** `TheGreatFisherduck.gd`, `CroakKing.gd`, `CaptainPinchbeard.gd`, `FinDiesel.gd`
 
-Most bosses call ALL attacks simultaneously in `start_phase()` with no delay or timer system. Attacks should cycle with timers. Only Guppazuma and AbominableSnowbass have proper timer-based cycling.
+~~Most bosses call ALL attacks simultaneously~~ — fixed. Added timer-based attack rotation (`_attack_queue`, `_rotation_timer`, `_next_queued_attack()`) to TheGreatFisherduck, CroakKing, CaptainPinchbeard, and FinDiesel. DonCatfishoni already had proper timer scheduling.
 
 ---
 
@@ -424,18 +418,17 @@ Most bosses call ALL attacks simultaneously in `start_phase()` with no delay or 
 
 ---
 
-### 4.13 — `SaveManager.gd` fragile node lookups
-**File:** `scripts/SaveManager.gd`, lines ~28-38 and ~52-56
+### ~~4.13 — `SaveManager.gd` fragile node lookups~~
+**File:** `scripts/SaveManager.gd`
 
-- `find_child("Player", true, false)` — if Player isn't named exactly "Player", save silently skips all player data
-- Expects `/root/ProgressionManager` and `/root/BiomeManager` as autoloads — not registered
+~~`find_child("Player")` fragile lookup~~ — fixed. Added `_get_player()` helper that first checks the `"player"` group, falls back to `find_child()`. Autoloads already registered.
 
 ---
 
-### 4.14 — No save format versioning
+### ~~4.14 — No save format versioning~~
 **File:** `scripts/SaveManager.gd`
 
-Save files have no version field. Future format changes will silently corrupt old saves with no migration path.
+~~No version field~~ — fixed. Added `SAVE_VERSION` constant, `"version"` key in save_data, and `_migrate_save_data()` function with migration framework for future format changes.
 
 ---
 
@@ -446,38 +439,38 @@ Save files have no version field. Future format changes will silently corrupt ol
 
 ---
 
-### 4.16 — `BossBattleManager.gd` boss_data maps boss_scene to arena
+### ~~4.16 — `BossBattleManager.gd` boss_data maps boss_scene to arena~~
 **File:** `scripts/bosses/BossBattleManager.gd`
 
-In the `boss_data` dictionary, both `boss_scene` and `arena_scene` point to the same arena `.tscn` path for every boss. The code then searches for a "Boss" child node in the arena — if not found, boss_instance is null and the fight starts with no boss.
+~~Both `boss_scene` and `arena_scene` pointed to same .tscn~~ — fixed. Renamed `boss_scene` to `boss_script` with correct `.gd` paths. `_start_battle()` now falls back to instantiating from `boss_script` if no boss node found in arena.
 
 ---
 
-### 4.17 — `CombatFish.gd` can leave arena bounds
+### ~~4.17 — `CombatFish.gd` can leave arena bounds~~
 **File:** `scripts/combat/CombatFish.gd`
 
-No boundary clamping on the fish's position. `_do_charge()` and `_do_dash()` teleport the fish without collision checks — can end up inside walls or outside the arena.
+~~No boundary clamping~~ — fixed. Added `_clamp_to_arena()` and `_get_arena_rect()` methods. Both `_do_charge()` and `_do_dash()` now clamp to arena bounds.
 
 ---
 
-### 4.18 — `CombatFish.gd` can only hit bosses
+### ~~4.18 — `CombatFish.gd` can only hit bosses~~
 **File:** `scripts/combat/CombatFish.gd`
 
-`_get_hittable_bodies()` only returns nodes in group `"boss"`. Minions, environmental hazards, and destructible objects are not targetable.
+~~`_get_hittable_bodies()` only returns `"boss"` group~~ — fixed. Now returns `"boss"` + `"minion"` groups.
 
 ---
 
-### 4.19 — `Guppazuma.gd` mimicry calls nonexistent player methods
+### ~~4.19 — `Guppazuma.gd` mimicry calls nonexistent player methods~~
 **File:** `scripts/bosses/Guppazuma/Guppazuma.gd`
 
-`mimicry_attack()` calls `player.get_last_move_type()` and `player.get_last_move_direction()` — neither method exists on Player.gd or CombatFish.gd.
+~~`mimicry_attack()` called `player.get_last_move_type()` and `player.get_last_move_direction()`~~ — fixed. Now looks for CombatFish node with `has_method()` guards. `get_last_move_type()` and `get_last_move_direction()` added to CombatFish.gd.
 
 ---
 
-### 4.20 — `CroakKing.gd` take_damage bypasses base class
+### ~~4.20 — `CroakKing.gd` take_damage bypasses base class~~
 **File:** `scripts/bosses/CroakKing/CroakKing.gd`
 
-`take_damage()` override doesn't call `super()` and doesn't check vulnerability or armor — completely bypasses the base class damage system including status effects.
+~~`take_damage()` override didn't call `super()`~~ — fixed. Now calls `super(amount)` first, then checks for defeat/phase transitions.
 
 ---
 
@@ -497,34 +490,34 @@ Denominator is `available + posted + completed`, but bounties move between these
 
 ## 5. Low-Severity Issues (Dead Code & Cleanup)
 
-### 5.1 — Dead / empty files that should be removed
+### ~~5.1 — Dead / empty files that should be removed~~
 | File | Reason |
 |---|---|
-| `biomes.gd` (top-level) | Empty file. Superseded by `scripts/data/biomes.gd` |
-| `scenes/ui/SettingsMenu.gd` | Superseded by `SettingsMenuV2.gd`. MainMenu and PauseMenu both use V2 |
-| `scenes/ui/InventoryUI.gd` | Superseded by `scenes/ui/inventory/InventoryMenu.gd` |
+| ~~`biomes.gd` (top-level)~~ | ~~Empty file~~ — still present but empty, safe to delete |
+| ~~`scenes/ui/SettingsMenu.gd`~~ | Superseded by `SettingsMenuV2.gd`. MainMenu and PauseMenu both use V2 |
+| ~~`scenes/ui/InventoryUI.gd`~~ | ~~Superseded by `scenes/ui/inventory/InventoryMenu.gd`~~ — marked deprecated |
 | `scripts/quests/Quest.gd` | ~~Incompatible stub that conflicts with the main `scripts/Quest.gd`~~ — gutted, marked deprecated |
 | `scripts/quests/Catch3CarpQuest.gd` | ~~Duplicates QuestFactory's `_create_catch_3_carp()`. Extends Resource, not Quest~~ — gutted, marked deprecated |
 
-### 5.2 — `TheGreatFisherduck.gd` duplicate disarm methods
+### ~~5.2 — `TheGreatFisherduck.gd` duplicate disarm methods~~
 **File:** `scripts/bosses/TheGreatFisherduck/TheGreatFisherduck.gd`
 
-`_on_disarmed()` and `on_player_hooks_disarm()` do the same thing — dead code duplication.
+~~`_on_disarmed()` and `on_player_hooks_disarm()` do the same thing~~ — removed `_on_disarmed()`, kept `on_player_hooks_disarm()` which also emits the "disarmed" signal.
 
-### 5.3 — `SaveLoadTest.gd` has untested method
+### ~~5.3 — `SaveLoadTest.gd` has untested method~~
 **File:** `scripts/tests/SaveLoadTest.gd`
 
-`test_equipment_persistence()` is defined but never called from `run_tests()`.
+~~`test_equipment_persistence()` never called from `run_tests()`~~ — added as Test 7.
 
-### 5.4 — `OverworldScreen.gd` undeclared property assignment
-**File:** `scenes/overworld/OverworldScreen.gd`, line ~39
+### ~~5.4 — `OverworldScreen.gd` undeclared property assignment~~
+**File:** `scenes/overworld/OverworldScreen.gd`
 
-`self.daynight_weather_manager = daynight_weather_manager` assigns to an undeclared property. Works due to GDScript's dynamic nature but is a code smell.
+~~`self.daynight_weather_manager` assigned without declaration~~ — declared as `var daynight_weather_manager = null`, removed redundant `self.` assignment.
 
-### 5.5 — `InventoryMenuLoader.gd` uses removed method
-**File:** `scenes/ui/inventory/InventoryMenuLoader.gd`, line ~10
+### ~~5.5 — `InventoryMenuLoader.gd` uses removed method~~
+**File:** `scenes/ui/inventory/InventoryMenuLoader.gd`
 
-`inventory_menu.raise_()` — `raise_()` was removed in Godot 4. Use `move_to_front()` instead.
+~~`inventory_menu.raise_()`~~ — fixed to `move_to_front()`.
 
 ### ~~5.6 — `QuestFactory.gd` only has 1 quest registered~~
 **File:** `scripts/QuestFactory.gd`
@@ -603,7 +596,7 @@ Only `catch_3_carp` is registered. The bounty board references 15 bounty IDs, no
 | `SettingsManager.gd` | ~55 | ✅ Done | ~~Never loads, key destruction on load~~ — _ready() loads, merge-with-defaults |
 | `Quest.gd` | ~158 | ✅ Done | ~~Calls nonexistent Inventory/Player methods~~ — all methods exist, duplicate var removed |
 | `QuestManager.gd` | ~230 | ✅ Done | ~~Mixed indentation~~ fixed; auto player lookup via _find_player() |
-| `QuestFactory.gd` | ~290 | ✅ Done | ~~Only 1 quest~~ — 22 quests registered (7 NPC + 15 bounties) |
+| `QuestFactory.gd` | ~290 | ✅ Done | ~~Only 1 quest~~ — 21 quests registered (7 NPC + 14 bounties) |
 | `BountyBoard.gd` | ~155 | ✅ Done | ~~All bounty creation returns null~~ — all 15 bounties in QuestFactory; fixed total percentage |
 | `DayNightSystem.gd` | ~53 | ✅ Done | Clean |
 | `WeatherSystem.gd` | ~55 | ✅ Done | ~~Re-roll spam issue~~ — always assigns duration |
@@ -612,7 +605,7 @@ Only `catch_3_carp` is registered. The bounty board references 15 bounty IDs, no
 ### Data Scripts
 | File | Lines | Status | Blockers |
 |---|---|---|---|
-| `data/fish_data.gd` | ~1200+ | 🟢 Mostly Done | No helpers; biome mismatch with ProgressionManager |
+| `data/fish_data.gd` | ~1200+ | 🟢 Mostly Done | No helpers; ~~biome mismatch with ProgressionManager~~ fixed |
 | `data/biomes.gd` | ~80 | ✅ Done | Clean, well-structured |
 | `data/item_data.gd` | ~400+ | ✅ Done | ~~Empty~~ — 6 rods, 24 baits, 5 lures, 3 lines, 2 sinkers, 100+ fish, 1 kit |
 | `data/shop_data.gd` | ~90+ | ✅ Done | ~~Empty~~ — per-biome shop inventories + upgrades |
@@ -626,7 +619,7 @@ Only `catch_3_carp` is registered. The bounty board references 15 bounty IDs, no
 | `progression/BiomeManager.gd` | ~50 | 🟡 Partial | Overlaps with ProgressionManager |
 | `progression/UpgradeManager.gd` | ~40 | 🔴 Stub | No save support, no effect data |
 | `progression/BaitManager.gd` | ~13 | 🔴 Stub | No save support, no integration |
-| `progression/ProgressionManager.gd` | ~100 | 🟡 Partial | Wrong biome names, overlaps with all above |
+| `progression/ProgressionManager.gd` | ~100 | 🟡 Partial | ~~Wrong biome names~~ fixed; overlaps with all above |
 
 ### Boss Scripts
 | File | Lines | Status | Critical Issues |
@@ -634,12 +627,12 @@ Only `catch_3_carp` is registered. The bounty board references 15 bounty IDs, no
 | `bosses/Boss.gd` | ~192 | ✅ Done | ~~Stun blocks damage~~ fixed; ~~double start_phase(1)~~ removed from base |
 | `bosses/BossBattleManager.gd` | ~186 | ✅ Done | boss_scene == arena_scene issue |
 | `combat/CombatFish.gd` | ~340 | ✅ Done | `_do_summon()` stub; no arena bounds |
-| `TheGreatFisherduck.gd` | ~219 | 🟡 Partial | All attacks fire at once (needs timer system) |
+| `TheGreatFisherduck.gd` | ~219 | 🟡 Partial | All attacks fire at once (needs timer system); ~~preload() with dynamic string~~ fixed |
 | `DonCatfishoni.gd` | ~231 | � Mostly Done | ~~Undefined variable crash~~; ~~indentation error~~; ~~preload~~; ~~duplicate method~~ — all fixed |
 | `CaptainPinchbeard.gd` | ~166 | � Mostly Done | ~~Shadowed vars~~; ~~re-declared signals~~ — fixed |
 | `FinDiesel.gd` | ~196 | � Mostly Done | ~~Invalid list comprehension~~; ~~duplicate method~~; ~~shadowed var~~; ~~preload~~ — all fixed |
-| `Guppazuma.gd` | ~251 | 🟢 Mostly Done | ~~Undeclared signals~~; ~~missing method~~ — all fixed |
-| `CroakKing.gd` | ~168 | � Mostly Done | ~~.emit() on bool~~; ~~method/signal clash~~; ~~undeclared signals~~ — all fixed |
+| `Guppazuma.gd` | ~251 | ✅ Done | ~~Undeclared signals~~; ~~missing method~~; ~~mimicry crash~~ — all fixed |
+| `CroakKing.gd` | ~168 | ✅ Done | ~~.emit() on bool~~; ~~method/signal clash~~; ~~undeclared signals~~; ~~take_damage bypass~~ — all fixed |
 | `AbominableSnowbass.gd` | ~177 | � Mostly Done | ~~Undeclared signals~~; ~~await nonexistent signal~~ — fixed |
 | `FrostbiteMaestro.gd` | ~222 | � Mostly Done | ~~Possible infinite recursion~~; ~~shadowed var~~; ~~indentation~~ — fixed |
 | `MagmaChef.gd` | ~75 | 🔴 Stub | Every method is `pass` |
@@ -649,16 +642,16 @@ Only `catch_3_carp` is registered. The bounty board references 15 bounty IDs, no
 | DonCatfishoni hazards (4) | ~10 ea | 🔴 Stub | Signals only, no logic |
 | CroakKing hazards (4) | ~15 ea | 🔴 Stub | All `pass` |
 | CroakKing minions (7) | ~15 ea | 🔴 Stub | All `pass` |
-| CroakKingCeremony.gd | ~46 | 🟡 Partial | Undeclared signals; never properly invoked |
+| CroakKingCeremony.gd | ~46 | 🟡 Partial | ~~Undeclared signals~~ fixed; never properly invoked |
 
 ### Overworld Scripts
 | File | Lines | Status | Blockers |
 |---|---|---|---|
 | `OverworldManager.gd` | ~60 | � Mostly Done | Stub navigation; ~~bad autoload check~~ fixed |
 | `FishingSpot.gd` | ~5 | 🔴 Stub | Never connected, no habitat data |
-| `OverworldScreen.gd` | ~50 | 🟡 Partial | Undefined input actions, hardcoded positions |
+| `OverworldScreen.gd` | ~50 | 🟡 Partial | ~~Undefined input actions~~ now in project.godot; hardcoded positions |
 | `BossGateGuard.gd` | ~45 | 🟡 Partial | Assumes nonexistent Player methods |
-| `ObliqueCamera2D.gd` | ~30 | 🔴 Broken | Deprecated properties, inverted zoom |
+| `ObliqueCamera2D.gd` | ~30 | � Partial | ~~Deprecated properties~~; ~~inverted zoom~~ — fixed; no camera following code |
 
 ### UI Scripts
 | File | Lines | Status | Blockers |
@@ -666,11 +659,11 @@ Only `catch_3_carp` is registered. The bounty board references 15 bounty IDs, no
 | `MainMenu.gd` | ~40 | 🟢 Mostly Done | Fragile SaveManager coupling |
 | `PauseMenu.gd` | ~35 | � Mostly Done | ~~Bad autoload check~~ fixed; no Resume button |
 | `SettingsMenuV2.gd` | ~80 | � Mostly Done | ~~Bad autoload check~~ fixed; accessibility stubs, hardcoded bus indices |
-| `InventoryMenu.gd` | ~120 | 🔴 Broken | Godot 3 drag-and-drop API, empty item_data |
+| `InventoryMenu.gd` | ~120 | � Partial | Godot 3 drag-and-drop API; ~~GridContainer.clear()~~; ~~rect_min_size~~ — fixed |
 | `QuestLogMenu.gd` | ~35 | ✅ Done | ~~Data contract mismatch~~ — uses Quest objects, shows progress strings |
 | `ShopMenu.gd` | ~80 | 🔴 Broken | Drag-and-drop API, no buy/sell logic |
-| `TributeMenu.gd` | ~40 | 🔴 Broken | Missing class_name on TributeSlot |
-| `TributeSlot.gd` | ~50 | 🔴 Broken | Full Godot 3 API, fish name check excludes most fish |
+| `TributeMenu.gd` | ~40 | � Mostly Done | ~~Missing class_name on TributeSlot~~ — fixed |
+| `TributeSlot.gd` | ~50 | 🟢 Mostly Done | ~~Full Godot 3 API~~ — updated to Godot 4; ~~fish name check~~ — uses type field now |
 | `SaveNotification.gd` | ~25 | 🟢 Mostly Done | Tween conflict on rapid calls |
 | `OpeningCutscene.gd` | ~15 | 🔴 Stub | No content, stuck after timer |
 | `InventoryUI.gd` | ~25 | ❌ Dead | Superseded by InventoryMenu |

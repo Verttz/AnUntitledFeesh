@@ -30,45 +30,47 @@ var combat_fish_instance: CombatFish = null
 var fish_spawn_position: Vector2 = Vector2(400, 300)  # Default, set by arena
 
 # Mapping of boss names to their scene and arena paths
+# boss_script: path to the boss .gd script (instantiated at runtime)
+# arena_scene: path to the arena .tscn (contains environment, hazards, spawn markers)
 var boss_data = {
 	"TheGreatFisherduck": {
-		"boss_scene": "res://scenes/arenas/TheGreatFisherduckArena.tscn",
+		"boss_script": "res://scripts/bosses/TheGreatFisherduck/TheGreatFisherduck.gd",
 		"arena_scene": "res://scenes/arenas/TheGreatFisherduckArena.tscn"
 	},
 	"DonCatfishoni": {
-		"boss_scene": "res://scenes/arenas/DonCatfishoniArena.tscn",
+		"boss_script": "res://scripts/bosses/DonCatfishoni/DonCatfishoni.gd",
 		"arena_scene": "res://scenes/arenas/DonCatfishoniArena.tscn"
 	},
 	"CaptainPinchbeard": {
-		"boss_scene": "res://scenes/arenas/CaptainPinchbeardArena.tscn",
+		"boss_script": "res://scripts/bosses/CaptainPinchbeard/CaptainPinchbeard.gd",
 		"arena_scene": "res://scenes/arenas/CaptainPinchbeardArena.tscn"
 	},
 	"FinDiesel": {
-		"boss_scene": "res://scenes/arenas/FinDieselArena.tscn",
+		"boss_script": "res://scripts/bosses/FinDiesel/FinDiesel.gd",
 		"arena_scene": "res://scenes/arenas/FinDieselArena.tscn"
 	},
 	"Guppazuma": {
-		"boss_scene": "res://scenes/arenas/GuppazumaArena.tscn",
+		"boss_script": "res://scripts/bosses/Guppazuma/Guppazuma.gd",
 		"arena_scene": "res://scenes/arenas/GuppazumaArena.tscn"
 	},
 	"CroakKing": {
-		"boss_scene": "res://scenes/arenas/CroakKingArena.tscn",
+		"boss_script": "res://scripts/bosses/CroakKing/CroakKing.gd",
 		"arena_scene": "res://scenes/arenas/CroakKingArena.tscn"
 	},
 	"AbominableSnowbass": {
-		"boss_scene": "res://scenes/arenas/AbominableSnowbassArena.tscn",
+		"boss_script": "res://scripts/bosses/AbominableSnowbass/AbominableSnowbass.gd",
 		"arena_scene": "res://scenes/arenas/AbominableSnowbassArena.tscn"
 	},
 	"FrostbiteMaestro": {
-		"boss_scene": "res://scenes/arenas/FrostbiteMaestroArena.tscn",
+		"boss_script": "res://scripts/bosses/FrostbiteMaestro/FrostbiteMaestro.gd",
 		"arena_scene": "res://scenes/arenas/FrostbiteMaestroArena.tscn"
 	},
 	"MagmaChef": {
-		"boss_scene": "res://scenes/arenas/MagmaChefArena.tscn",
+		"boss_script": "res://scripts/bosses/MagmaChef/MagmaChef.gd",
 		"arena_scene": "res://scenes/arenas/MagmaChefArena.tscn"
 	},
 	"PranksterPoppo": {
-		"boss_scene": "res://scenes/arenas/PranksterPoppoArena.tscn",
+		"boss_script": "res://scripts/bosses/PranksterPoppo/PranksterPoppo.gd",
 		"arena_scene": "res://scenes/arenas/PranksterPoppoArena.tscn"
 	}
 }
@@ -110,16 +112,25 @@ func _start_battle(boss_name: String) -> void:
 	if spawn_marker:
 		fish_spawn_position = spawn_marker.global_position
 
-	# Load boss (arena .tscn should contain the boss node, or load separately)
+	# Load boss (arena .tscn should contain the boss node, or instantiate from script)
 	var boss_node = arena_instance.find_child("Boss", true, false)
 	if boss_node:
 		boss_instance = boss_node
 	else:
-		# Fallback: instantiate boss from arena scene root children
+		# Fallback: check for any node in "boss" group
 		for child in arena_instance.get_children():
 			if child.is_in_group("boss"):
 				boss_instance = child
 				break
+
+	# If no boss found in arena, instantiate from boss_script
+	if boss_instance == null and data.has("boss_script"):
+		var script = load(data["boss_script"])
+		if script:
+			boss_instance = CharacterBody2D.new()
+			boss_instance.set_script(script)
+			boss_instance.add_to_group("boss")
+			arena_instance.add_child(boss_instance)
 
 	if boss_instance:
 		boss_instance.defeated.connect(_on_boss_defeated)

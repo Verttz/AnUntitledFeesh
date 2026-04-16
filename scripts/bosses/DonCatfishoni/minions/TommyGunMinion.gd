@@ -7,13 +7,16 @@ var burst_count := 6
 var burst_cooldown := 2.0
 var burst_timer := 0.0
 
-func _process(delta):
+func _physics_process(delta):
 	if not is_instance_valid(player):
 		return
 	var to_player = player.global_position - global_position
 	if abs(to_player.length() - preferred_distance) > 16:
-		move_and_slide((to_player.normalized() * (speed if to_player.length() > preferred_distance else -speed)))
+		var dir_sign = 1.0 if to_player.length() > preferred_distance else -1.0
+		velocity = to_player.normalized() * speed * dir_sign
+		move_and_slide()
 	else:
+		velocity = Vector2.ZERO
 		burst_timer -= delta
 		if burst_timer <= 0.0:
 			fire_burst()

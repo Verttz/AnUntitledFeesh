@@ -1,24 +1,45 @@
 extends Node
 
-# Handles upgrades purchased with fish sales
+# UpgradeManager.gd — Thin facade delegating to ProgressionManager.
 
 signal upgrade_available(upgrade_name)
 signal upgrade_purchased(upgrade_name)
 
-var available_upgrades := ["Rod1", "Rod2", "Boat", "BaitBag"]
-var purchased_upgrades := []
-var fish_currency := 0
+var available_upgrades: Array:
+	get:
+		var pm = get_node_or_null("/root/ProgressionManager")
+		return pm.available_upgrades if pm else []
+
+var purchased_upgrades: Array:
+	get:
+		var pm = get_node_or_null("/root/ProgressionManager")
+		return pm.upgrades if pm else []
+	set(v):
+		var pm = get_node_or_null("/root/ProgressionManager")
+		if pm: pm.upgrades = v
+
+var fish_currency: int:
+	get:
+		var pm = get_node_or_null("/root/ProgressionManager")
+		return pm.fish_currency if pm else 0
+	set(v):
+		var pm = get_node_or_null("/root/ProgressionManager")
+		if pm: pm.fish_currency = v
 
 func add_fish_currency(amount):
-	fish_currency += amount
+	var pm = get_node_or_null("/root/ProgressionManager")
+	if pm: pm.add_fish_currency(amount)
 
 func can_purchase(upgrade_name, cost):
-	return fish_currency >= cost and not purchased_upgrades.has(upgrade_name)
+	var pm = get_node_or_null("/root/ProgressionManager")
+	if pm: return pm.can_purchase(upgrade_name, cost)
+	return false
 
 func purchase_upgrade(upgrade_name, cost):
 	if can_purchase(upgrade_name, cost):
 		fish_currency -= cost
-		purchased_upgrades.append(upgrade_name)
+		var pm = get_node_or_null("/root/ProgressionManager")
+		if pm: pm.purchase_upgrade(upgrade_name)
 		upgrade_purchased.emit(upgrade_name)
 		return true
 	return false

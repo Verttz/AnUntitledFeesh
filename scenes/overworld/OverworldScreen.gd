@@ -12,6 +12,7 @@ var player = null
 var boss_guard = null
 var inventory_menu_loader = null
 var INTERACT_DISTANCE := 48
+var daynight_weather_manager = null
 
 func _ready():
     # Add PauseMenu as child
@@ -38,8 +39,6 @@ func _ready():
     # Add DayNightWeatherManager as child (handles day/night and weather systems)
     var daynight_weather_manager = preload("res://scripts/DayNightWeatherManager.gd").new()
     add_child(daynight_weather_manager)
-    # Optionally, store reference for UI or gameplay hooks
-    self.daynight_weather_manager = daynight_weather_manager
 
 func _on_tribute_accepted(tribute_fish):
     print("Tribute accepted! Fish: %s" % [str(tribute_fish)])

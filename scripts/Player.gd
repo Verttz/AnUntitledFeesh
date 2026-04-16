@@ -1,6 +1,14 @@
 
 extends CharacterBody2D
 
+signal fish_caught(catch_data: Dictionary)
+signal fish_lost(fish_name: String)
+signal fishing_state_changed(new_state: int)
+signal casting_started
+signal cast_released(power: float, direction: Vector2, target_pos: Vector2)
+signal bite_occurred(fish_name: String, rarity: int)
+signal reel_started(fish_name: String, rarity: int)
+
 # --- Inventory Management ---
 var tacklebox = preload("res://scripts/Inventory.gd").new()
 var backpack = preload("res://scripts/Inventory.gd").new()
@@ -68,7 +76,7 @@ func add_item_to_inventory(item_name: String, amount := 1):
 # --- Movement & State ---
 var speed := 150
 
-enum State { MOVE, FISHING_WAIT, FISHING_REEL }
+enum State { MOVE, CASTING, WAITING, BITING, REELING }
 var state = State.MOVE
 
 # Fishing variables
@@ -107,6 +115,7 @@ var cast_power_max := 1.0
 var cast_power_speed := 0.7
 var is_charging_cast := false
 var cast_direction := Vector2.RIGHT
+var bobber_target := Vector2.ZERO
 
 
 # =============================================================================
@@ -133,7 +142,12 @@ func next_location():
 func prev_location():
 	set_location((current_location - 1 + locations_data.LOCATIONS[current_biome].size()) % locations_data.LOCATIONS[current_biome].size())
 
+# External override for fishing spot check (set by test scenes)
+var fishing_spot_override: Callable = Callable()
+
 func _is_at_fishing_spot() -> bool:
+	if fishing_spot_override.is_valid():
+		return fishing_spot_override.call()
 	var loc = locations_data.LOCATIONS[current_biome][current_location]
 	return loc.get("type", "") == "fishing_spot"
 
@@ -147,21 +161,16 @@ func _physics_process(delta):
 		State.MOVE:
 			_handle_movement(delta)
 			if Input.is_action_just_pressed("ui_accept") and _is_at_fishing_spot():
-				_begin_cast()
-		State.FISHING_WAIT:
-			fishing_timer += delta
-			if not bobber_submerged and fishing_timer >= fishing_bite_time:
-				bobber_submerged = true
-				bobber_reaction_timer = 0.0
-				# TODO: Animate bobber dip + splash sound
-			if bobber_submerged:
-				bobber_reaction_timer += delta
-				if Input.is_action_just_pressed("ui_accept"):
-					fish_hooked = true
-					_start_reeling()
-				elif bobber_reaction_timer > bobber_reaction_window:
-					_finish_fishing(false)
-		State.FISHING_REEL:
+				_start_casting()
+		State.CASTING:
+			_handle_casting(delta)
+			if Input.is_action_just_released("ui_accept"):
+				_release_cast()
+		State.WAITING:
+			_handle_waiting(delta)
+		State.BITING:
+			_handle_biting(delta)
+		State.REELING:
 			_handle_reeling(delta)
 
 func _handle_movement(delta):
@@ -177,19 +186,44 @@ func _handle_movement(delta):
 
 
 # =============================================================================
-# Unified Cast System — both keyboard (Space) and mouse use this
+# Cast System — MOVE → CASTING → WAITING → BITING → REELING
 # =============================================================================
 
-func _begin_cast():
+func _start_casting():
+	state = State.CASTING
+	cast_power = cast_power_min
+	is_charging_cast = true
+	velocity = Vector2.ZERO
+	_update_cast_direction()
+	casting_started.emit()
+	fishing_state_changed.emit(State.CASTING)
+
+func _handle_casting(_delta):
+	cast_power = clampf(cast_power + cast_power_speed * _delta, cast_power_min, cast_power_max)
+	_update_cast_direction()
+	_show_cast_preview()
+
+func _release_cast():
+	is_charging_cast = false
+	_hide_cast_preview()
+
 	var eq_stats = equipment.get_combined_stats()
+	var base_distance := lerpf(100.0, 400.0, (cast_power - cast_power_min) / (cast_power_max - cast_power_min))
+	if eq_stats.cast_distance > 0:
+		base_distance = maxf(base_distance, float(eq_stats.cast_distance))
+	bobber_target = global_position + cast_direction * base_distance
+
+	# Pre-select fish (determines bite timing); revealed to player at bite
 	var selected = _select_fish(eq_stats)
 	if selected == null:
 		print("No fish here for habitat: %s" % current_habitat)
+		state = State.MOVE
+		fishing_state_changed.emit(State.MOVE)
 		return
 	current_fish = Fish.from_dict(selected)
 	_consume_bait()
 
-	state = State.FISHING_WAIT
+	state = State.WAITING
 	fishing_timer = 0.0
 	bobber_submerged = false
 	fish_hooked = false
@@ -202,8 +236,29 @@ func _begin_cast():
 		bite_max = max(bite_min, bite_max - eq_stats.bite_bonus)
 	fishing_bite_time = randf_range(bite_min, bite_max)
 	bobber_reaction_window = current_fish.reaction_window
-	velocity = Vector2.ZERO
-	# TODO: Show bobber at cast location, animate bobbing
+
+	cast_released.emit(cast_power, cast_direction, bobber_target)
+	fishing_state_changed.emit(State.WAITING)
+
+func _handle_waiting(delta):
+	fishing_timer += delta
+	if fishing_timer >= fishing_bite_time:
+		_enter_biting()
+
+func _enter_biting():
+	state = State.BITING
+	bobber_submerged = true
+	bobber_reaction_timer = 0.0
+	bite_occurred.emit(current_fish.fish_name, current_fish.rarity)
+	fishing_state_changed.emit(State.BITING)
+
+func _handle_biting(delta):
+	bobber_reaction_timer += delta
+	if Input.is_action_just_pressed("ui_accept"):
+		fish_hooked = true
+		_start_reeling()
+	elif bobber_reaction_timer > bobber_reaction_window:
+		_finish_fishing(false)
 
 
 # =============================================================================
@@ -277,7 +332,7 @@ func _consume_bait():
 const REEL_TIME_BY_RARITY := [2.0, 3.0, 4.0, 5.5, 7.0]
 
 func _start_reeling():
-	state = State.FISHING_REEL
+	state = State.REELING
 	tension = 0.5
 	reeling_timer = 0.0
 	fight_phase_index = 0
@@ -295,7 +350,8 @@ func _start_reeling():
 	var eq_stats = equipment.get_combined_stats()
 	tension_safe_min = eq_stats.tension_safe_min if eq_stats.tension_safe_min != null else 0.3
 	tension_safe_max = eq_stats.tension_safe_max if eq_stats.tension_safe_max != null else 0.7
-	# TODO: Show tension meter UI
+	reel_started.emit(current_fish.fish_name, current_fish.rarity)
+	fishing_state_changed.emit(State.REELING)
 
 func _handle_reeling(delta):
 	# Determine current fight phase
@@ -344,26 +400,39 @@ func _handle_reeling(delta):
 # =============================================================================
 
 func _finish_fishing(success: bool):
+	var caught_fish_name := ""
+	var caught_rarity := 0
+	var caught_size := 0.0
 	if success and current_fish:
+		caught_size = randf_range(0.5, 2.0)
 		var catch_data = {
 			"name": current_fish.fish_name,
 			"biome": current_fish.biome,
 			"rarity": current_fish.rarity,
-			"size": randf_range(0.5, 2.0),
+			"size": caught_size,
 			"catch_date": Time.get_datetime_string_from_system(),
 			"unique_id": str(randi()) + "_" + str(Time.get_ticks_msec()),
 		}
+		caught_fish_name = current_fish.fish_name
+		caught_rarity = current_fish.rarity
 		backpack.add_item(current_fish.fish_name, 1, catch_data)
-		print("Caught: %s (rarity %d, size %.1fx)" % [current_fish.fish_name, current_fish.rarity, catch_data.size])
+		print("Caught: %s (rarity %d, size %.1fx)" % [current_fish.fish_name, current_fish.rarity, caught_size])
+		fish_caught.emit(catch_data)
 		# Notify QuestManager autoload
 		var qm = get_node_or_null("/root/QuestManager")
 		if qm and qm.has_method("check_quests"):
 			qm.check_quests()
-		# TODO: Success animation + sound
 	else:
+		caught_fish_name = current_fish.fish_name if current_fish else ""
 		if current_fish:
 			print("Lost: %s got away!" % current_fish.fish_name)
-		# TODO: Fail animation + sound
+		fish_lost.emit(caught_fish_name)
+
+	# Cache for HUD before reset
+	var _was_success = success
+	var _fish_name = caught_fish_name
+	var _rarity = caught_rarity
+	var _size = caught_size
 
 	# Full state reset
 	state = State.MOVE
@@ -380,7 +449,8 @@ func _finish_fishing(success: bool):
 	fight_phase_timer = 0.0
 	is_charging_cast = false
 	cast_power = 0.0
-	# TODO: Hide fishing UI elements
+
+	fishing_state_changed.emit(State.MOVE)
 
 	# Autosave
 	if has_node("/root/SaveManager") and SaveManager.can_save("exploration"):
@@ -396,21 +466,25 @@ func _finish_fishing(success: bool):
 
 func _input(event):
 	# Cancel fishing with Escape
-	if state in [State.FISHING_WAIT, State.FISHING_REEL] and event.is_action_pressed("ui_cancel"):
+	if state in [State.CASTING, State.WAITING, State.BITING, State.REELING] and event.is_action_pressed("ui_cancel"):
 		_finish_fishing(false)
 		return
 
-	# Mouse-based cast (click-hold to charge, release to cast)
+	# Mouse-based cast (click to start charging, release to cast)
 	if state == State.MOVE and _is_at_fishing_spot():
-		if event is InputEventMouseButton:
-			if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-				is_charging_cast = true
-				cast_power = cast_power_min
-			elif event.button_index == MOUSE_BUTTON_LEFT and not event.pressed and is_charging_cast:
-				is_charging_cast = false
-				_perform_mouse_cast()
-		elif event is InputEventMouseMotion and is_charging_cast:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			_start_casting()
+	if state == State.CASTING:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			_release_cast()
+		elif event is InputEventMouseMotion:
 			_update_cast_direction()
+
+	# Hook fish with mouse click during BITING
+	if state == State.BITING:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			fish_hooked = true
+			_start_reeling()
 
 	# Enter shop if at shop location
 	if state == State.MOVE:
@@ -437,27 +511,24 @@ func open_shop(shop_data: Dictionary):
 # Mouse Cast Helpers
 # =============================================================================
 
-func _process(delta):
+func _process(_delta):
 	if state == State.MOVE:
 		_check_screen_edges()
-	if is_charging_cast:
-		cast_power = clamp(cast_power + cast_power_speed * delta, cast_power_min, cast_power_max)
-		_update_cast_direction()
-		_show_cast_preview()
-	else:
-		_hide_cast_preview()
 
 func _check_screen_edges():
 	var screen_rect = get_viewport_rect()
 	var margin := 8
+	var parent = get_parent()
+	if not parent or not parent.has_method("on_player_reach_edge"):
+		return
 	if position.x < margin:
-		get_parent().on_player_reach_edge("left")
+		parent.on_player_reach_edge("left")
 	elif position.x > screen_rect.size.x - margin:
-		get_parent().on_player_reach_edge("right")
+		parent.on_player_reach_edge("right")
 	elif position.y < margin:
-		get_parent().on_player_reach_edge("up")
+		parent.on_player_reach_edge("up")
 	elif position.y > screen_rect.size.y - margin:
-		get_parent().on_player_reach_edge("down")
+		parent.on_player_reach_edge("down")
 
 func _update_cast_direction():
 	var mouse_pos = get_global_mouse_position()
@@ -471,13 +542,4 @@ func _hide_cast_preview():
 	# TODO: Hide cast preview
 	pass
 
-func _perform_mouse_cast():
-	# Cast power determines bobber distance (for animation only)
-	var eq_stats = equipment.get_combined_stats()
-	var base_distance := lerp(100.0, 400.0, (cast_power - cast_power_min) / (cast_power_max - cast_power_min))
-	if eq_stats.cast_distance > 0:
-		base_distance = maxf(base_distance, float(eq_stats.cast_distance))
-	var _target_pos = global_position + cast_direction * base_distance
-	# TODO: Animate bobber flying to _target_pos
-	# Fish selection uses the same unified path
-	_begin_cast()
+

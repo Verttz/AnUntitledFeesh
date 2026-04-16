@@ -33,6 +33,9 @@ func run_tests():
 	print("\n--- Test 6: Progression Data Persistence ---")
 	test_progression_data()
 	
+	print("\n--- Test 7: Equipment Persistence ---")
+	test_equipment_persistence()
+	
 	print("\n=== All Tests Complete ===")
 
 func test_save_manager_exists():

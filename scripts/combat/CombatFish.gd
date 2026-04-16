@@ -43,6 +43,10 @@ const BASE_MOVE_SPEED: float = 200.0
 var move_speed: float = 200.0
 var aim_direction: Vector2 = Vector2.RIGHT
 
+# --- Last move tracking (for boss mimicry, etc.) ---
+var last_move_type: String = "idle"
+var last_move_direction: Vector2 = Vector2.RIGHT
+
 # --- Projectile scene (assign in editor or from BossBattleManager) ---
 @export var projectile_scene: PackedScene
 
@@ -118,6 +122,8 @@ func _handle_movement(_delta: float) -> void:
 
 	if input_dir != Vector2.ZERO:
 		input_dir = input_dir.normalized()
+		last_move_direction = input_dir
+		last_move_type = "dash"
 
 	velocity = input_dir * move_speed
 	move_and_slide()
@@ -126,6 +132,14 @@ func _handle_movement(_delta: float) -> void:
 func _handle_aiming() -> void:
 	var mouse_pos := get_global_mouse_position()
 	aim_direction = (mouse_pos - global_position).normalized()
+
+
+func get_last_move_type() -> String:
+	return last_move_type
+
+
+func get_last_move_direction() -> Vector2:
+	return last_move_direction
 
 
 # ==========================================================================
@@ -164,19 +178,26 @@ func _handle_weapon(delta: float) -> void:
 
 func _fire_weapon(wc: int, stats: Dictionary) -> void:
 	var damage := _calc_damage(stats)
+	last_move_direction = aim_direction
 
 	match wc:
 		Fish.WeaponClass.SLASH, Fish.WeaponClass.HEAVY_SLASH, Fish.WeaponClass.WHIP:
+			last_move_type = "circle"
 			_do_melee_arc(stats, damage)
 		Fish.WeaponClass.THRUST:
+			last_move_type = "dash"
 			_do_melee_thrust(stats, damage)
 		Fish.WeaponClass.SMASH:
+			last_move_type = "circle"
 			_do_melee_smash(stats, damage)
 		Fish.WeaponClass.SINGLE_SHOT, Fish.WeaponClass.BLASTER, Fish.WeaponClass.RAPID_FIRE:
+			last_move_type = "ranged"
 			_do_ranged_projectile(stats, damage)
 		Fish.WeaponClass.BOOMERANG:
+			last_move_type = "ranged"
 			_do_boomerang(stats, damage)
 		Fish.WeaponClass.LOBBED:
+			last_move_type = "ranged"
 			_do_lobbed(stats, damage)
 
 
@@ -363,8 +384,8 @@ func _apply_passive_to_projectile(proj: Node) -> void:
 
 
 func _get_hittable_bodies() -> Array:
-	# Returns all boss/enemy nodes in the arena that can be hit
-	return get_tree().get_nodes_in_group("boss")
+	# Returns all boss and minion nodes in the arena that can be hit
+	return get_tree().get_nodes_in_group("boss") + get_tree().get_nodes_in_group("minion")
 
 
 # ==========================================================================
@@ -499,9 +520,9 @@ func _do_charge() -> void:
 	var charge_distance := 150.0
 	var charge_damage := fish_data.attack * 3
 	_start_iframes()
-	# Move instantly in aim direction
+	# Move instantly in aim direction, clamped to arena bounds
 	var target_pos := global_position + aim_direction * charge_distance
-	global_position = target_pos
+	global_position = _clamp_to_arena(target_pos)
 	# Damage anything at destination
 	for body in _get_hittable_bodies():
 		if body.global_position.distance_to(global_position) < 60.0:
@@ -525,7 +546,7 @@ func _do_dash() -> void:
 	# Invulnerable dash in move direction, 150px
 	var dash_dir := velocity.normalized() if velocity.length() > 0 else aim_direction
 	_start_iframes()
-	global_position += dash_dir * 150.0
+	global_position = _clamp_to_arena(global_position + dash_dir * 150.0)
 
 
 # --- Reflect (called by boss bullets) ---
@@ -537,3 +558,21 @@ func try_reflect_bullet(bullet: Node2D) -> bool:
 	if bullet.has_method("reflect"):
 		bullet.reflect()
 	return true
+
+
+# ==========================================================================
+# ARENA BOUNDARY CLAMPING
+# ==========================================================================
+
+func _clamp_to_arena(pos: Vector2) -> Vector2:
+	var arena_rect := _get_arena_rect()
+	pos.x = clampf(pos.x, arena_rect.position.x, arena_rect.end.x)
+	pos.y = clampf(pos.y, arena_rect.position.y, arena_rect.end.y)
+	return pos
+
+func _get_arena_rect() -> Rect2:
+	# Try to find an arena bounds node, fall back to viewport
+	var arena = get_parent()
+	if arena and arena.has_method("get_arena_rect"):
+		return arena.get_arena_rect()
+	return get_viewport_rect()
